@@ -1,14 +1,30 @@
-<nav class="sidebar-nav">
-  <a routerLink="/me" routerLinkActive="active">
-    <img src="assets/icons/user.svg" alt="Me">
-  </a>
-  <a routerLink="/communities" routerLinkActive="active">
-    <img src="assets/icons/communities.svg" alt="Communities">
-  </a>
-  <a routerLink="/songs" routerLinkActive="active">
-    <img src="assets/icons/music.svg" alt="Songs">
-  </a>
-  <a routerLink="/playlist" routerLinkActive="active">
-    <img src="assets/icons/playlist.svg" alt="Playlist">
-  </a>
-</nav>
+<aside class="sidebar-content">
+  <!-- Logo -->
+  <div class="logo">
+    <img src="/assets/images/music-logo.svg" alt="Alikin Logo">
+  </div>
+
+  <!-- Navegación principal -->
+  <nav class="nav-menu">
+    <a class="nav-item" routerLink="/profile" routerLinkActive="active" title="Me">
+      <img src="/assets/icons/user.svg" alt="Me" class="nav-icon">
+      <span class="nav-text">Me</span>
+    </a>
+    <a class="nav-item" routerLink="/communities" routerLinkActive="active" title="Communities">
+      <img src="/assets/icons/communities.svg" alt="Communities" class="nav-icon">
+      <span class="nav-text">Communities</span>
+    </a>
+    <a class="nav-item highlighted" routerLink="/post" routerLinkActive="active" title="Post">
+      <img src="/assets/icons/post.svg" alt="Post" class="nav-icon">
+      <span class="nav-text">Post</span>
+    </a>
+    <a class="nav-item" routerLink="/playlist" routerLinkActive="active" title="Playlist">
+      <img src="/assets/icons/playlist.svg" alt="Playlist" class="nav-icon">
+      <span class="nav-text">Playlist</span>
+    </a>
+    <a class="nav-item" routerLink="/songs" routerLinkActive="active" title="Songs">
+      <img src="/assets/icons/song.svg" alt="Songs" class="nav-icon">
+      <span class="nav-text">Songs</span>
+    </a>
+  </nav>
+</aside>

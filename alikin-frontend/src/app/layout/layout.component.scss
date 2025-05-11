@@ -1,47 +1,362 @@
+// Variables de colores inspirados en Spotify y Reddit
+$spotify-green: #1db954;
+$spotify-black: #121212;
+$spotify-dark-gray: #181818;
+$spotify-light-gray: #282828;
+$spotify-lighter-gray: #b3b3b3;
+$reddit-orange: #ff4500;
+$reddit-orange-light: #ff6a33;
+$white: #ffffff;
+$gradient-start: $spotify-black;
+$gradient-end: darken($spotify-dark-gray, 3%);
+
+// Tipografía
+$font-family: 'Circular', 'Helvetica Neue', Arial, sans-serif;
+
+// Mixins
+@mixin glass-effect {
+  background: rgba($spotify-black, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@mixin hover-scale {
+  transition: transform 0.2s ease;
+  &:hover {
+    transform: scale(1.03);
+  }
+}
+
+@mixin neon-glow($color) {
+  box-shadow: 0 0 5px rgba($color, 0.5),
+  0 0 15px rgba($color, 0.3);
+}
+
+// Estilos base
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-family;
+  background-color: $spotify-black;
+  color: $white;
+  overflow: hidden;
+}
+
+// Layout principal
 .layout {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  background: linear-gradient(150deg, $gradient-start 0%, $gradient-end 100%);
+  position: relative;
 
+  // Elemento decorativo - ondas musicales
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    background:
+      radial-gradient(circle at 10% 20%, rgba($spotify-green, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba($reddit-orange, 0.03) 0%, transparent 40%);
+    z-index: 0;
+  }
+
+  // Sidebar
   .sidebar {
     width: 80px;
-    background-color: #ff4500;
+    background: linear-gradient(to bottom, $spotify-black, darken($spotify-dark-gray, 5%));
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 1rem;
+    padding-top: 1.5rem;
+    position: relative;
+    z-index: 10;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    transition: width 0.3s ease;
+
+    // Destello superior
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(to right, $reddit-orange, $spotify-green);
+    }
+
+    // Efecto hover
+    &:hover {
+      width: 220px;
+    }
+
+    // Versión móvil
+    @media (max-width: 768px) {
+      width: 60px;
+
+      &:hover {
+        width: 60px;
+      }
+    }
   }
 
+  // Contenido principal
   .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 5;
 
+    // Navbar
     .navbar {
-      height: 56px;
-      background-color: #1a1a1b;
+      height: 60px;
+      @include glass-effect;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
-      padding: 0 1rem;
-      color: white;
+      padding: 0 1.5rem;
+      color: $white;
+      border-bottom: 1px solid rgba($spotify-lighter-gray, 0.1);
+      z-index: 20;
+
+      // Efecto de borde degradado sutil
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg,
+          transparent 0%,
+          rgba($spotify-green, 0.5) 20%,
+          rgba($reddit-orange, 0.5) 80%,
+          transparent 100%);
+      }
     }
 
+    // Área de contenido principal
     .feed-area {
       flex: 1;
       overflow-y: auto;
-      padding: 1rem;
-      background-color: #0b0b0b;
-      color: white;
+      padding: 1.5rem;
+      background-color: $spotify-black;
+      color: $white;
+      position: relative;
+
+      // Estilizar la barra de desplazamiento
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: $spotify-dark-gray;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: $spotify-light-gray;
+        border-radius: 4px;
+
+        &:hover {
+          background: lighten($spotify-light-gray, 10%);
+        }
+      }
+
+      // Estilizar el fondo con patrón sutil
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+          radial-gradient(rgba($spotify-green, 0.03) 1px, transparent 1px),
+          radial-gradient(rgba($reddit-orange, 0.02) 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
+        pointer-events: none;
+      }
     }
 
+    // Reproductor de música
     .music-player {
-      height: 64px;
-      background-color: #0f5132;
+      height: 75px;
+      @include glass-effect;
+      border-top: 1px solid rgba($spotify-lighter-gray, 0.1);
       display: flex;
       align-items: center;
-      padding: 0 1rem;
-      color: white;
+      padding: 0 1.5rem;
+      color: $white;
+      position: relative;
+      z-index: 20;
+      @include neon-glow($spotify-green);
+
+      // Borde superior con degradado
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg,
+          transparent 0%,
+          rgba($spotify-green, 0.6) 30%,
+          rgba($reddit-orange, 0.6) 70%,
+          transparent 100%);
+      }
+
+      // Versión móvil - más alto para mejor usabilidad
+      @media (max-width: 768px) {
+        height: 85px;
+        padding: 0 1rem;
+      }
+    }
+  }
+}
+
+// Efecto visual para los elementos interactivos en el sidebar
+:host ::ng-deep .sidebar {
+  .nav-item {
+    margin-bottom: 1.2rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: $spotify-dark-gray;
+
+    &:hover {
+      background: $spotify-light-gray;
+      @include neon-glow($spotify-green);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, $spotify-green, darken($spotify-green, 20%));
+      color: $white;
+      @include neon-glow($spotify-green);
+    }
+
+    // Elemento destacado de tipo Reddit
+    &.highlighted {
+      background: linear-gradient(135deg, $reddit-orange, darken($reddit-orange, 15%));
+      color: $white;
+      @include neon-glow($reddit-orange);
+    }
+  }
+}
+
+// Animación para la visualización de audio en el reproductor
+:host ::ng-deep .music-player {
+  .audio-waves {
+    display: flex;
+    align-items: center;
+    height: 20px;
+
+    .wave {
+      width: 3px;
+      height: 100%;
+      margin: 0 2px;
+      border-radius: 2px;
+      background: $spotify-green;
+      animation: sound 0ms -800ms linear infinite alternate;
+
+      @for $i from 1 through 5 {
+        &:nth-child(#{$i}) {
+          height: 60% + $i * 8%;
+          animation-duration: 700ms - $i * 80ms;
+        }
+      }
+    }
+  }
+}
+
+@keyframes sound {
+  0% {
+    height: 10%;
+  }
+  100% {
+    height: 100%;
+  }
+}
+
+// Efecto pulse para elementos activos
+.pulse {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba($spotify-green, 0.5);
+    border-radius: 50%;
+    transform: scale(1);
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+// Media queries para responsividad
+@media (max-width: 992px) {
+  .layout {
+    .sidebar {
+      width: 70px;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .layout {
+    .sidebar {
+      width: 60px;
+
+      &:hover {
+        width: 60px;
+      }
+    }
+
+    .main-content {
+      .navbar {
+        height: 55px;
+        padding: 0 1rem;
+      }
+
+      .feed-area {
+        padding: 1rem;
+      }
+
+      .music-player {
+        height: 70px;
+      }
     }
   }
 }

@@ -1,1 +1,68 @@
-<p>music-player works!</p>
+<div class="player-container">
+  <!-- Info de la canción actual -->
+  <div class="now-playing">
+    <div class="track-artwork">
+      <img src="assets/images/album-cover.jpg" alt="Album Cover">
+    </div>
+    <div class="track-info">
+      <h4 class="track-title">Nombre de la canción</h4>
+      <p class="track-artist">Nombre del artista</p>
+    </div>
+    <div class="track-actions">
+      <button class="action-btn">
+        <i class="far fa-heart"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Controles principales -->
+  <div class="player-controls">
+    <div class="control-buttons">
+      <button class="control-btn">
+        <i class="fas fa-random"></i>
+      </button>
+      <button class="control-btn">
+        <i class="fas fa-step-backward"></i>
+      </button>
+      <button class="control-btn play-btn">
+        <i class="fas fa-play"></i>
+      </button>
+      <button class="control-btn">
+        <i class="fas fa-step-forward"></i>
+      </button>
+      <button class="control-btn">
+        <i class="fas fa-redo"></i>
+      </button>
+    </div>
+
+    <div class="progress-container">
+      <span class="time current">0:00</span>
+      <div class="progress-bar">
+        <div class="progress-current"></div>
+      </div>
+      <span class="time total">3:45</span>
+    </div>
+  </div>
+
+  <!-- Controles adicionales -->
+  <div class="extra-controls">
+    <button class="control-btn">
+      <i class="fas fa-list"></i>
+    </button>
+    <button class="control-btn">
+      <i class="fas fa-volume-up"></i>
+    </button>
+    <div class="volume-bar">
+      <div class="volume-current"></div>
+    </div>
+
+    <!-- Visualización de audio animada -->
+    <div class="audio-waves">
+      <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="wave"></div>
+    </div>
+  </div>
+</div>
