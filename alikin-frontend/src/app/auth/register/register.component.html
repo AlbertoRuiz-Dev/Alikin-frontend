@@ -1,0 +1,45 @@
+<div class="signup-container">
+  <h2>Crear cuenta</h2>
+
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    <input formControlName="name" placeholder="Nombre" />
+    <p *ngIf="signupForm.get('name')?.touched && signupForm.get('name')?.invalid" class="error">
+      Nombre es obligatorio
+    </p>
+
+    <input formControlName="lastName" placeholder="Apellidos" />
+    <p *ngIf="signupForm.get('lastName')?.touched && signupForm.get('lastName')?.invalid" class="error">
+      Apellidos son obligatorios
+    </p>
+
+    <input formControlName="nickname" placeholder="Nickname" />
+    <p *ngIf="signupForm.get('nickname')?.touched && signupForm.get('nickname')?.invalid" class="error">
+      Nickname es obligatorio
+    </p>
+
+    <input formControlName="email" placeholder="Email" type="email" />
+    <p *ngIf="signupForm.get('email')?.touched && signupForm.get('email')?.hasError('required')" class="error">
+      Email es obligatorio
+    </p>
+    <p *ngIf="signupForm.get('email')?.touched && signupForm.get('email')?.hasError('email')" class="error">
+      Email no válido
+    </p>
+
+    <input formControlName="password" placeholder="Contraseña" type="password" />
+    <p *ngIf="signupForm.get('password')?.touched && signupForm.get('password')?.hasError('required')" class="error">
+      Contraseña es obligatoria
+    </p>
+    <p *ngIf="signupForm.get('password')?.touched && signupForm.get('password')?.hasError('minlength')" class="error">
+      La contraseña debe tener al menos 6 caracteres
+    </p>
+
+    <button type="submit" [disabled]="signupForm.invalid">Registrarse</button>
+
+    <p>
+      ¿Ya tienes Cuenta?
+    </p>
+    <button routerLink="/auth/login">Haz Login aquí</button>
+
+    <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  </form>
+</div>
