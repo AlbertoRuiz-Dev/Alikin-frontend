@@ -1,0 +1,7 @@
+<div class="feed-container">
+  <div class="post-list">
+    <app-post-item *ngFor="let post of posts" [post]="post"></app-post-item>
+  </div>
+  <div class="loading" *ngIf="isLoading">Cargando más posts...</div>
+  <div class="no-more-posts" *ngIf="!hasMorePosts && !isLoading">No hay más posts</div>
+</div>

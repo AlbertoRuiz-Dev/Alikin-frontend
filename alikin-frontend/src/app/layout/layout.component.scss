@@ -145,13 +145,14 @@ body {
 
     // Área de contenido principal
     .feed-area {
+      max-width: 70%;
+      margin: 0 auto;
       flex: 1;
       overflow-y: auto;
       padding: 1.5rem;
       background-color: $spotify-black;
       color: $white;
       position: relative;
-
       // Estilizar la barra de desplazamiento
       &::-webkit-scrollbar {
         width: 8px;
@@ -310,6 +311,32 @@ body {
   }
 }
 
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.feed-wrapper {
+  width: 100%;
+
+  padding: 0 1rem;
+  background: #181818;
+  border-radius: 12px;
+}
+
+.feed-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 1rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -352,6 +379,7 @@ body {
 
       .feed-area {
         padding: 1rem;
+        margin-left: 5rem;
       }
 
       .music-player {

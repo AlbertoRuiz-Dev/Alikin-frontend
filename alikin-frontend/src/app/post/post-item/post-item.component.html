@@ -1,0 +1,54 @@
+<div class="post-card" [ngClass]="{'highlighted': post.isHighlighted}">
+  <!-- Voting Section -->
+  <div class="vote-section">
+    <button class="vote-btn upvote" [ngClass]="{'active': post.userVote === 1}" (click)="upvote()" aria-label="Upvote post">
+      <img src="assets/icons/upvote.svg" alt="">
+    </button>
+    <span class="vote-count">{{ post.voteCount || 0 }}</span>
+    <button class="vote-btn downvote" [ngClass]="{'active': post.userVote === -1}" (click)="downvote()" aria-label="Downvote post">
+      <img src="assets/icons/down-vote.svg" alt="">
+    </button>
+  </div>
+
+  <!-- Post Content -->
+  <div class="post-content">
+    <!-- Header -->
+    <div class="post-header">
+      <img class="avatar" [src]="post.user.profilePictureUrl || '/assets/default-profile.jpg'" alt="User avatar">
+      <div class="user-info">
+        <span class="nickname">{{ post.user.nickname || 'Anonymous' }}</span>
+        <span class="created-at">• {{ post.createdAt | date:"short" }}</span>
+      </div>
+      <button class="menu-btn" aria-label="More options">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="18" r="2"/></svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="post-body">
+      <p *ngIf="!post.isExpanded && post.content.length > 200" (click)="post.isExpanded = true">
+        {{ post.content | slice:0:200 }}... <span class="read-more">Read more</span>
+      </p>
+      <p *ngIf="post.isExpanded || post.content.length <= 200">{{ post.content }}</p>
+    </div>
+
+    <!-- Image -->
+    <div class="post-media" *ngIf="post.imageUrl">
+      <img [src]="getImageUrl(post.imageUrl)" class="post-image" alt="Post image" (click)="expandImage()" style="cursor: zoom-in;" />
+    </div>
+
+    <!-- Expanded image modal -->
+    <div class="image-modal" *ngIf="expandedImageUrl" (click)="closeImage()">
+      <img [src]="expandedImageUrl" alt="Expanded post image" class="image-full" />
+    </div>
+
+    <!-- Interaction Bar -->
+    <div class="interaction-bar">
+      <button class="interaction-btn comments" aria-label="View comments">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>{{ post.commentsCount || 0 }}</span>
+      </button>
+
+    </div>
+  </div>
+</div>

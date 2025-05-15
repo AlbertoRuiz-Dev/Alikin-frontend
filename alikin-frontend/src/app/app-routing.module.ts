@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { AuthGuard } from './core/auth.guard';
+import {FeedComponent} from "./feed/feed.component";
 
 const routes: Routes = [
   {
@@ -11,7 +12,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./home/home.module').then(m => m.HomeModule)
+        loadChildren: () => import('./home/home.module').then(m => m.HomeModule),
+        component : FeedComponent
       },
       {
         path: 'me',
@@ -35,6 +37,7 @@ const routes: Routes = [
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
+  { path: 'post', loadChildren: () => import('./post/post.module').then(m => m.PostModule) },
   {
     path: '**',
     redirectTo: ''

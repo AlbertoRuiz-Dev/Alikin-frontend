@@ -1,0 +1,71 @@
+<div class="post-create-container">
+  <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="post-form">
+    <!-- Header -->
+    <div class="form-header">
+      <h2>Crear un Post</h2>
+      <div class="community-info" *ngIf="communityId">
+        <span>Publicando en: {{ communityId }}</span>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <!-- Content -->
+    <div class="form-group">
+      <label for="content">Contenido</label>
+      <textarea
+        id="content"
+        formControlName="content"
+        placeholder="¿Qué tienes en mente?"
+        rows="5"
+        class="form-control"
+        [ngClass]="{'invalid': postForm.get('content')?.invalid && postForm.get('content')?.touched}"
+        aria-required="true"
+      ></textarea>
+      <div class="error" *ngIf="postForm.get('content')?.invalid && postForm.get('content')?.touched">
+        El contenido es obligatorio
+      </div>
+    </div>
+
+    <!-- Song Selection -->
+    <div class="form-group">
+      <label for="songId">Seleccionar una Canción (Opcional)</label>
+      <select id="songId" formControlName="songId" class="form-control" [disabled]="isLoadingSongs">
+        <option value="">Sin canción</option>
+        <option *ngFor="let song of songs" [value]="song.id">
+          {{ song.title }} por {{ song.artist }}
+        </option>
+      </select>
+      <div class="loading" *ngIf="isLoadingSongs">Cargando canciones...</div>
+      <div class="error" *ngIf="noSongsAvailable && !isLoadingSongs">No hay canciones disponibles</div>
+    </div>
+
+    <!-- Image Upload -->
+    <div class="form-group">
+      <label for="image">Subir Imagen (Opcional)</label>
+      <input
+        type="file"
+        id="image"
+        accept="image/*"
+        (change)="onImageSelected($event)"
+        class="form-control"
+        aria-describedby="image-help"
+      />
+      <small id="image-help" class="help-text">Formatos aceptados: JPEG, PNG</small>
+      <div class="preview" *ngIf="selectedImageFile">
+        <img *ngIf="imagePreviewUrl" [src]="imagePreviewUrl" alt="Vista previa de la imagen" class="image-preview" loading="lazy" />
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <button type="submit" [disabled]="postForm.invalid || isLoadingSongs || isSubmitting" class="submit-btn">
+        {{ isSubmitting ? 'Publicando...' : 'Publicar' }}
+      </button>
+      <button type="button" (click)="postForm.reset(); selectedImageFile = undefined; error = null" class="cancel-btn">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>

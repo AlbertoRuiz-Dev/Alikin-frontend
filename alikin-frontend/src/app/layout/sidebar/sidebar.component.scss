@@ -1,9 +1,9 @@
 :root {
-  --primary-color: #1DB954; /* Spotify green */
-  --bg-dark: #121212; /* Dark background */
-  --text-light: #E0E0E0; /* Light text */
-  --text-muted: #B3B3B3; /* Muted text */
-  --hover-bg: #282828; /* Hover background */
+  --primary-color: #1DB954;
+  --bg-dark: #121212;
+  --text-light: #E0E0E0;
+  --text-muted: #B3B3B3;
+  --hover-bg: #282828;
 }
 
 .sidebar-content {
@@ -15,8 +15,9 @@
   background-color: var(--bg-dark);
   display: flex;
   flex-direction: column;
+  justify-content: space-between; // separa arriba y abajo
   align-items: center;
-  padding: 1.5rem 0;
+  padding: 1rem 0;
   transition: width 0.3s ease;
   overflow: hidden;
   z-index: 1000;
@@ -43,75 +44,69 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  flex: 1;
+  gap: 1.2rem;
+}
+
+.bottom-nav {
+  margin-bottom: 1.5rem;
+
+  .nav-item {
+    margin-top: auto;
+  }
 }
 
 .nav-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  width: 100%;
-  padding: 0.75rem 1rem;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: 0.25rem 0;
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #1a1a1a;
   color: var(--text-muted);
   text-decoration: none;
   transition: all 0.3s ease;
-  position: relative;
   cursor: pointer;
+  position: relative;
 
   .nav-icon {
     width: 24px;
     height: 24px;
-    filter: invert(70%); /* Ajusta visibilidad en fondo oscuro */
+    filter: invert(70%);
     transition: filter 0.3s ease;
   }
 
   .nav-text {
-    margin-left: 1rem;
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 0.75rem;
+    margin-top: 0.4rem;
     color: var(--text-light);
-    opacity: 0;
-    white-space: nowrap;
-    transition: opacity 0.3s ease;
+    opacity: 1;
+    text-align: center;
   }
 
   &:hover {
     background-color: var(--hover-bg);
-    color: var(--text-light);
-
     .nav-icon {
       filter: invert(100%);
-    }
-
-    .nav-text {
-      opacity: 1;
     }
   }
 
   &.active {
-    color: var(--primary-color);
-
+    background-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
     .nav-icon {
-      filter: invert(100%) sepia(100%) saturate(1000%) hue-rotate(90deg);
-    }
-
-    .nav-text {
-      opacity: 1;
+      filter: invert(100%);
     }
   }
 
   &.highlighted {
-    background-color: var(--hover-bg);
-
+    background-color: #ff4500;
+    box-shadow: 0 0 10px #ff4500;
     &:hover {
-      background-color: var(--primary-color);
-
-      .nav-icon {
-        filter: invert(100%);
-      }
-
-      .nav-text {
-        color: var(--bg-dark);
-      }
+      background-color: lighten(#ff4500, 10%);
     }
   }
 }
@@ -121,12 +116,9 @@
     width: 100%;
     height: 70px;
     flex-direction: row;
-    bottom: 0;
-    top: auto;
     justify-content: space-around;
     padding: 0.5rem 0;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-
     &:hover {
       width: 100%;
     }
@@ -136,16 +128,14 @@
     display: none;
   }
 
-  .nav-menu {
+  .nav-menu, .bottom-nav {
     flex-direction: row;
     justify-content: space-around;
     width: 100%;
   }
 
   .nav-item {
-    padding: 0.5rem;
     width: auto;
-
     .nav-text {
       display: none;
     }
@@ -153,7 +143,7 @@
     &.active::after {
       content: '';
       position: absolute;
-      bottom: 0;
+      bottom: -4px;
       left: 50%;
       transform: translateX(-50%);
       width: 6px;

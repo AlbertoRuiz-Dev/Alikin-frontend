@@ -4,6 +4,9 @@ FROM node:18-alpine as builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
+RUN npm npm install ngx-infinite-scroll@15.0.0
+
+
 COPY . .
 RUN npm run build --prod
 
