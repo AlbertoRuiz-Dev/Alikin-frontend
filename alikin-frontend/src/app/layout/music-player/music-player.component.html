@@ -1,12 +1,12 @@
-<div class="player-container">
+<div class="player-container" *ngIf="musicService.currentSong">
   <!-- Info de la canción actual -->
   <div class="now-playing">
     <div class="track-artwork">
-      <img src="assets/images/album-cover.jpg" alt="Album Cover">
+      <img [src]="musicService.currentSong.coverImageUrl || 'assets/images/album-cover.jpg'" alt="Portada">
     </div>
     <div class="track-info">
-      <h4 class="track-title">Nombre de la canción</h4>
-      <p class="track-artist">Nombre del artista</p>
+      <h4 class="track-title">{{ musicService.currentSong.title }}</h4>
+      <p class="track-artist">{{ musicService.currentSong.artist }}</p>
     </div>
     <div class="track-actions">
       <button class="action-btn">
@@ -18,51 +18,44 @@
   <!-- Controles principales -->
   <div class="player-controls">
     <div class="control-buttons">
-      <button class="control-btn">
-        <i class="fas fa-random"></i>
+      <button class="control-btn play-btn" (click)="togglePlayPause()">
+        <i class="fas" [ngClass]="{ 'fa-pause': musicService.isPlaying, 'fa-play': !musicService.isPlaying }"></i>
       </button>
-      <button class="control-btn">
-        <i class="fas fa-step-backward"></i>
-      </button>
-      <button class="control-btn play-btn">
-        <i class="fas fa-play"></i>
-      </button>
-      <button class="control-btn">
-        <i class="fas fa-step-forward"></i>
-      </button>
-      <button class="control-btn">
-        <i class="fas fa-redo"></i>
-      </button>
+
     </div>
 
     <div class="progress-container">
-      <span class="time current">0:00</span>
+      <span class="time current">{{ musicService.currentTime | date:'mm:ss' }}</span>
       <div class="progress-bar">
-        <div class="progress-current"></div>
+        <div class="progress-current" [style.width.%]="musicService.progress"></div>
       </div>
-      <span class="time total">3:45</span>
+      <span class="time total">{{ musicService.duration | date:'mm:ss' }}</span>
     </div>
   </div>
 
   <!-- Controles adicionales -->
   <div class="extra-controls">
     <button class="control-btn">
-      <i class="fas fa-list"></i>
-    </button>
-    <button class="control-btn">
       <i class="fas fa-volume-up"></i>
     </button>
     <div class="volume-bar">
-      <div class="volume-current"></div>
+      <input type="range" min="0" max="1" step="0.01"
+             [(ngModel)]="musicService.volume"
+             (input)="musicService.changeVolume()" />
     </div>
 
-    <!-- Visualización de audio animada -->
     <div class="audio-waves">
-      <div class="wave"></div>
-      <div class="wave"></div>
-      <div class="wave"></div>
-      <div class="wave"></div>
-      <div class="wave"></div>
+      <div class="wave" *ngFor="let wave of [1,2,3,4,5]"></div>
     </div>
   </div>
+
+  <!-- 🎧 Elemento de audio oculto pero funcional -->
+  <audio
+    #audioPlayer
+    [src]="musicService.currentSong?.streamUrl"
+    (loadedmetadata)="musicService.onLoadedMetadata($event)"
+    (timeupdate)="musicService.onTimeUpdate($event)"
+    (ended)="musicService.onEnded()"
+    [autoplay]="true"
+  ></audio>
 </div>

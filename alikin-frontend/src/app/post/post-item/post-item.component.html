@@ -37,6 +37,19 @@
       <img [src]="getImageUrl(post.imageUrl)" class="post-image" alt="Post image" (click)="expandImage()" style="cursor: zoom-in;" />
     </div>
 
+    <div class="song-card" *ngIf="post.song">
+      <img class="cover" [src]="getSongUrl(post.song.coverImageUrl)" alt="Cover">
+      <div class="song-details">
+        <div class="title">{{ post.song.title }}</div>
+        <div class="artist">{{ post.song.artist }}</div>
+      </div>
+      <button class="play-btn" (click)="playSong()">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </button>
+    </div>
+
     <!-- Expanded image modal -->
     <div class="image-modal" *ngIf="expandedImageUrl" (click)="closeImage()">
       <img [src]="expandedImageUrl" alt="Expanded post image" class="image-full" />

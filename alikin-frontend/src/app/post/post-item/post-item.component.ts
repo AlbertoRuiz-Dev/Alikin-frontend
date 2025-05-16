@@ -1,7 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PostResponse } from '../post.model';
-import {environment} from "../../../enviroments/enviroment";
+import { environment } from '../../../enviroments/enviroment';
+import {MusicPlayerService} from "../../layout/music-player/music-player.service";
 
 @Component({
   selector: 'app-post-item',
@@ -12,7 +13,10 @@ export class PostItemComponent {
   @Input() post!: PostResponse;
   expandedImageUrl?: string;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private musicService: MusicPlayerService
+  ) {}
 
   upvote(): void {
     const newVote = this.post.userVote === 1 ? 0 : 1;
@@ -44,9 +48,11 @@ export class PostItemComponent {
     });
   }
 
-  getImageUrl(path: string): string {
+  getImageUrl(path?: string | null): string {
+    if (!path) return 'assets/images/default-cover.png'; // O una imagen por defecto
     return path.startsWith('http') ? path : `${environment.mediaUrl}${path}`;
   }
+
 
   expandImage(): void {
     this.expandedImageUrl = this.getImageUrl(this.post.imageUrl || '');
@@ -54,5 +60,21 @@ export class PostItemComponent {
 
   closeImage(): void {
     this.expandedImageUrl = undefined;
+  }
+
+  getSongUrl(path?: string | null): string {
+    if (!path) return '';
+    return path.startsWith('http') ? path : `${environment.apiUrl}/songs/${this.post.song?.id}/stream`;
+  }
+
+  playSong(): void {
+    if (!this.post.song) return;
+
+    this.musicService.playSong({
+      title: this.post.song.title,
+      artist: this.post.song.artist,
+      coverImageUrl: this.getImageUrl(this.post.song.coverImageUrl),
+      streamUrl: `${environment.apiUrl}/songs/${this.post.song.id}/stream`
+    });
   }
 }

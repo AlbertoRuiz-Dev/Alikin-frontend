@@ -65,7 +65,7 @@ export class PostComponent implements OnInit, OnDestroy {
       next: (response) => {
         console.log('Songs API response:', response); // Para depuración
         // Ajustar según la estructura real de la respuesta
-        const songsData = Array.isArray(response) ? response : response.data || response.songs || [];
+        const songsData = response.content || [];
         if (!Array.isArray(songsData)) {
           console.error('Songs data is not an array:', songsData);
           this.error = 'Formato de canciones inválido.';

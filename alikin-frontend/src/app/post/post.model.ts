@@ -1,13 +1,10 @@
+import {Song} from "../songs/song.model";
+
 export interface PostResponse {
   id: number;
   content: string;
   imageUrl?: string;
-  song?: {
-    id: number;
-    title: string;
-    artist: string;
-    albumCoverUrl?: string;
-  };
+  song?: Song
   user: {
     id: number;
     name: string;

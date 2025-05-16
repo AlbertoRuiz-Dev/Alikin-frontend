@@ -1,1 +1,41 @@
-<p>songs works!</p>
+<div class="song-upload-container">
+  <form [formGroup]="songForm" (ngSubmit)="onSubmit()" class="song-form">
+    <h2>Subir Canción</h2>
+
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <label>
+      Título *
+      <input type="text" formControlName="title" placeholder="Título de la canción" />
+    </label>
+
+    <label>
+      Artista *
+      <input type="text" formControlName="artist" placeholder="Nombre del artista" />
+    </label>
+
+    <label>
+      Álbum
+      <input type="text" formControlName="album" placeholder="Álbum" />
+    </label>
+
+    <label>
+      Género *
+      <select formControlName="genre">
+        <option *ngFor="let g of genres" [value]="g">{{ g }}</option>
+      </select>
+    </label>
+
+    <label>
+      Archivo de canción (.mp3) *
+      <input type="file" (change)="onSongSelected($event)" accept=".mp3,audio/*" />
+    </label>
+
+    <label>
+      Imagen de portada (opcional)
+      <input type="file" (change)="onCoverSelected($event)" accept="image/*" />
+    </label>
+
+    <button type="submit" [disabled]="isSubmitting">Subir</button>
+  </form>
+</div>
