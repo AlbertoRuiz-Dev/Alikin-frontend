@@ -120,12 +120,12 @@ body {
       height: 60px;
       @include glass-effect;
       display: flex;
-      justify-content: space-between;
       align-items: center;
       padding: 0 1.5rem;
       color: $white;
       border-bottom: 1px solid rgba($spotify-lighter-gray, 0.1);
       z-index: 20;
+      position: relative;
 
       // Efecto de borde degradado sutil
       &::after {
@@ -142,86 +142,97 @@ body {
           transparent 100%);
       }
     }
+    .reproductor-btn{
+      padding-left:5px ;
+    }
 
     // Área de contenido principal
     .feed-area {
-      max-width: 70%;
-      margin: 0 auto;
       flex: 1;
       overflow-y: auto;
-      padding: 1.5rem;
-      background-color: $spotify-black;
-      color: $white;
-      position: relative;
-      // Estilizar la barra de desplazamiento
-      &::-webkit-scrollbar {
-        width: 8px;
-      }
+      position: relative; // Necesario para los pseudo-elementos ::before
 
-      &::-webkit-scrollbar-track {
-        background: $spotify-dark-gray;
-      }
+      // Estilos por defecto para el feed (cuando NO es la vista de comunidades)
+      &:not(.communities-layout-active) {
+        max-width: 70%; // Estilo original del feed
+        margin: 0 auto;  // Estilo original del feed
+        padding: 1.5rem; // Estilo original del feed
+        background-color: $spotify-black; // Fondo oscuro para el feed
+        color: $white;
 
-      &::-webkit-scrollbar-thumb {
-        background: $spotify-light-gray;
-        border-radius: 4px;
+        // Estilizar la barra de desplazamiento (solo para el feed por defecto)
+        &::-webkit-scrollbar {
+          width: 8px;
+        }
+        &::-webkit-scrollbar-track {
+          background: $spotify-dark-gray;
+        }
+        &::-webkit-scrollbar-thumb {
+          background: $spotify-light-gray;
+          border-radius: 4px;
+          &:hover {
+            background: lighten($spotify-light-gray, 10%);
+          }
+        }
 
-        &:hover {
-          background: lighten($spotify-light-gray, 10%);
+        // Estilizar el fondo con patrón sutil (solo para el feed por defecto)
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-image:
+            radial-gradient(rgba($spotify-green, 0.03) 1px, transparent 1px),
+            radial-gradient(rgba($reddit-orange, 0.02) 1px, transparent 1px);
+          background-size: 20px 20px;
+          background-position: 0 0, 10px 10px;
+          pointer-events: none;
+          z-index: -1; // Para que esté detrás del contenido
         }
       }
 
-      // Estilizar el fondo con patrón sutil
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image:
-          radial-gradient(rgba($spotify-green, 0.03) 1px, transparent 1px),
-          radial-gradient(rgba($reddit-orange, 0.02) 1px, transparent 1px);
-        background-size: 20px 20px;
-        background-position: 0 0, 10px 10px;
-        pointer-events: none;
+      // Estilos para .feed-area cuando la vista de comunidades está activa
+      &.communities-layout-active {
+        max-width: 100%; // Ocupa todo el ancho disponible
+        margin: 0;
+        padding: 0; // El componente CommunitiesComponent manejará su propio padding
+        // El fondo será manejado por CommunitiesComponent
+        // La barra de scroll aquí podría ser la por defecto del navegador o una global si prefieres
       }
     }
 
+    // Wrapper del feed
+    .feed-wrapper {
+      width: 100%; // Generalmente se quiere que ocupe el 100% de .feed-area
+      height: 100%; // Para que el contenido interno pueda usar min-height: 100%
+
+      // Estilos por defecto para el feed (cuando NO es la vista de comunidades)
+      &:not(.communities-wrapper-active) {
+        padding: 0 1rem; // Padding original del feed
+        background: $spotify-dark-gray; // Fondo original del feed ($spotify-dark-gray o #181818 como tenías)
+        border-radius: 12px; // Bordes redondeados para el feed
+      }
+
+      // Estilos para .feed-wrapper cuando la vista de comunidades está activa
+      &.communities-wrapper-active {
+        padding: 0; // Sin padding, CommunitiesComponent se encarga
+        background: transparent; // Sin fondo, CommunitiesComponent pone el suyo
+        border-radius: 0; // Sin bordes redondeados
+      }
+    }
     // Reproductor de música
     .music-player {
-      height: 75px;
-      @include glass-effect;
-      border-top: 1px solid rgba($spotify-lighter-gray, 0.1);
-      display: flex;
-      align-items: center;
-      padding: 0 1.5rem;
-      color: $white;
-      position: relative;
-      z-index: 20;
-      @include neon-glow($spotify-green);
-
-      // Borde superior con degradado
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 1px;
-        background: linear-gradient(90deg,
-          transparent 0%,
-          rgba($spotify-green, 0.6) 30%,
-          rgba($reddit-orange, 0.6) 70%,
-          transparent 100%);
-      }
-
-      // Versión móvil - más alto para mejor usabilidad
-      @media (max-width: 768px) {
-        height: 85px;
-        padding: 0 1rem;
-      }
+      position: fixed;
+      bottom: 0;
+      left: 80px; /* Ancho del sidebar */
+      right: 0;
+      height: 90px;
+      z-index: 100;
+      background: transparent; /* Transparente para que el contenido del reproductor defina el fondo */
     }
+
   }
 }
 
@@ -332,7 +343,7 @@ body {
   align-items: center;
   gap: 1.5rem;
   padding: 2rem 1rem;
-  max-width: 700px;
+  max-width: 700px; // Esto es para un contenido de tipo feed muy específico
   margin: 0 auto;
 }
 

@@ -1,1 +1,136 @@
-<p>communities works!</p>
+<div class="communities-page-container">
+  <div class="top-bar">
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input
+        type="text"
+        placeholder="Buscar comunidades..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+        class="search-input"
+      />
+      <i
+        *ngIf="searchQuery"
+        class="fas fa-times-circle clear-icon"
+        (click)="clearSearch()"
+        title="Limpiar búsqueda"
+      ></i>
+    </div>
+    <button class="create-community-btn" (click)="createCommunity()">
+      <i class="fas fa-plus"></i> Nueva Comunidad
+    </button>
+  </div>
+
+  <div class="communities-content-scrollable">
+    <section class="community-section" *ngIf="userCommunities.length > 0">
+      <h2>Mis Comunidades</h2>
+      <div class="communities-grid">
+        <div
+          class="community-card"
+          *ngFor="let community of userCommunities"
+          (click)="viewCommunity(community.id)"
+          tabindex="0"
+          role="link"
+          (keydown.enter)="viewCommunity(community.id)"
+        >
+          <div class="card-image-container">
+            <img
+              *ngIf="community.imageUrl"
+              [src]="getFullImageUrl(community.imageUrl)"
+              alt="{{ community.name }}"
+              class="card-image"
+            />
+            <div *ngIf="!community.imageUrl" class="placeholder-image">
+              <span>{{ getCommunityInitials(community.name) }}</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">{{ community.name || 'Sin nombre' }}</h3>
+            <p class="card-description">
+              {{ community.description | slice:0:100 }}{{ community.description && community.description.length > 100 ? '...' : '' || 'Sin descripción disponible.' }}
+            </p>
+            <div class="card-footer">
+              <span class="members-info">
+                <i class="fas fa-users"></i>
+                {{ community.membersCount || 0 }} miembros
+              </span>
+              <span class="status-badge member">Miembro</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div *ngIf="userCommunities.length === 0 && allCommunities.length > 0 && !searchQuery" class="empty-state-user">
+      <i class="fas fa-users-slash"></i>
+      <p>Aún no te has unido a ninguna comunidad.</p>
+      <button class="explore-btn" (click)="scrollToAllCommunities()">Explorar Comunidades</button>
+    </div>
+
+    <hr *ngIf="userCommunities.length > 0 && getFilteredAndNotUserCommunities().length > 0" class="section-divider" />
+
+    <section class="community-section" #allCommunitiesSection>
+      <h2>Explorar Comunidades</h2>
+      <div class="communities-grid" *ngIf="getFilteredAndNotUserCommunities().length > 0; else noCommunitiesFound">
+        <ng-container *ngFor="let community of getFilteredAndNotUserCommunities()">
+          <div
+            class="community-card"
+            (click)="viewCommunity(community.id)"
+            tabindex="0"
+            role="link"
+            (keydown.enter)="viewCommunity(community.id)"
+          >
+            <div class="card-image-container">
+              <img
+                *ngIf="community.imageUrl"
+                [src]="getFullImageUrl(community.imageUrl)"
+                alt="{{ community.name }}"
+                class="card-image"
+              />
+              <div *ngIf="!community.imageUrl" class="placeholder-image">
+                <span>{{ getCommunityInitials(community.name) }}</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">{{ community.name || 'Sin nombre' }}</h3>
+              <p class="card-description">
+                {{ community.description | slice:0:100 }}{{ community.description && community.description.length > 100 ? '...' : '' || 'Sin descripción disponible.' }}
+              </p>
+              <div class="card-footer">
+                <span class="members-info">
+                  <i class="fas fa-users"></i>
+                  {{ community.membersCount || 0 }} miembros
+                </span>
+                <button class="join-btn" (click)="joinCommunity(community.id, $event)">
+                  <i class="fas fa-plus-circle"></i> Unirse
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </section>
+
+    <ng-template #noCommunitiesFound>
+      <div class="empty-state-search">
+        <i class="fas fa-search-minus"></i>
+        <p *ngIf="searchQuery">No se encontraron comunidades que coincidan con "{{ searchQuery }}".</p>
+        <p *ngIf="!searchQuery && allCommunities.length === 0 && userCommunities.length === 0">
+          No hay comunidades disponibles en este momento. ¡Anímate a crear la primera!
+        </p>
+        <p *ngIf="!searchQuery && allCommunities.length > 0 && getFilteredAndNotUserCommunities().length === 0 && userCommunities.length > 0">
+          ¡Ya eres miembro de todas las comunidades disponibles!
+        </p>
+        <button class="clear-search-btn" *ngIf="searchQuery" (click)="clearSearch()">Limpiar Búsqueda</button>
+      </div>
+    </ng-template>
+
+    <app-create-community-modal
+      *ngIf="showCreateCommunityModal"
+      (close)="handleCloseModal()"
+      (communityCreated)="handleCommunityCreated($event)">
+    </app-create-community-modal>
+
+  </div> </div> ```
+
+He eliminado la parte `(error)="$event.target.style.display='none'"` de ambas etiquetas `<img>`. Si una imagen no carga, ahora se mostrará el ícono de imagen rota estándar del navegador.

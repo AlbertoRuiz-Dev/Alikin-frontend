@@ -1,0 +1,241 @@
+// Usa tus variables de color existentes ($spotify-black, $reddit-orange, etc.)
+// Si no están globales, defínelas o impórtalas.
+$spotify-black: #121212;
+$spotify-dark-gray: #181818;
+$spotify-medium-gray: #222222;
+$spotify-light-gray: #282828;
+$spotify-lighter-gray: #b3b3b3;
+$spotify-text-muted: #777777;
+$white: #ffffff;
+$border-color-dark: #353535;
+
+$reddit-orange: #ff4500;
+$reddit-orange-hover: #e03e00;
+$spotify-green: #1db954; // Para botones de cancelar u otros acentos
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050; // Asegúrate que esté por encima de otros elementos como la top-bar
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background-color: $spotify-dark-gray;
+  padding: 25px 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  width: 90%;
+  max-width: 550px;
+  position: relative;
+  border: 1px solid $border-color-dark;
+  color: $spotify-lighter-gray;
+
+  h2 {
+    color: $white;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: $spotify-text-muted;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+
+  &:hover {
+    color: $white;
+  }
+}
+
+.form-field {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: $spotify-lighter-gray;
+  }
+
+  input[type="text"],
+  input[type="url"],
+  textarea {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: $spotify-light-gray;
+    border: 1px solid $border-color-dark;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: $white;
+    box-sizing: border-box;
+    transition: border-color 0.2s, background-color 0.2s;
+
+    &::placeholder {
+      color: $spotify-text-muted;
+    }
+
+    &:focus {
+      background-color: $spotify-medium-gray;
+      border-color: $reddit-orange;
+      outline: none;
+    }
+
+    &.invalid-field {
+      border-color: #e74c3c; // Un color de error
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+}
+
+.error-message {
+  margin-top: 6px;
+  small {
+    color: #e74c3c; // Color de error
+    font-size: 0.8rem;
+    display: block;
+  }
+}
+
+.api-error-message {
+  color: #e74c3c;
+  background-color: rgba(#e74c3c, 0.1);
+  border: 1px solid rgba(#e74c3c, 0.3);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+
+  .file-input {
+    // Puedes ocultar el input por defecto y estilizar un label en su lugar,
+    // o darle un estilo básico si es suficiente.
+    // Por simplicidad, aquí solo se asegura que tenga ancho completo.
+    display: block; // Para que tome el ancho y permita margen
+    width: 100%;
+    padding: 10px 0; // Algo de padding para que no se vea tan pegado
+    color: $spotify-lighter-gray; // Para que el texto "Ningún archivo seleccionado" sea visible
+
+    // Estilo para que el botón del input de archivo coincida un poco
+    &::file-selector-button {
+      padding: 8px 15px;
+      margin-right: 15px;
+      background-color: $spotify-light-gray;
+      border: 1px solid gray;
+      color: $spotify-lighter-gray;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: $spotify-medium-gray;
+      }
+    }
+  }
+}
+
+.image-preview-container {
+  margin-top: 15px;
+  text-align: center; // Centra la imagen de vista previa
+  position: relative; // Para el botón de eliminar
+  display: inline-block; // Para que el contenedor se ajuste a la imagen
+  max-width: 100%; // Asegura que no se desborde
+  border: 1px solid gray;
+  padding: 5px;
+  background-color: $spotify-light-gray;
+  border-radius: 4px;
+}
+
+.image-preview {
+  max-width: 200px; // Ajusta según necesites
+  max-height: 200px; // Ajusta según necesites
+  display: block;
+  border-radius: 4px;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: -10px; // Ajusta para posicionar fuera de la imagen
+  right: -10px; // Ajusta para posicionar fuera de la imagen
+  background-color: red;
+  color: $white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  line-height: 22px; // Centra el 'x'
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+
+  &:hover {
+    background-color: darken(red, 10%);
+  }
+
+  button {
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s;
+    font-size: 0.9rem;
+    border: none;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .cancel-btn {
+    background-color: $spotify-light-gray;
+    color: $spotify-lighter-gray;
+    border: 1px solid $border-color-dark;
+
+    &:hover:not(:disabled) {
+      background-color: $spotify-medium-gray;
+    }
+  }
+
+  .submit-btn {
+    background-color: $reddit-orange;
+    color: $white;
+
+    &:hover:not(:disabled) {
+      background-color: $reddit-orange-hover;
+    }
+
+    i {
+      margin-left: 8px;
+    }
+  }
+}

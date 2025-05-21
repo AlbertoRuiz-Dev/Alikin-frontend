@@ -1,86 +1,49 @@
-
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Custom SCSS compiled to CSS -->
-  <style>
-    :root {
-      --primary-color: #1DB954; /* Spotify green */
-      --bg-dark: #121212; /* Dark background */
-      --text-light: #E0E0E0; /* Light text */
-      --text-muted: #B3B3B3; /* Muted text */
-      --hover-bg: #282828; /* Hover background */
-    }
-
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-light);
-      font-family: 'Inter', sans-serif;
-    }
-
-    .navbar {
-      background-color: var(--bg-dark);
-      padding: 1rem 2rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .navbar-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .username {
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--text-light);
-      transition: color 0.3s ease;
-    }
-
-    .username:hover {
-      color: var(--primary-color);
-    }
-
-    .logout-btn {
-      background-color: transparent;
-      border: 1px solid var(--text-muted);
-      color: var(--text-muted);
-      padding: 0.5rem 1.5rem;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-
-    .logout-btn:hover {
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
-      color: var(--bg-dark);
-    }
-
-    @media (max-width: 576px) {
-      .navbar-content {
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .logout-btn {
-        width: 100%;
-        text-align: center;
-      }
-    }
-  </style>
-
-<body>
-<nav class="navbar">
-  <div class="navbar-content">
-    <span class="username">Bienvenido, {{ username }}</span>
-    <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+<div class="navbar-content">
+  <!-- Izquierda: Logo y nombre -->
+  <div class="navbar-left">
+    <div class="brand">
+      <div class="logo-container">
+        <img src="assets/icons/" alt="logo">
+        <div class="app-name">Alikin</div>
+      </div>
+    </div>
   </div>
-</nav>
 
-<!-- Bootstrap 5 JS (for potential future interactivity) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Centro: Buscador -->
+  <div class="navbar-center">
+    <div class="search-container">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" placeholder="Buscar canciones, artistas o podcasts..." class="search-input">
+        <button class="clear-btn" *ngIf="searchTerm">×</button>
+      </div>
+    </div>
+  </div>
 
+  <!-- Derecha: Usuario -->
+  <div class="navbar-right">
+    <div class="user-actions">
+      <div class="user-info" [ngClass]="{'user-info-expanded': menuVisible}" (click)="toggleUserMenu()">
+        <div class="avatar">
+          <img *ngIf="userAvatar; else defaultAvatar" [src]="userAvatar" alt="Avatar" />
+          <ng-template #defaultAvatar>
+            <div class="avatar-placeholder">{{ getInitials() }}</div>
+          </ng-template>
+        </div>
+        <span class="username">{{ username }}</span>
+        <i class="fas fa-chevron-down chevron-icon" [ngClass]="{'rotate': menuVisible}"></i>
+
+        <div class="user-dropdown" *ngIf="menuVisible">
+          <ul class="dropdown-menu">
+            <li class="dropdown-item"><i class="fas fa-user"></i><span>Perfil</span></li>
+            <li class="dropdown-item"><i class="fas fa-cog"></i><span>Configuración</span></li>
+            <li class="dropdown-divider"></li>
+            <li class="dropdown-item logout" (click)="logout()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="menu-backdrop" *ngIf="menuVisible" (click)="closeMenu()"></div>

@@ -8,8 +8,8 @@
       <app-navbar></app-navbar>
     </header>
 
-    <main class="feed-area">
-      <div class="feed-wrapper">
+    <main [ngClass]="getFeedAreaClasses()">
+      <div [ngClass]="getFeedWrapperClasses()">
         <router-outlet></router-outlet>
       </div>
     </main>

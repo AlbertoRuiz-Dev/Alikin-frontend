@@ -21,7 +21,8 @@ const routes: Routes = [
       },
       {
         path: 'communities',
-        loadChildren: () => import('./communities/communities.module').then(m => m.CommunitiesModule)
+        loadChildren: () => import('./communities/communities.module').then(m => m.CommunitiesModule),
+        data: {pageType: 'communities'}
       },
       {
         path: 'songs',

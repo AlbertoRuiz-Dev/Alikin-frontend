@@ -1,17 +1,27 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
-import { CommunitiesRoutingModule } from './communities-routing.module';
-import {CommunitiesComponent} from "./communities.component";
+import { CommunitiesComponent } from './communities.component';
+import { CreateCommunityModalComponent } from '../create-community-modal/create-community-modal.component';
+import {CommunitiesRoutingModule} from "./communities-routing.module";
 
 
 @NgModule({
   declarations: [
-    CommunitiesComponent
+    CommunitiesComponent,
+    CreateCommunityModalComponent
   ],
   imports: [
     CommonModule,
-    CommunitiesRoutingModule
+    CommunitiesRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule
+  ],
+  exports: [
+    CommunitiesComponent
   ]
 })
 export class CommunitiesModule { }

@@ -40,11 +40,6 @@ export class MusicPlayerService {
     }).catch(err => console.error('🎵 Error al reproducir:', err));
   }
 
-  pause(): void {
-    this.audio.pause();
-    this.isPlaying = false;
-  }
-
   togglePlayPause(): void {
     if (this.audio.paused) {
       this.audio.play().then(() => this.isPlaying = true);
@@ -75,5 +70,21 @@ export class MusicPlayerService {
 
   getCurrentAudio(): HTMLAudioElement {
     return this.audio;
+  }
+
+  formatTime(seconds: number): string {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }
+
+  seekTo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const seekTime = parseFloat(input.value);
+
+    this.audio.currentTime = seekTime;
+    this.currentTime = seekTime;
+    this.progress = this.duration ? (seekTime / this.duration) * 100 : 0;
   }
 }

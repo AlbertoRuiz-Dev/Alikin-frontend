@@ -62,9 +62,8 @@ export class PostItemComponent {
     this.expandedImageUrl = undefined;
   }
 
-  getSongUrl(path?: string | null): string {
-    if (!path) return '';
-    return path.startsWith('http') ? path : `${environment.apiUrl}/songs/${this.post.song?.id}/stream`;
+  getSongStreamUrl(songId: number): string {
+    return `${environment.apiUrl}/songs/${songId}/stream`;
   }
 
   playSong(): void {
@@ -74,7 +73,13 @@ export class PostItemComponent {
       title: this.post.song.title,
       artist: this.post.song.artist,
       coverImageUrl: this.getImageUrl(this.post.song.coverImageUrl),
-      streamUrl: `${environment.apiUrl}/songs/${this.post.song.id}/stream`
+      streamUrl: this.getSongStreamUrl(this.post.song.id)
     });
   }
+
+  getSongUrl(path?: string): string {
+    if (!path) return '';
+    return path.startsWith('http') ? path : `${environment.mediaUrl}${path}`;
+  }
+
 }

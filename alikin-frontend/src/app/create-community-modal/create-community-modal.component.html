@@ -1,0 +1,70 @@
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="close-button" (click)="closeModal()" aria-label="Cerrar modal">&times;</button>
+    <h2>Crear Nueva Comunidad</h2>
+
+    <form [formGroup]="createCommunityForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <label for="name">Nombre de la Comunidad</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          placeholder="Ej: Amantes del Jazz Fusión"
+          [ngClass]="{'invalid-field': name?.invalid && (name?.dirty || name?.touched)}"
+        />
+        <div *ngIf="name?.invalid && (name?.dirty || name?.touched)" class="error-message">
+          <small *ngIf="name?.errors?.['required']">El nombre es obligatorio.</small>
+          <small *ngIf="name?.errors?.['minlength']">El nombre debe tener al menos 3 caracteres.</small>
+          <small *ngIf="name?.errors?.['maxlength']">El nombre no debe exceder los 30 caracteres.</small>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="description">Descripción</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="4"
+          placeholder="Describe el propósito y tema de tu comunidad..."
+          [ngClass]="{'invalid-field': description?.invalid && (description?.dirty || description?.touched)}"
+        ></textarea>
+        <div *ngIf="description?.invalid && (description?.dirty || description?.touched)" class="error-message">
+          <small *ngIf="description?.errors?.['required']">La descripción es obligatoria.</small>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="imageFile">Imagen de la Comunidad (Opcional)</label>
+        <input
+          type="file"
+          id="imageFile"
+          (change)="onFileChange($event)"
+          accept="image/png, image/jpeg, image/gif"
+          class="file-input"
+        />
+        <div *ngIf="imagePreviewUrl && !createCommunityForm.get('imageFile')?.errors?.['invalidFileType']" class="image-preview-container">
+          <img [src]="imagePreviewUrl" alt="Vista previa de la imagen" class="image-preview"/>
+          <button type="button" (click)="removeImagePreview()" class="remove-image-btn">&times;</button>
+        </div>
+        <div *ngIf="createCommunityForm.get('imageFile')?.errors?.['invalidFileType']" class="error-message">
+          <small>Tipo de archivo no válido. Sube PNG, JPG o GIF.</small>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="api-error-message">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="closeModal()" [disabled]="isSubmitting">
+          Cancelar
+        </button>
+        <button type="submit" class="submit-btn" [disabled]="createCommunityForm.invalid || isSubmitting">
+          <span *ngIf="!isSubmitting">Crear Comunidad</span>
+          <span *ngIf="isSubmitting">Creando... <i class="fas fa-spinner fa-spin"></i></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

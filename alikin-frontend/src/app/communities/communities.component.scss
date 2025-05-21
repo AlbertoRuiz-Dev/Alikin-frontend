@@ -1,0 +1,376 @@
+$spotify-black: #121212;
+$spotify-dark-gray: #181818;
+$spotify-medium-gray: #222222;
+$spotify-light-gray: #282828;
+$spotify-lighter-gray: #b3b3b3;
+$spotify-text-muted: #777777;
+$white: #ffffff;
+
+$reddit-orange: #ff4500;
+$reddit-orange-hover: #e03e00;
+
+$spotify-green: #1db954;
+$spotify-green-hover: #1aa34a;
+
+$border-color-dark: #353535;
+$font-family: 'Arial', sans-serif;
+
+.communities-page-container {
+  background-color: $spotify-black;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: $font-family;
+  color: $spotify-lighter-gray;
+}
+
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: $spotify-dark-gray;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  padding: 16px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $border-color-dark;
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin-right: 25px;
+
+  .search-icon {
+    position: absolute;
+    left: 18px;
+    color: $spotify-text-muted;
+    font-size: 1.1em;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 12px 20px 12px 50px;
+    background-color: $spotify-light-gray;
+    border: 1px solid $border-color-dark;
+    border-radius: 25px;
+    font-size: 1rem;
+    color: $white;
+    transition: border-color 0.2s, background-color 0.2s;
+
+    &::placeholder {
+      color: $spotify-text-muted;
+    }
+
+    &:focus {
+      background-color: $spotify-medium-gray;
+      border-color: $reddit-orange;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba($reddit-orange, 0.3);
+    }
+  }
+
+  .clear-icon {
+    position: absolute;
+    right: 18px;
+    color: $spotify-text-muted;
+    cursor: pointer;
+    font-size: 1.2em;
+    &:hover {
+      color: $spotify-lighter-gray;
+    }
+  }
+}
+
+.create-community-btn {
+  background-color: $reddit-orange;
+  color: $white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+
+  i {
+    margin-right: 10px;
+    font-size: 1.1em;
+  }
+
+  &:hover {
+    background-color: $reddit-orange-hover;
+  }
+}
+
+.communities-content-scrollable {
+  padding: 25px 40px;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.community-section {
+  margin-bottom: 40px;
+
+  h2 {
+    font-size: 1.9rem;
+    color: $white;
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid $spotify-light-gray;
+    display: inline-block;
+  }
+}
+
+.communities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.community-card {
+  background-color: $spotify-dark-gray;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border: 1px solid $border-color-dark;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    border-color: $spotify-light-gray;
+  }
+}
+
+.card-image-container {
+  width: 100%;
+  height: 180px;
+  position: relative;
+  background-color: $spotify-light-gray;
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .placeholder-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $spotify-medium-gray;
+    color: $spotify-lighter-gray;
+    font-size: 3rem;
+    font-weight: bold;
+  }
+}
+
+.card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: $white;
+  margin: 0 0 12px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-description {
+  font-size: 0.9rem;
+  color: $spotify-lighter-gray;
+  line-height: 1.6;
+  margin-bottom: 18px;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: calc(0.9rem * 1.6 * 3);
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid $border-color-dark;
+  margin-top: auto;
+}
+
+.members-info {
+  font-size: 0.9rem;
+  color: $spotify-text-muted;
+  display: inline-flex;
+  align-items: center;
+
+  i {
+    margin-right: 8px;
+    color: $spotify-green;
+  }
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  &.member {
+    background-color: rgba($spotify-green, 0.15);
+    color: $spotify-green;
+    border: 1px solid rgba($spotify-green, 0.3);
+  }
+}
+
+.join-btn {
+  background-color: $spotify-green;
+  color: $white;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+
+  i {
+    margin-right: 8px;
+  }
+
+  &:hover {
+    background-color: $spotify-green-hover;
+  }
+}
+
+.empty-state-user, .empty-state-search {
+  text-align: center;
+  padding: 50px 25px;
+  margin-top: 30px;
+  background-color: $spotify-dark-gray;
+  border-radius: 8px;
+  border: 1px solid $border-color-dark;
+  color: $spotify-lighter-gray;
+
+  i {
+    font-size: 3.8rem;
+    margin-bottom: 20px;
+    color: $spotify-light-gray;
+  }
+
+  p {
+    font-size: 1.15rem;
+    margin-bottom: 25px;
+  }
+}
+
+.explore-btn, .clear-search-btn {
+  color: $white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  font-size: 1rem;
+  display: inline-block;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.explore-btn {
+  background-color: $reddit-orange;
+  &:hover {
+    background-color: $reddit-orange-hover;
+  }
+}
+
+.clear-search-btn {
+  background-color: $spotify-light-gray;
+  &:hover {
+    background-color: $spotify-medium-gray;
+  }
+}
+
+.section-divider {
+  margin: 45px auto;
+  border: 0;
+  height: 1px;
+  background-color: $border-color-dark;
+  width: 90%;
+}
+
+@media (max-width: 768px) {
+  .top-bar {
+    padding: 12px 15px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-container {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  .create-community-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 15px;
+  }
+  .communities-content-scrollable {
+    padding: 20px 15px;
+  }
+  .communities-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .card-title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .communities-grid {
+    grid-template-columns: 1fr;
+  }
+  .card-image-container {
+    height: 160px;
+  }
+  .card-body {
+    padding: 15px;
+  }
+  .top-bar {
+    padding: 10px;
+  }
+  .search-input {
+    padding: 10px 15px 10px 40px;
+    font-size: 0.9rem;
+  }
+  .create-community-btn {
+    font-size: 0.85rem;
+    padding: 10px 15px;
+  }
+  .communities-content-scrollable {
+    padding: 15px 10px;
+  }
+}
