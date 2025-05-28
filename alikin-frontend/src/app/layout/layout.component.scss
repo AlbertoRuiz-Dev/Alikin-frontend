@@ -1,4 +1,3 @@
-// Variables de colores inspirados en Spotify y Reddit
 $spotify-green: #1db954;
 $spotify-black: #121212;
 $spotify-dark-gray: #181818;
@@ -9,11 +8,14 @@ $reddit-orange-light: #ff6a33;
 $white: #ffffff;
 $gradient-start: $spotify-black;
 $gradient-end: darken($spotify-dark-gray, 3%);
-
-// Tipografía
 $font-family: 'Circular', 'Helvetica Neue', Arial, sans-serif;
 
-// Mixins
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 @mixin glass-effect {
   background: rgba($spotify-black, 0.8);
   backdrop-filter: blur(10px);
@@ -32,13 +34,6 @@ $font-family: 'Circular', 'Helvetica Neue', Arial, sans-serif;
   0 0 15px rgba($color, 0.3);
 }
 
-// Estilos base
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   font-family: $font-family;
   background-color: $spotify-black;
@@ -46,7 +41,6 @@ body {
   overflow: hidden;
 }
 
-// Layout principal
 .layout {
   display: flex;
   height: 100vh;
@@ -54,7 +48,6 @@ body {
   background: linear-gradient(150deg, $gradient-start 0%, $gradient-end 100%);
   position: relative;
 
-  // Elemento decorativo - ondas musicales
   &::before {
     content: '';
     position: absolute;
@@ -68,7 +61,6 @@ body {
     z-index: 0;
   }
 
-  // Sidebar
   .sidebar {
     width: 80px;
     background: linear-gradient(to bottom, $spotify-black, darken($spotify-dark-gray, 5%));
@@ -81,7 +73,6 @@ body {
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
     transition: width 0.3s ease;
 
-    // Destello superior
     &::before {
       content: "";
       position: absolute;
@@ -92,22 +83,18 @@ body {
       background: linear-gradient(to right, $reddit-orange, $spotify-green);
     }
 
-    // Efecto hover
     &:hover {
       width: 220px;
     }
 
-    // Versión móvil
     @media (max-width: 768px) {
       width: 60px;
-
       &:hover {
         width: 60px;
       }
     }
   }
 
-  // Contenido principal
   .main-content {
     flex: 1;
     display: flex;
@@ -115,7 +102,6 @@ body {
     position: relative;
     z-index: 5;
 
-    // Navbar
     .navbar {
       height: 60px;
       @include glass-effect;
@@ -127,7 +113,6 @@ body {
       z-index: 20;
       position: relative;
 
-      // Efecto de borde degradado sutil
       &::after {
         content: '';
         position: absolute;
@@ -146,21 +131,21 @@ body {
       padding-left:5px ;
     }
 
-    // Área de contenido principal
     .feed-area {
       flex: 1;
       overflow-y: auto;
-      position: relative; // Necesario para los pseudo-elementos ::before
+      position: relative;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
 
-      // Estilos por defecto para el feed (cuando NO es la vista de comunidades)
-      &:not(.communities-layout-active) {
-        max-width: 70%; // Estilo original del feed
-        margin: 0 auto;  // Estilo original del feed
-        padding: 1.5rem; // Estilo original del feed
-        background-color: $spotify-black; // Fondo oscuro para el feed
+      &.feed-area--feed-style {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 1.5rem;
+        background-color: $spotify-black;
         color: $white;
 
-        // Estilizar la barra de desplazamiento (solo para el feed por defecto)
         &::-webkit-scrollbar {
           width: 8px;
         }
@@ -175,7 +160,6 @@ body {
           }
         }
 
-        // Estilizar el fondo con patrón sutil (solo para el feed por defecto)
         &::before {
           content: '';
           position: absolute;
@@ -189,54 +173,50 @@ body {
           background-size: 20px 20px;
           background-position: 0 0, 10px 10px;
           pointer-events: none;
-          z-index: -1; // Para que esté detrás del contenido
+          z-index: -1;
         }
       }
 
-      // Estilos para .feed-area cuando la vista de comunidades está activa
       &.communities-layout-active {
-        max-width: 100%; // Ocupa todo el ancho disponible
+        max-width: 100%;
         margin: 0;
-        padding: 0; // El componente CommunitiesComponent manejará su propio padding
-        // El fondo será manejado por CommunitiesComponent
-        // La barra de scroll aquí podría ser la por defecto del navegador o una global si prefieres
+        padding: 0;
       }
     }
 
-    // Wrapper del feed
     .feed-wrapper {
-      width: 100%; // Generalmente se quiere que ocupe el 100% de .feed-area
-      height: 100%; // Para que el contenido interno pueda usar min-height: 100%
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      background: transparent;
+      border-radius: 0;
 
-      // Estilos por defecto para el feed (cuando NO es la vista de comunidades)
-      &:not(.communities-wrapper-active) {
-        padding: 0 1rem; // Padding original del feed
-        background: $spotify-dark-gray; // Fondo original del feed ($spotify-dark-gray o #181818 como tenías)
-        border-radius: 12px; // Bordes redondeados para el feed
+      &.feed-wrapper--feed-style {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        background: $spotify-dark-gray;
+        border-radius: 12px;
       }
 
-      // Estilos para .feed-wrapper cuando la vista de comunidades está activa
       &.communities-wrapper-active {
-        padding: 0; // Sin padding, CommunitiesComponent se encarga
-        background: transparent; // Sin fondo, CommunitiesComponent pone el suyo
-        border-radius: 0; // Sin bordes redondeados
+        padding: 0;
+        background: transparent;
+        border-radius: 0;
       }
     }
-    // Reproductor de música
     .music-player {
       position: fixed;
       bottom: 0;
-      left: 80px; /* Ancho del sidebar */
+      left: 80px;
       right: 0;
       height: 90px;
       z-index: 100;
-      background: transparent; /* Transparente para que el contenido del reproductor defina el fondo */
+      background: transparent;
     }
-
   }
 }
 
-// Efecto visual para los elementos interactivos en el sidebar
 :host ::ng-deep .sidebar {
   .nav-item {
     margin-bottom: 1.2rem;
@@ -261,7 +241,6 @@ body {
       @include neon-glow($spotify-green);
     }
 
-    // Elemento destacado de tipo Reddit
     &.highlighted {
       background: linear-gradient(135deg, $reddit-orange, darken($reddit-orange, 15%));
       color: $white;
@@ -270,7 +249,6 @@ body {
   }
 }
 
-// Animación para la visualización de audio en el reproductor
 :host ::ng-deep .music-player {
   .audio-waves {
     display: flex;
@@ -304,7 +282,6 @@ body {
   }
 }
 
-// Efecto pulse para elementos activos
 .pulse {
   position: relative;
 
@@ -322,6 +299,7 @@ body {
   }
 }
 
+/*
 .main-content {
   flex: 1;
   display: flex;
@@ -331,7 +309,6 @@ body {
 
 .feed-wrapper {
   width: 100%;
-
   padding: 0 1rem;
   background: #181818;
   border-radius: 12px;
@@ -343,10 +320,10 @@ body {
   align-items: center;
   gap: 1.5rem;
   padding: 2rem 1rem;
-  max-width: 700px; // Esto es para un contenido de tipo feed muy específico
+  max-width: 700px;
   margin: 0 auto;
 }
-
+*/
 
 @keyframes pulse {
   0% {
@@ -363,7 +340,6 @@ body {
   }
 }
 
-// Media queries para responsividad
 @media (max-width: 992px) {
   .layout {
     .sidebar {
@@ -389,8 +365,8 @@ body {
       }
 
       .feed-area {
-        padding: 1rem;
-        margin-left: 5rem;
+        /* padding: 1rem; */
+        /* margin-left: 5rem; */
       }
 
       .music-player {

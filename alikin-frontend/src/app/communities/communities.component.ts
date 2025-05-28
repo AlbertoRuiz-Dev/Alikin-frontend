@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommunityService } from "./communities.service";
 import { Router } from '@angular/router';
 import {CommunityResponse} from "./community-response";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-communities',
@@ -21,7 +22,8 @@ export class CommunitiesComponent implements OnInit {
 
   constructor(
     private communityService: CommunityService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -128,16 +130,30 @@ export class CommunitiesComponent implements OnInit {
     }
   }
 
+
   joinCommunity(communityId: number, event: Event): void {
     event.stopPropagation();
     event.preventDefault();
-    const communityToJoin = this.allCommunities.find(c => c.id === communityId);
-    if (communityToJoin && !this.isUserCommunity(communityId)) {
-      this.userCommunities.push({ ...communityToJoin, member: true });
-      this.applySearchAndExclusionFilter();
-    }
-  }
 
+    const communityToJoin = this.allCommunities.find(c => c.id === communityId);
+    const communityName = communityToJoin ? communityToJoin.name : 'la comunidad';
+
+    this.communityService.joinCommunity(communityId).subscribe({
+      next: (response) => {
+        const successMessage = response?.message || `¡Te has unido a "${communityName}" con éxito!`;
+        this.toastr.success(successMessage, '¡Unido!'); // Notificación de éxito
+
+        this.loadUserCommunities();
+        this.loadAllCommunities();
+      },
+      error: (err) => {
+        console.error('Error al unirse a la comunidad:', err);
+        const backendErrorMessage = err.error?.message || err.error?.error;
+        const displayMessage = backendErrorMessage || err.message || 'No se pudo unir a la comunidad.';
+        this.toastr.error(displayMessage, 'Error al Unirse'); // Notificación de error
+      }
+    });
+  }
   viewCommunity(communityId: number): void {
     this.router.navigate(['/community', communityId]);
   }

@@ -1,0 +1,60 @@
+// _colors.scss
+
+// --- Paleta Base ---
+$white: #ffffff;
+$black: #121212; // Usando el spotify-black como el negro principal para el tema
+
+// --- Colores Primarios del Tema Oscuro (Inspirados en Spotify) ---
+$theme-bg-primary: $black;                      // Fondo más profundo de la página
+$theme-bg-secondary: #181818;                   // Para tarjetas, modales, secciones elevadas
+$theme-bg-tertiary: #282828;                    // Para elementos más sutiles, fondos de input oscuros, hovers
+
+// --- Colores de Acento ---
+$accent-green: #1DB954;                         // Verde Spotify principal
+$accent-green-light: #1ed760;                   // Un verde más brillante
+$accent-green-hover: darken($accent-green, 8%); // Para estados hover del verde principal
+
+$accent-orange: #ff4500;                        // Naranja Reddit principal
+$accent-orange-light: #ff6a33;                  // Un naranja más brillante
+$accent-orange-hover: darken($accent-orange, 8%); // Para estados hover del naranja principal
+
+// --- Colores de Texto para Tema Oscuro ---
+$text-primary: $white;                          // Texto principal sobre fondos oscuros
+$text-secondary: #B3B3B3;                       // Texto secundario, menos prominente
+$text-muted: #888888;                           // Texto aún más atenuado, placeholders oscuros
+$text-disabled: #535353;                        // Texto para elementos deshabilitados
+$text-on-accent: $white;                        // Texto para usar sobre botones con fondo de acento (verde/naranja)
+
+// --- Colores para Inputs con Fondo Claro (como en la referencia del modal) ---
+$input-bg-light: #f0f0f0;                       // Fondo claro para campos de input
+$input-text-dark: #333333;                      // Texto oscuro para campos de input con fondo claro
+$input-placeholder-light-bg: #757575;           // Placeholder para campos de input con fondo claro
+$input-border-light: #cccccc;                   // Borde para campos de input con fondo claro
+
+// --- Colores de Bordes y Separadores ---
+$border-primary-darktheme: #353535;             // Borde general sutil para el tema oscuro
+$border-secondary-darktheme: #888888; // Un borde un poco más claro si es necesario
+
+// --- Colores de Estado y Feedback ---
+$status-error: #e74c3c;                         // Rojo para errores
+$status-error-bg: rgba($status-error, 0.1);
+$status-error-border: rgba($status-error, 0.3);
+
+$status-success: $accent-green;                 // Verde para éxito (reutilizando el de acento)
+$status-success-bg: rgba($status-success, 0.1);
+$status-success-border: rgba($status-success, 0.3);
+
+$status-warning: #f39c12;                       // Naranja/amarillo para advertencias
+$status-warning-bg: rgba($status-warning, 0.1);
+
+$status-info: #3498db;                          // Azul para información
+$status-info-bg: rgba($status-info, 0.1);
+
+// --- Gradientes (de tu lista original) ---
+$gradient-start: $theme-bg-primary;             // Usando $black (que es $spotify-black)
+$gradient-end: darken($theme-bg-secondary, 3%);
+$theme-bg-tertiary: #282828;
+$accent-orange: #ff4500;
+$status-error: #e74c3c;
+$accent-green: #1DB954;
+$border-primary-darktheme: #353535;

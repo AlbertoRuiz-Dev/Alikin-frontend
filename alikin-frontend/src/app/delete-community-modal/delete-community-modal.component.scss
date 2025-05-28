@@ -1,0 +1,131 @@
+@import "../../assets/styles/_colors.scss";
+
+// Estilos base del modal (puedes reusar o extender los de CreateCommunityModal)
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($black, 0.85); // Más oscuro para alerta
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1060; // Por encima de otros modales si es necesario
+  backdrop-filter: blur(4px);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-content.delete-confirmation-modal {
+  background-color: $theme-bg-secondary;
+  padding: 30px 35px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.7);
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  border: 1px solid $border-primary-darktheme;
+  color: $text-secondary;
+  text-align: left;
+
+  h2 {
+    color: $status-error; // Título en color de error
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.7rem;
+    font-weight: 600;
+  }
+
+  p {
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    strong {
+      color: $text-primary;
+      font-weight: 600;
+    }
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: $text-muted;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  &:hover { color: $text-primary; }
+}
+
+.form-field {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: $theme-bg-tertiary;
+    border: 1px solid $border-primary-darktheme;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: $text-primary;
+    box-sizing: border-box;
+    &:focus {
+      border-color: $accent-orange;
+      outline: none;
+    }
+    &.invalid-field {
+      border-color: $status-error;
+    }
+  }
+}
+
+.error-message {
+  margin-top: 6px;
+  small {
+    color: $status-error;
+    font-size: 0.8rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+
+  button {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s;
+    font-size: 0.9rem;
+    border: none;
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  }
+
+  .cancel-btn {
+    background-color: $theme-bg-tertiary;
+    color: $text-secondary;
+    border: 1px solid $border-primary-darktheme;
+    &:hover:not(:disabled) { background-color: lighten($theme-bg-tertiary, 5%); }
+  }
+
+  .submit-btn.danger-btn {
+    background-color: $status-error;
+    color: $white;
+    &:hover:not(:disabled) { background-color: darken($status-error, 10%); }
+  }
+}

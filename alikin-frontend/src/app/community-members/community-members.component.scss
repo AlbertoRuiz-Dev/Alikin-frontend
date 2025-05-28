@@ -1,0 +1,100 @@
+@import "../../assets/styles/_colors.scss";
+.community-members-container {
+  .loading-indicator, .error-message, .empty-message {
+    padding: 20px;
+    text-align: center;
+    color: $text-secondary;
+    font-style: italic;
+  }
+  .error-message {
+    color: $status-error;
+    background-color: $status-error-bg;
+    border: 1px solid $status-error-border;
+    border-radius: 4px;
+  }
+}
+
+.members-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 15px;
+  background-color: $theme-bg-secondary;
+  border: 1px solid $border-primary-darktheme;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: lighten($theme-bg-secondary, 5%);
+  }
+}
+
+.member-info {
+  display: flex;
+  align-items: center;
+
+  .member-avatar, .member-avatar-placeholder {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+    background-color: $theme-bg-tertiary;
+    color: $text-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+
+  .member-details {
+    display: flex;
+    flex-direction: column;
+
+    .member-name {
+      color: $text-primary;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .member-role {
+      color: $text-muted;
+      font-size: 0.8rem;
+      text-transform: capitalize; // LEADER -> Leader
+    }
+  }
+}
+
+.member-actions {
+  .kick-button {
+    background-color: transparent;
+    border: 1px solid $status-error;
+    color: $status-error;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    i {
+      margin-right: 5px;
+    }
+
+    &:hover {
+      background-color: $status-error;
+      color: $white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}

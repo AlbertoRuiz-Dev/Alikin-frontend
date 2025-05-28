@@ -1,0 +1,187 @@
+<div class="community-feed-wrapper">
+  <div class="post-list-container" #postListContainer>
+    <div *ngIf="isLoadingPosts && posts.length === 0" class="loading-indicator-posts">
+      <p><i class="fas fa-spinner fa-spin"></i> Cargando posts...</p>
+    </div>
+    <div *ngIf="!isLoadingPosts && posts.length === 0 && !postsError" class="empty-feed-message">
+      <p>¡Esta comunidad aún no tiene publicaciones! <span *ngIf="canPost()">Anímate a ser el primero.</span></p>
+    </div>
+    <div *ngIf="postsError && posts.length === 0" class="error-loading-posts">
+      <p>{{ postsError }}</p>
+      <button (click)="resetAndLoadPosts()" class="retry-btn">Reintentar</button>
+    </div>
+
+    <div *ngFor="let post of posts" class="post-item" [class.highlighted-post]="post.isHighlighted" (click)="!post.uiShowComments && toggleExpand(post)" [class.expanded-post]="post.isExpanded">
+      <div class="post-author">
+        <img *ngIf="post.user.profilePictureUrl" [src]="getFullImageUrl(post.user.profilePictureUrl)" [alt]="post.user.nickname || post.user.name" class="author-avatar"/>
+        <div *ngIf="!post.user.profilePictureUrl" class="author-avatar-placeholder">
+          {{ (post.user.nickname || post.user.name) ? (post.user.nickname || post.user.name).substring(0,1).toUpperCase() : '?' }}
+        </div>
+        <div class="author-info">
+          <span class="author-name">{{ post.user.nickname || post.user.name }}</span>
+          <span class="post-timestamp">{{ formatPostDate(post.createdAt) }}</span>
+        </div>
+      </div>
+      <div class="post-content">
+        <p [innerHTML]="post.isExpanded || (post.content && post.content.length < 200) ? post.content : (post.content | slice:0:200) + '...'"></p>
+        <button *ngIf="post.content && post.content.length >= 200 && !post.isExpanded" (click)="toggleExpand(post); $event.stopPropagation()" class="read-more-btn">Leer más</button>
+        <img *ngIf="post.imageUrl" [src]="getFullImageUrl(post.imageUrl)" alt="Imagen del post" class="post-image-attachment">
+        <div *ngIf="post.song" class="post-song-attachment">
+          <div class="song-info-wrapper">
+            <i class="fas fa-music song-icon"></i>
+            <div class="song-details">
+              <span class="song-title">{{post.song.title || 'Título Desconocido'}}</span>
+              <span class="song-artist" *ngIf="post.song.artist">{{post.song.artist}}</span>
+            </div>
+          </div>
+          <button class="play-btn" (click)="playSong(post); $event.stopPropagation()" aria-label="Reproducir canción">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="post-interactions">
+        <span><i class="far fa-heart"></i> {{post.voteCount}} Votos</span>
+        <span class="interaction-btn comments" (click)="toggleComments(post); $event.stopPropagation()" role="button" tabindex="0" [attr.aria-pressed]="post.uiShowComments">
+          <i class="far fa-comment"></i> {{post.commentsCount}} Comentarios
+        </span>
+        <button *ngIf="currentUserRole === 'LEADER'" (click)="toggleHighlight(post); $event.stopPropagation()" class="highlight-btn">
+          <i [ngClass]="post.isHighlighted ? 'fas fa-star' : 'far fa-star'"></i> Destacar
+        </button>
+      </div>
+
+      <div class="comments-section-feed" *ngIf="post.uiShowComments">
+        <div *ngIf="post.uiIsLoadingComments" class="loading-comments">
+          <p><i class="fas fa-spinner fa-spin"></i> Cargando comentarios...</p>
+        </div>
+        <div *ngIf="post.uiCommentsError && !post.uiIsLoadingComments" class="error-comments">
+          <p>{{ post.uiCommentsError }} <button (click)="loadComments(post)" class="retry-btn small">Reintentar</button></p>
+        </div>
+
+        <form [formGroup]="getCommentForm(post.id)!" (ngSubmit)="onCommentSubmit(post)" class="new-comment-form-feed" *ngIf="getCommentForm(post.id)">
+          <textarea
+            formControlName="content"
+            placeholder="Escribe un comentario..."
+            rows="2"
+            class="comment-textarea-feed"
+            [ngClass]="{'is-invalid': getCommentForm(post.id)!.get('content')?.invalid && getCommentForm(post.id)!.get('content')?.touched}"
+          ></textarea>
+          <div *ngIf="getCommentForm(post.id)!.get('content')?.hasError('required') && getCommentForm(post.id)!.get('content')?.touched" class="comment-form-error">
+            El comentario no puede estar vacío.
+          </div>
+          <div *ngIf="getCommentForm(post.id)!.get('content')?.hasError('maxlength') && getCommentForm(post.id)!.get('content')?.touched" class="comment-form-error">
+            Máximo 1000 caracteres.
+          </div>
+          <button type="submit" class="submit-comment-btn-feed" [disabled]="getCommentForm(post.id)!.invalid || post.uiIsSubmittingComment">
+            <span *ngIf="!post.uiIsSubmittingComment">Comentar</span>
+            <span *ngIf="post.uiIsSubmittingComment"><i class="fas fa-spinner fa-spin"></i> Enviando...</span>
+          </button>
+          <div *ngIf="post.uiSubmitCommentError" class="comment-submit-error">
+            {{ post.uiSubmitCommentError }}
+          </div>
+        </form>
+
+        <div class="comments-list-feed" *ngIf="!post.uiIsLoadingComments && !post.uiCommentsError">
+          <div *ngIf="!post.uiComments || post.uiComments.length === 0" class="no-comments">
+            <p>No hay comentarios todavía. ¡Sé el primero!</p>
+          </div>
+          <div *ngFor="let comment of post.uiComments" class="comment-item-feed">
+            <img
+              *ngIf="comment.user.profilePictureUrl"
+              [src]="getFullImageUrl(comment.user.profilePictureUrl)"
+              alt="Avatar de {{ comment.user.nickname || comment.user.name }}"
+              class="comment-author-avatar-feed"
+            />
+            <div *ngIf="!comment.user.profilePictureUrl" class="comment-author-avatar-placeholder-feed">
+              {{ getCommentUserInitials(comment.user) }}
+            </div>
+            <div class="comment-content-wrapper-feed">
+              <div class="comment-author-info-feed">
+                <span class="comment-author-name-feed">{{ comment.user.nickname || comment.user.name }}</span>
+                <span class="comment-timestamp-feed">• {{ comment.createdAt | date:'shortDate' }} a las {{ comment.createdAt | date:'shortTime' }}</span>
+              </div>
+              <p class="comment-text-feed">{{ comment.content }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="hasMorePosts && !isLoadingPosts && posts.length > 0" class="load-more-container">
+      <button (click)="loadMorePosts()" class="load-more-btn" [disabled]="isLoadingPosts">
+        <span *ngIf="!isLoadingPosts">Cargar más posts</span>
+        <span *ngIf="isLoadingPosts"><i class="fas fa-spinner fa-spin"></i> Cargando...</span>
+      </button>
+    </div>
+    <div *ngIf="isLoadingPosts && posts.length > 0" class="loading-more-indicator">
+      <i class="fas fa-spinner fa-spin"></i> Cargando más...
+    </div>
+  </div>
+
+  <div class="new-post-bar-container" *ngIf="canPost()">
+    <div class="new-post-bar" appDraggable>
+      <form [formGroup]="newPostForm" (ngSubmit)="onPostSubmit()" class="new-post-form-container">
+        <textarea
+          formControlName="content"
+          placeholder="Comparte algo con la comunidad..."
+          rows="1"
+          class="new-post-textarea"
+          (input)="autoResizeTextarea($event.target)"
+          [attr.disabled]="newPostForm.get('content')?.disabled ? true : null"
+        ></textarea>
+        <div class="controls-and-submit-wrapper">
+          <div class="post-attachments">
+            <label for="imageFilePost" class="attach-btn" title="Adjuntar imagen">
+              <img class="fas fa-image" src="assets/icons/file.svg" alt="Adjuntar imagen"/>
+            </label>
+            <input
+              type="file"
+              id="imageFilePost"
+              #imageFileInput
+              (change)="onImageFileSelected($event)"
+              accept="image/png, image/jpeg, image/gif"
+              style="display: none;"
+            />
+            <div class="song-selector-container" *ngIf="availableSongs.length > 0 || isLoadingSongs">
+              <label for="songIdSelect" class="attach-btn song-attach-label" title="Adjuntar canción existente">
+                <img class="fas fa-music" src="assets/icons/musicU.svg" alt="Adjuntar canción"/>
+              </label>
+              <select formControlName="songId" id="songIdSelect" class="song-select minimal-select">
+                <option [ngValue]="null" disabled selected>Canción</option>
+                <option *ngFor="let song of availableSongs" [value]="song.id">
+                  {{ song.title }} <span *ngIf="song.artist">- {{ song.artist }}</span>
+                </option>
+              </select>
+              <div *ngIf="isLoadingSongs" class="loading-songs-inline">
+                <i class="fas fa-spinner fa-spin"></i>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="submit-post-btn" [disabled]="(!newPostForm.get('content')?.value?.trim() && !selectedImageFile && !newPostForm.get('songId')?.value) || isSubmittingPost || newPostForm.get('content')?.hasError('maxlength')" title="Publicar">
+            <img class="fas fa-paper-plane" src="assets/icons/send.svg" alt="Enviar"/>
+          </button>
+        </div>
+      </form>
+      <div class="previews-and-errors-container">
+        <div class="previews-container">
+          <div *ngIf="imagePreviewUrl" class="image-preview-post">
+            <img [src]="imagePreviewUrl" alt="Vista previa de imagen">
+            <button type="button" (click)="clearImageSelection()" class="remove-preview-btn">&times;</button>
+          </div>
+          <div *ngIf="newPostForm.get('songId')?.value && availableSongs.length > 0" class="song-preview-post">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ getSelectedSongName(newPostForm.get('songId')?.value) }}</span>
+            <button type="button" (click)="newPostForm.get('songId')?.reset();" class="remove-preview-btn">&times;</button>
+          </div>
+        </div>
+        <div *ngIf="postSubmitError" class="api-error-message small-error">
+          {{ postSubmitError }}
+        </div>
+        <div *ngIf="newPostForm.get('content')?.hasError('maxlength')" class="error-message small-error">
+          <small>El mensaje es demasiado largo (máx. 2000 caracteres).</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

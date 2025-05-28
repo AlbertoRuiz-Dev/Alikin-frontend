@@ -1,0 +1,38 @@
+<div class="community-members-container">
+  <div *ngIf="isLoading" class="loading-indicator">Cargando miembros...</div>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <ul *ngIf="!isLoading && !error && members.length > 0" class="members-list">
+    <li *ngFor="let member of members" class="member-item">
+      <div class="member-info">
+        <img
+          *ngIf="member.profilePictureUrl"
+          [src]="getFullImageUrl(member.profilePictureUrl)"
+          [alt]="member.nickname"
+          class="member-avatar"
+        />
+        <div *ngIf="!member.profilePictureUrl" class="member-avatar-placeholder">
+          {{ getMemberInitials(member.nickname) }}
+        </div>
+        <div class="member-details">
+          <span class="member-name">{{ member.nickname || member.name }}</span>
+          <span class="member-role">{{ member.role || 'Miembro' }}</span>
+        </div>
+      </div>
+      <div class="member-actions">
+        <button
+          *ngIf="canKick(member.id)"
+          (click)="kickMember(member.id, member.nickname || member.name || 'Usuario')"
+          class="kick-button danger-btn"
+          title="Echar de la comunidad"
+        >
+          <i class="fas fa-user-times"></i> Echar
+        </button>
+      </div>
+    </li>
+  </ul>
+
+  <div *ngIf="!isLoading && !error && members.length === 0" class="empty-message">
+    No hay miembros para mostrar o esta comunidad aún no tiene miembros (¡lo cual sería raro si tú estás aquí!).
+  </div>
+</div>

@@ -1,10 +1,123 @@
-.song-upload-container {
-  background-color: #1e1e1e;
-  border-radius: 12px;
-  padding: 2rem;
+@import "../../assets/styles/_colors.scss";
+
+$theme-bg-primary: #121212;
+$theme-bg-secondary: #181818;
+$theme-bg-tertiary: #282828;
+$border-primary-darktheme: #353535;
+$text-primary: #ffffff;
+$text-secondary: #b3b3b3;
+$text-muted: #888888;
+$accent-orange: #ff4500;
+$accent-green: #1DB954; // Para botones de acción
+$white: #ffffff;
+$status-error: #e74c3c;
+
+
+.songs-page-container {
+  padding: 20px 30px;
+  color: $text-secondary;
+  // background-color: $theme-bg-primary; // Si no lo hereda del layout
+  min-height: calc(100vh - 60px); // Asumiendo navbar de 60px
+}
+
+.songs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.search-songs-container {
+  position: relative;
+  flex-grow: 1;
   max-width: 500px;
-  margin: 2rem auto;
-  color: white;
+
+  .search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $text-muted;
+  }
+
+  .search-songs-input {
+    width: 100%;
+    padding: 12px 20px 12px 45px;
+    background-color: $theme-bg-tertiary;
+    border: 1px solid $border-primary-darktheme;
+    border-radius: 25px;
+    color: $text-primary;
+    font-size: 0.95rem;
+
+    &:focus {
+      outline: none;
+      border-color: $accent-orange;
+      background-color: lighten($theme-bg-tertiary, 5%);
+    }
+    &::placeholder {
+      color: $text-muted;
+    }
+  }
+}
+
+.upload-song-btn, .accent-btn { // Estilo común para botones de acción
+  background-color: $accent-green;
+  color: $white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: darken($accent-green, 10%);
+  }
+}
+
+// --- Estilos para el formulario de subida (tu SCSS existente, con algunos ajustes) ---
+.song-upload-form-section {
+  // Podrías usar un estilo de modal/overlay si lo prefieres
+  // Por ahora, lo mostramos como una sección
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: $theme-bg-secondary;
+  border-radius: 8px;
+  border: 1px solid $border-primary-darktheme;
+}
+
+.song-upload-container { // Tu contenedor existente para el form
+  background-color: transparent; // El fondo ya lo da .song-upload-form-section
+  border-radius: 0;
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+  color: $text-primary; // Asegura que el texto dentro sea visible
+
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    h2 {
+      margin: 0;
+      color: $text-primary;
+      font-size: 1.5rem;
+    }
+    .close-form-btn {
+      background: none;
+      border: none;
+      color: $text-muted;
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      &:hover { color: $white; }
+    }
+  }
 
   .song-form {
     display: flex;
@@ -15,35 +128,170 @@
       display: flex;
       flex-direction: column;
       font-size: 0.9rem;
+      color: $text-secondary;
     }
 
-    input, select {
-      margin-top: 0.3rem;
-      padding: 0.5rem;
+    input[type="text"], input[type="file"], select {
+      margin-top: 0.4rem;
+      padding: 0.7rem 0.8rem;
       border-radius: 6px;
-      border: none;
+      border: 1px solid $border-primary-darktheme;
       font-size: 0.95rem;
-      background-color: #2a2a2a;
-      color: white;
+      background-color: $theme-bg-tertiary;
+      color: $text-primary;
+      &:focus {
+        outline: none;
+        border-color: $accent-orange;
+      }
+    }
+    input[type="file"] {
+      color: $text-secondary; // El texto del input de archivo
+      &::file-selector-button { // Estilo del botón "Seleccionar archivo"
+        background-color: $accent-orange;
+        color: $white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+        &:hover { background-color: darken($accent-orange, 10%); }
+      }
+    }
+    .file-selected-info {
+      font-size: 0.8rem;
+      color: $text-muted;
+      margin-top: 5px;
+    }
+    .cover-preview {
+      max-width: 100px;
+      max-height: 100px;
+      margin-top: 10px;
+      border-radius: 4px;
+      border: 1px solid $border-primary-darktheme;
     }
 
-    button {
-      background-color: #3b82f6;
-      color: white;
-      padding: 0.7rem;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.2s;
-
-      &:hover {
-        background-color: #2563eb;
+    .submit-upload-btn { // Hereda de .accent-btn pero podemos sobreescribir
+      margin-top: 1rem;
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      &:disabled {
+        background-color: $theme-bg-tertiary;
+        color: $text-muted;
+        cursor: not-allowed;
       }
     }
 
-    .error {
-      color: #ff5252;
-      font-weight: bold;
+    .error-message.form-error, .success-message.form-success {
+      text-align: center;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+    .error-message.form-error { background-color: rgba($status-error, 0.1); color: $status-error; }
+    .success-message.form-success { background-color: rgba($accent-green, 0.1); color: $accent-green; }
+    .field-error small { color: $status-error; font-size: 0.8rem; margin-top: 4px; }
+  }
+}
+// --- Fin estilos formulario de subida ---
+
+
+.songs-list-container {
+  .loading-indicator, .empty-list-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: $text-muted;
+    font-size: 1.1rem;
+    i { margin-right: 10px; }
+  }
+  .error-message {
+    text-align: center;
+    padding: 20px;
+    color: $status-error;
+    background-color: rgba($status-error, 0.1);
+    border: 1px solid $status-error;
+    border-radius: 4px;
+    button { margin-left: 10px; }
+  }
+}
+
+.song-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); // Ajusta minmax para el tamaño de tarjeta
+  gap: 20px;
+}
+
+.song-item-card {
+  background-color: $theme-bg-secondary;
+  border-radius: 8px;
+  padding: 15px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent; // Para el hover
+  position: relative; // Para el play-overlay
+
+  &:hover {
+    background-color: $theme-bg-tertiary;
+    transform: translateY(-3px);
+    border-color: $border-primary-darktheme;
+    .play-overlay {
+      opacity: 1;
+    }
+  }
+
+  .song-cover-container {
+    position: relative;
+    margin-bottom: 12px;
+    padding-top: 100%; // Para mantener relación de aspecto cuadrada para la imagen
+
+    .song-cover-art {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+      background-color: $theme-bg-tertiary; // Color mientras carga o si no hay imagen
+    }
+
+    .play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba($black, 0.5);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+
+      i.fa-play {
+        color: $white;
+        font-size: 2.5rem;
+      }
+    }
+  }
+
+  .song-info {
+    .song-title {
+      color: $text-primary;
+      font-weight: 500;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .song-artist {
+      color: $text-secondary;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }

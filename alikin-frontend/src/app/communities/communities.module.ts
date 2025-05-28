@@ -6,19 +6,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { CommunitiesComponent } from './communities.component';
 import { CreateCommunityModalComponent } from '../create-community-modal/create-community-modal.component';
 import {CommunitiesRoutingModule} from "./communities-routing.module";
+import {DeleteCommunityModalComponent} from "../delete-community-modal/delete-community-modal.component";
 
 
 @NgModule({
   declarations: [
     CommunitiesComponent,
-    CreateCommunityModalComponent
+    CreateCommunityModalComponent,
   ],
   imports: [
     CommonModule,
     CommunitiesRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   exports: [
     CommunitiesComponent

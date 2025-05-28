@@ -1,0 +1,39 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content delete-confirmation-modal" (click)="$event.stopPropagation()">
+    <button class="close-button" (click)="onClose()" aria-label="Cerrar modal">&times;</button>
+    <h2>Confirmar Eliminación</h2>
+    <p>
+      Estás a punto de eliminar la comunidad <strong>"{{ communityName }}"</strong>.
+      Esta acción es irreversible y se perderán todos los datos asociados.
+    </p>
+    <p>
+      Para confirmar, por favor escribe el nombre exacto de la comunidad en el campo de abajo:
+    </p>
+
+    <form [formGroup]="confirmForm" (ngSubmit)="onConfirm()">
+      <div class="form-field">
+        <label for="confirmationName">Escribe "{{ communityName }}" para confirmar:</label>
+        <input
+          type="text"
+          id="confirmationName"
+          formControlName="confirmationName"
+          [placeholder]="communityName"
+          [ngClass]="{'invalid-field': confirmationName?.invalid && (confirmationName?.dirty || confirmationName?.touched)}"
+        />
+        <div *ngIf="confirmationName?.invalid && (confirmationName?.dirty || confirmationName?.touched)" class="error-message">
+          <small *ngIf="confirmationName?.errors?.['required']">El nombre es obligatorio para confirmar.</small>
+          <small *ngIf="confirmationName?.errors?.['pattern']">El nombre no coincide con "{{communityName}}".</small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="onClose()">
+          Cancelar
+        </button>
+        <button type="submit" class="submit-btn danger-btn" [disabled]="confirmForm.invalid">
+          Eliminar Comunidad
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

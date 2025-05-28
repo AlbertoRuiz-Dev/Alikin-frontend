@@ -2,18 +2,15 @@
   <aside class="sidebar">
     <app-sidebar></app-sidebar>
   </aside>
-
   <div class="main-content">
     <header class="navbar">
       <app-navbar></app-navbar>
     </header>
-
-    <main [ngClass]="getFeedAreaClasses()">
-      <div [ngClass]="getFeedWrapperClasses()">
+    <main class="feed-area" [class.feed-area--feed-style]="isFeedRouteActive">
+      <div class="feed-wrapper" [class.feed-wrapper--feed-style]="isFeedRouteActive">
         <router-outlet></router-outlet>
       </div>
     </main>
-
     <footer class="music-player">
       <app-music-player></app-music-player>
     </footer>

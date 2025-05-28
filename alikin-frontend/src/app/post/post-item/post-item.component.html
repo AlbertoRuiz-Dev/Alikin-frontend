@@ -1,67 +1,143 @@
 <div class="post-card" [ngClass]="{'highlighted': post.isHighlighted}">
-  <!-- Voting Section -->
   <div class="vote-section">
-    <button class="vote-btn upvote" [ngClass]="{'active': post.userVote === 1}" (click)="upvote()" aria-label="Upvote post">
-      <img src="assets/icons/upvote.svg" alt="">
+    <button
+      class="vote-btn upvote"
+      [ngClass]="{'active': post.userVote === 1}"
+      (click)="vote(1)"
+      aria-label="Upvote post"
+    >
+      <img src="assets/icons/upvote.svg" alt="Upvote">
     </button>
     <span class="vote-count">{{ post.voteCount || 0 }}</span>
-    <button class="vote-btn downvote" [ngClass]="{'active': post.userVote === -1}" (click)="downvote()" aria-label="Downvote post">
-      <img src="assets/icons/down-vote.svg" alt="">
+    <button
+      class="vote-btn downvote"
+      [ngClass]="{'active': post.userVote === -1}"
+      (click)="vote(-1)"
+      aria-label="Downvote post"
+    >
+      <img src="assets/icons/down-vote.svg" alt="Downvote">
     </button>
   </div>
 
-  <!-- Post Content -->
-  <div class="post-content">
-    <!-- Header -->
-    <div class="post-header">
-      <img class="avatar" [src]="post.user.profilePictureUrl || '/assets/default-profile.jpg'" alt="User avatar">
-      <div class="user-info">
-        <span class="nickname">{{ post.user.nickname || 'Anonymous' }}</span>
-        <span class="created-at">• {{ post.createdAt | date:"short" }}</span>
-      </div>
-      <button class="menu-btn" aria-label="More options">
-        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="18" r="2"/></svg>
-      </button>
+  <div class="post-content-main"> <div class="post-header">
+    <img
+      class="avatar"
+      [src]="getImageUrl(post.user.profilePictureUrl) || '/assets/default-profile.jpg'"
+      alt="User avatar"
+    >
+    <div class="user-info">
+      <span class="nickname">{{ post.user.nickname || post.user.name || 'Anónimo' }}</span>
+      <span class="created-at">• {{ post.createdAt | date:"short" }}</span>
     </div>
+    <button class="menu-btn" aria-label="More options">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="18" r="2"/></svg>
+    </button>
+  </div>
 
-    <!-- Content -->
     <div class="post-body">
-      <p *ngIf="!post.isExpanded && post.content.length > 200" (click)="post.isExpanded = true">
-        {{ post.content | slice:0:200 }}... <span class="read-more">Read more</span>
+      <p
+        *ngIf="post.content && (!post.isExpanded && post.content.length > 200)"
+        (click)="post.isExpanded = true; $event.stopPropagation()"
+        class="post-text-collapsible"
+      >
+        {{ post.content | slice:0:200 }}<span class="read-more">... Leer más</span>
       </p>
-      <p *ngIf="post.isExpanded || post.content.length <= 200">{{ post.content }}</p>
+      <p
+        *ngIf="post.content && (post.isExpanded || post.content.length <= 200)"
+        class="post-text"
+      >
+        {{ post.content }}
+      </p>
     </div>
 
-    <!-- Image -->
     <div class="post-media" *ngIf="post.imageUrl">
-      <img [src]="getImageUrl(post.imageUrl)" class="post-image" alt="Post image" (click)="expandImage()" style="cursor: zoom-in;" />
+      <img [src]="getImageUrl(post.imageUrl)" class="post-image" alt="Post image" (click)="expandImage(); $event.stopPropagation()" style="cursor: zoom-in;" />
     </div>
 
     <div class="song-card" *ngIf="post.song">
-      <img class="cover" [src]="getSongUrl(post.song.coverImageUrl)" alt="Cover">
+      <img
+        class="cover"
+        [src]="getImageUrl(post.song.coverImageUrl) || 'assets/images/default-song-cover.png'"
+        alt="Cover del álbum"
+      >
       <div class="song-details">
-        <div class="title">{{ post.song.title }}</div>
-        <div class="artist">{{ post.song.artist }}</div>
+        <div class="title">{{ post.song.title || 'Título Desconocido' }}</div>
+        <div class="artist">{{ post.song.artist || 'Artista Desconocido' }}</div>
       </div>
-      <button class="play-btn" (click)="playSong()">
+      <button class="play-btn" (click)="playSong(); $event.stopPropagation()" aria-label="Reproducir canción">
         <svg class="icon" viewBox="0 0 24 24">
           <path d="M8 5v14l11-7z"/>
         </svg>
       </button>
     </div>
 
-    <!-- Expanded image modal -->
-    <div class="image-modal" *ngIf="expandedImageUrl" (click)="closeImage()">
-      <img [src]="expandedImageUrl" alt="Expanded post image" class="image-full" />
+    <div class="image-modal-overlay" *ngIf="expandedImageUrl" (click)="closeImage()">
+      <div class="image-modal-content">
+        <img [src]="expandedImageUrl" alt="Expanded post image" class="image-full" />
+        <button class="close-modal-btn" (click)="closeImage()" aria-label="Cerrar imagen expandida">&times;</button>
+      </div>
     </div>
 
-    <!-- Interaction Bar -->
     <div class="interaction-bar">
-      <button class="interaction-btn comments" aria-label="View comments">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <button class="interaction-btn comments" aria-label="View comments" (click)="toggleComments()">        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span>{{ post.commentsCount || 0 }}</span>
       </button>
+    </div>
 
+    <div class="comments-section" *ngIf="showComments">
+      <div *ngIf="isLoadingComments" class="loading-comments">
+        <p><i class="fas fa-spinner fa-spin"></i> Cargando comentarios...</p>
+      </div>
+      <div *ngIf="commentsError && !isLoadingComments" class="error-comments">
+        <p>{{ commentsError }} <button (click)="loadComments()" class="retry-btn small">Reintentar</button></p>
+      </div>
+
+      <form [formGroup]="commentForm" (ngSubmit)="onCommentSubmit()" class="new-comment-form">
+        <textarea
+          formControlName="content"
+          placeholder="Escribe un comentario..."
+          rows="2"
+          class="comment-textarea"
+          [ngClass]="{'is-invalid': commentForm.get('content')?.invalid && commentForm.get('content')?.touched}"
+        ></textarea>
+        <div *ngIf="commentForm.get('content')?.hasError('required') && commentForm.get('content')?.touched" class="comment-form-error">
+          El comentario no puede estar vacío.
+        </div>
+        <div *ngIf="commentForm.get('content')?.hasError('maxlength') && commentForm.get('content')?.touched" class="comment-form-error">
+          Máximo 1000 caracteres.
+        </div>
+        <button type="submit" class="submit-comment-btn" [disabled]="commentForm.invalid || isSubmittingComment">
+          <span *ngIf="!isSubmittingComment">Comentar</span>
+          <span *ngIf="isSubmittingComment"><i class="fas fa-spinner fa-spin"></i> Enviando...</span>
+        </button>
+        <div *ngIf="submitCommentError" class="comment-submit-error">
+          {{ submitCommentError }}
+        </div>
+      </form>
+
+      <div class="comments-list" *ngIf="!isLoadingComments && !commentsError">
+        <div *ngIf="comments.length === 0 && !isLoadingComments" class="no-comments">
+          <p>No hay comentarios todavía. ¡Sé el primero!</p>
+        </div>
+        <div *ngFor="let comment of comments" class="comment-item">
+          <img
+            *ngIf="comment.user.profilePictureUrl"
+            [src]="getImageUrl(comment.user.profilePictureUrl)"
+            alt="Avatar"
+            class="comment-author-avatar"
+          />
+          <div *ngIf="!comment.user.profilePictureUrl" class="comment-author-avatar-placeholder">
+            {{ getCommentUserInitials(comment.user) }}
+          </div>
+          <div class="comment-content-wrapper">
+            <div class="comment-author-info">
+              <span class="comment-author-name">{{ comment.user.nickname || comment.user.name }}</span>
+              <span class="comment-timestamp">• {{ comment.createdAt | date:'shortDate' }} a las {{ comment.createdAt | date:'shortTime' }}</span>
+            </div>
+            <p class="comment-text">{{ comment.content }}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

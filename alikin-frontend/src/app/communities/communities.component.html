@@ -47,7 +47,7 @@
           <div class="card-body">
             <h3 class="card-title">{{ community.name || 'Sin nombre' }}</h3>
             <p class="card-description">
-              {{ community.description | slice:0:100 }}{{ community.description && community.description.length > 100 ? '...' : '' || 'Sin descripción disponible.' }}
+              {{ community.description | slice:0:100 }}{{ community.description && community.description.length > 100 ? '...' : '' }}
             </p>
             <div class="card-footer">
               <span class="members-info">
@@ -94,7 +94,7 @@
             <div class="card-body">
               <h3 class="card-title">{{ community.name || 'Sin nombre' }}</h3>
               <p class="card-description">
-                {{ community.description | slice:0:100 }}{{ community.description && community.description.length > 100 ? '...' : '' || 'Sin descripción disponible.' }}
+                {{ community.description | slice:0:100 }}{{ community.description && community.description.length > 100 ? '...' : '' }}
               </p>
               <div class="card-footer">
                 <span class="members-info">

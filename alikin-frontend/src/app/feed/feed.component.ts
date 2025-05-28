@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { PostService } from '../post/post.service';
-import { PostResponse } from '../post/post.model';
-import { Page } from '../shared/models/page.model';
+import { PostService } from '../post/post.service'; // Ajusta la ruta
+import { PostResponse } from '../post/post.model'; // Ajusta la ruta
+import { Page } from '../shared/models/page.model'; // Ajusta la ruta
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, finalize } from 'rxjs/operators'; // Importa finalize
 
 @Component({
   selector: 'app-feed',
@@ -12,44 +12,68 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class FeedComponent implements OnInit, OnDestroy {
   posts: PostResponse[] = [];
-  page = 0;
+  currentPage = 0; // Las páginas suelen ser basadas en 0 para el backend
   pageSize = 10;
   isLoading = false;
   hasMorePosts = true;
+  error: string | null = null;
   private destroy$ = new Subject<void>();
 
-  constructor(private postService: PostService) {}
+  constructor(private postService: PostService) {} // Inyección correcta
 
   ngOnInit(): void {
-    this.loadPosts();
+    this.loadInitialPosts();
   }
 
   @HostListener('window:scroll', ['$event'])
   onScroll(): void {
     if (this.isLoading || !this.hasMorePosts) return;
 
-    const scrollPosition = window.innerHeight + window.scrollY;
-    const documentHeight = document.documentElement.offsetHeight;
+    // Comprobación más robusta para el final del scroll
+    const threshold = 150; // Píxeles desde el fondo para disparar la carga
+    const position = window.innerHeight + window.scrollY;
+    const height = document.body.offsetHeight;
 
-    if (scrollPosition >= documentHeight - 100) {
-      this.loadPosts();
+    if (position >= height - threshold) {
+      this.loadMorePosts();
     }
   }
 
-  loadPosts(): void {
+  loadInitialPosts(): void {
+    this.currentPage = 0;
+    this.posts = [];
+    this.hasMorePosts = true;
+    this.error = null;
+    this.fetchPosts(false);
+  }
+
+  loadMorePosts(): void {
+    if (!this.hasMorePosts || this.isLoading) return;
+    this.currentPage++;
+    this.fetchPosts(true);
+  }
+
+  private fetchPosts(isLoadMore: boolean = false): void {
     this.isLoading = true;
-    this.postService.getPosts(this.page, this.pageSize)
-      .pipe(takeUntil(this.destroy$))
+    this.postService.getGeneralFeedPosts(this.currentPage, this.pageSize)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.isLoading = false) // Asegura que isLoading se ponga a false
+      )
       .subscribe({
-        next: (page: Page<PostResponse>) => {
-          this.posts = [...this.posts, ...page.content];
-          this.hasMorePosts = !page.last;
-          this.page++;
-          this.isLoading = false;
+        next: (pageData: Page<PostResponse>) => {
+          if (isLoadMore) {
+            this.posts = [...this.posts, ...pageData.content];
+          } else {
+            this.posts = pageData.content;
+          }
+          this.hasMorePosts = !pageData.last;
+          // this.currentPage ya se incrementó en loadMorePosts o se reseteó en loadInitialPosts
         },
-        error: (error) => {
-          console.error('Error al cargar posts:', error);
-          this.isLoading = false;
+        error: (err) => {
+          console.error('Error al cargar posts del feed:', err);
+          this.error = 'No se pudieron cargar las publicaciones.';
+          // No resetear hasMorePosts aquí, podría ser un error temporal
         }
       });
   }

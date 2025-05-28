@@ -1,41 +1,114 @@
-<div class="song-upload-container">
-  <form [formGroup]="songForm" (ngSubmit)="onSubmit()" class="song-form">
-    <h2>Subir Canción</h2>
+<div class="songs-page-container">
+  <header class="songs-header">
+    <div class="search-songs-container">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" class="search-songs-input" placeholder="Buscar canciones, artistas, álbumes..." [formControl]="searchControl">
+    </div>
+    <button class="upload-song-btn accent-btn" (click)="toggleUploadForm()">
+      <i class="fas fa-plus-circle"></i>
+      <span *ngIf="!showUploadForm">Subir Canción</span>
+      <span *ngIf="showUploadForm">Cancelar Subida</span>
+    </button>
+  </header>
 
-    <div *ngIf="error" class="error">{{ error }}</div>
+  <div class="song-upload-form-section" *ngIf="showUploadForm">
+    <div class="song-upload-container">
+      <form [formGroup]="songForm" (ngSubmit)="onSubmitUpload()" class="song-form">
+        <div class="form-header">
+          <h2>Subir Nueva Canción</h2>
+        </div>
 
-    <label>
-      Título *
-      <input type="text" formControlName="title" placeholder="Título de la canción" />
-    </label>
+        <div *ngIf="uploadError" class="error-message form-error">{{ uploadError }}</div>
+        <div *ngIf="uploadSuccess" class="success-message form-success">{{ uploadSuccess }}</div>
 
-    <label>
-      Artista *
-      <input type="text" formControlName="artist" placeholder="Nombre del artista" />
-    </label>
+        <label>
+          Título *
+          <input type="text" formControlName="title" placeholder="Título de la canción" />
+          <div *ngIf="songForm.get('title')?.invalid && songForm.get('title')?.touched" class="field-error">
+            <small *ngIf="songForm.get('title')?.errors?.['required']">El título es obligatorio.</small>
+          </div>
+        </label>
 
-    <label>
-      Álbum
-      <input type="text" formControlName="album" placeholder="Álbum" />
-    </label>
+        <label>
+          Artista *
+          <input type="text" formControlName="artist" placeholder="Nombre del artista" />
+          <div *ngIf="songForm.get('artist')?.invalid && songForm.get('artist')?.touched" class="field-error">
+            <small *ngIf="songForm.get('artist')?.errors?.['required']">El artista es obligatorio.</small>
+          </div>
+        </label>
 
-    <label>
-      Género *
-      <select formControlName="genre">
-        <option *ngFor="let g of genres" [value]="g">{{ g }}</option>
-      </select>
-    </label>
+        <label>
+          Álbum
+          <input type="text" formControlName="album" placeholder="Álbum (opcional)" />
+        </label>
 
-    <label>
-      Archivo de canción (.mp3) *
-      <input type="file" (change)="onSongSelected($event)" accept=".mp3,audio/*" />
-    </label>
+        <label>
+          Género *
+          <select formControlName="genre">
+            <option value="" disabled>Selecciona un género</option>
+            <option *ngFor="let g of genres" [value]="g">{{ g }}</option>
+          </select>
+          <div *ngIf="songForm.get('genre')?.invalid && songForm.get('genre')?.touched" class="field-error">
+            <small *ngIf="songForm.get('genre')?.errors?.['required']">El género es obligatorio.</small>
+          </div>
+        </label>
 
-    <label>
-      Imagen de portada (opcional)
-      <input type="file" (change)="onCoverSelected($event)" accept="image/*" />
-    </label>
+        <label>
+          Archivo de canción (.mp3, .wav, .ogg) *
+          <input type="file" (change)="onSongSelected($event)" accept=".mp3,.wav,.ogg,audio/*" />
+          <small *ngIf="selectedSongFile" class="file-selected-info">Archivo seleccionado: {{ selectedSongFile.name }}</small>
+        </label>
 
-    <button type="submit" [disabled]="isSubmitting">Subir</button>
-  </form>
+        <label>
+          Imagen de portada (opcional)
+          <input type="file" (change)="onCoverSelected($event)" accept="image/*" />
+          <img *ngIf="coverPreviewUrl" [src]="coverPreviewUrl" alt="Vista previa portada" class="cover-preview">
+        </label>
+
+        <button type="submit" class="submit-upload-btn accent-btn" [disabled]="songForm.invalid || !selectedSongFile || isSubmittingUpload">
+          <span *ngIf="!isSubmittingUpload">Subir Canción</span>
+          <span *ngIf="isSubmittingUpload">Subiendo... <i class="fas fa-spinner fa-spin"></i></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="songs-list-container" *ngIf="!showUploadForm">
+    <div *ngIf="isLoadingSongs && filteredSongs.length === 0" class="loading-indicator">
+      <p><i class="fas fa-spinner fa-spin"></i> Cargando canciones...</p>
+    </div>
+    <div *ngIf="!isLoadingSongs && filteredSongs.length === 0 && !listError" class="empty-list-message">
+      <p *ngIf="allSongs.length === 0 && !searchControl.value">Aún no hay canciones en la plataforma. ¡Sube la primera!</p>
+      <p *ngIf="allSongs.length > 0 && searchControl.value">No se encontraron canciones para "{{ searchControl.value }}".</p>
+    </div>
+    <div *ngIf="listError && filteredSongs.length === 0" class="error-message">
+      <p>{{ listError }}</p>
+      <button (click)="loadInitialSongs()" class="retry-btn accent-btn">Reintentar</button>
+    </div>
+
+    <div class="song-grid" *ngIf="filteredSongs.length > 0">
+      <div class="song-item-card" *ngFor="let song of filteredSongs" (click)="playSongFromList(song)">
+        <div class="song-cover-container">
+          <img [src]="getSongCoverUrl(song.coverImageUrl)" [alt]="song.title" class="song-cover-art">
+          <div class="play-overlay">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="song-info">
+          <h4 class="song-title" title="{{song.title}}">{{ song.title }}</h4>
+          <p class="song-artist" title="{{song.artist}}">{{ song.artist }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="hasMoreSongs && !isLoadingSongs && filteredSongs.length > 0" class="load-more-songs-container">
+      <button (click)="loadMoreSongs()" class="load-more-btn" [disabled]="isLoadingSongs">
+        <span *ngIf="!isLoadingSongs">Cargar más canciones</span>
+        <span *ngIf="isLoadingSongs"><i class="fas fa-spinner fa-spin"></i> Cargando...</span>
+      </button>
+    </div>
+    <div *ngIf="isLoadingSongs && filteredSongs.length > 0" class="loading-more-indicator">
+      <i class="fas fa-spinner fa-spin"></i> Cargando más...
+    </div>
+  </div>
 </div>

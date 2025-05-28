@@ -1,0 +1,78 @@
+<div class="community-detail-page" *ngIf="!isLoading && community">
+  <aside class="community-sidebar">
+    <div class="community-header">
+      <img *ngIf="community?.imageUrl" [src]="getFullImageUrl(community!.imageUrl)" [alt]="community!.name" class="community-avatar">
+      <div *ngIf="!community?.imageUrl" class="community-avatar-placeholder">
+        {{ getCommunityInitials(community?.name) }}
+      </div>
+      <h3>{{ community?.name }}</h3>
+      <p class="role-indicator">Tu rol: {{ currentUserRole }}</p>
+    </div>
+
+    <nav class="community-menu">
+      <ul>
+        <li (click)="setActiveSection('feed')" [class.active]="activeSection === 'feed'">
+          <i class="fas fa-rss"></i> Feed Principal
+        </li>
+        <li (click)="setActiveSection('members')" [class.active]="activeSection === 'members'">
+          <i class="fas fa-users"></i> Miembros
+        </li>
+        <li *ngIf="currentUserRole === 'LEADER'" (click)="setActiveSection('settings')" [class.active]="activeSection === 'settings'">
+          <i class="fas fa-cog"></i> Opciones del Servidor
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="community-main-content">
+    <div class="main-content-header">
+      <button class="back-button" (click)="navigateToCommunities()">
+        <i class="fas fa-arrow-left"></i> Volver a Comunidades
+      </button>
+      <button class="delete-community-button danger" *ngIf="currentUserRole === 'LEADER'" (click)="openDeleteConfirmationModal()">
+        <i class="fas fa-trash-alt"></i> Eliminar Comunidad
+      </button>
+    </div>
+
+    <div class="active-section-content">
+      <div *ngIf="activeSection === 'feed' && communityId">
+        <app-community-feed
+          [communityId]="communityId"
+          [currentUserRole]="currentUserRole">
+        </app-community-feed>
+      </div>
+
+      <div *ngIf="activeSection === 'members' && communityId">
+        <h4>Miembros de la Comunidad</h4>
+        <app-community-members
+          [communityId]="communityId"
+          [currentUserRole]="currentUserRole">
+        </app-community-members>
+      </div>
+
+      <div *ngIf="activeSection === 'settings' && currentUserRole === 'LEADER'">
+        <h4>Opciones del Servidor (Próximamente para LEADER)</h4>
+        <p>Formulario para editar nombre, descripción, imagen, etc.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div *ngIf="isLoading" class="loading-indicator">
+  <p>Cargando detalles de la comunidad...</p>
+</div>
+<div *ngIf="!isLoading && error" class="error-message-container">
+  <p>{{ error }}</p>
+  <button (click)="navigateToCommunities()">Volver a Comunidades</button>
+</div>
+<div *ngIf="!isLoading && !community && !error" class="not-found-container">
+  <p>Comunidad no disponible.</p>
+  <button (click)="navigateToCommunities()">Volver a Comunidades</button>
+</div>
+
+<app-delete-community-modal
+  *ngIf="showDeleteModal && community"
+  [communityName]="community!.name"
+  (close)="closeDeleteConfirmationModal()"
+  (confirmDelete)="confirmCommunityDeletion($event)">
+</app-delete-community-modal>

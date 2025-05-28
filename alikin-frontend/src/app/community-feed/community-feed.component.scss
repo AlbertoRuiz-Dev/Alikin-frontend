@@ -1,0 +1,732 @@
+$theme-bg-primary: #121212;
+$theme-bg-secondary: #181818;
+$theme-bg-tertiary: #282828;
+$border-primary-darktheme: #353535;
+$text-primary: #ffffff;
+$text-secondary: #b3b3b3;
+$text-muted: #888888;
+$accent-orange: #ff4500;
+$accent-orange-hover: darken($accent-orange, 8%);
+$status-error: #e74c3c;
+$accent-green: #1DB954;
+$accent-green-hover: darken($accent-green, 8%);
+$white: #ffffff;
+$black: #000000;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+
+.community-feed-wrapper {
+  padding-bottom: 90px;
+  box-sizing: border-box;
+}
+
+.new-post-bar {
+  background-color: $theme-bg-secondary;
+  padding: 12px 15px;
+  border-radius: 25px;
+  border: 1px solid $border-primary-darktheme;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 600px;
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.new-post-form-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.new-post-textarea {
+  flex-grow: 1;
+  min-height: 24px;
+  max-height: 120px;
+  padding: 8px 15px;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: $text-primary;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: none;
+  overflow-y: auto;
+  line-height: 1.5;
+  margin-bottom: 10px;
+
+  &:focus {
+    outline: none;
+  }
+  &::placeholder {
+    color: $text-muted;
+  }
+  &:disabled {
+    color: gray;
+    cursor: not-allowed;
+  }
+}
+
+.controls-and-submit-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.post-attachments {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .attach-btn {
+    background-color: transparent;
+    color: $text-muted;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: color 0.2s ease, background-color 0.2s ease;
+
+    &:hover {
+      color: $accent-orange;
+      background-color: $theme-bg-tertiary;
+    }
+  }
+}
+
+.song-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+
+  .song-select {
+    background-color: $theme-bg-tertiary;
+    color: $text-primary;
+    border: 1px solid $border-primary-darktheme;
+    border-radius: 20px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 30px;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23b3b3b3" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 18px;
+
+    &:focus {
+      outline: none;
+      border-color: $accent-orange;
+    }
+
+    option {
+      background-color: $theme-bg-tertiary;
+      color: $text-primary;
+    }
+  }
+
+  .loading-songs-inline {
+    margin-left: 5px;
+    color: $text-muted;
+    i {
+      font-size: 1rem;
+    }
+  }
+}
+
+.submit-post-btn {
+  background-color: $accent-orange;
+  color: $white;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    background-color: $accent-orange-hover;
+  }
+  &:disabled {
+    background-color: $theme-bg-tertiary;
+    color: $text-muted;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  i.fa-spinner {
+    font-size: 1rem;
+  }
+}
+
+.previews-and-errors-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding-left: 5px;
+}
+
+.previews-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.image-preview-post, .song-preview-post {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background-color: $theme-bg-tertiary;
+  border: 1px solid $border-primary-darktheme;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  color: $text-secondary;
+  max-width: 150px;
+
+  img {
+    display: block;
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    object-fit: cover;
+  }
+  i.fa-check-circle {
+    color: $accent-green;
+    font-size: 1rem;
+  }
+  span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .remove-preview-btn {
+    background-color: rgba($black, 0.5);
+    color: $white;
+    border: none;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+    line-height: 15px;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: $status-error;
+    }
+  }
+}
+.small-error, .error-message {
+  font-size: 0.8rem;
+  color: $status-error;
+  text-align: left;
+  & small { color: $status-error; }
+}
+.api-error-message.small-error {
+  color: $status-error;
+}
+
+.post-list-container {
+  overflow-y: visible;
+  padding-right: 10px;
+  padding-bottom: 20px; // Mantenemos este padding para el contenido interno
+
+  .loading-indicator-posts, .empty-feed-message, .error-loading-posts, .loading-more-indicator {
+    text-align: center;
+    padding: 25px 20px;
+    color: $text-secondary;
+    font-style: italic;
+    font-size: 1.1rem;
+    i.fa-spinner { margin-right: 8px; }
+  }
+
+  .error-loading-posts {
+    color: $status-error;
+    button.retry-btn {
+      margin-top: 15px;
+      padding: 8px 18px;
+      background-color: $accent-green;
+      color: $white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      &:hover {
+        background-color: $accent-green-hover;
+      }
+    }
+  }
+}
+
+.post-item {
+  background-color: $theme-bg-secondary;
+  padding: 18px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid $border-primary-darktheme;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    border-color: lighten($border-primary-darktheme, 8%);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+
+  &.highlighted-post {
+    border-left: 4px solid $accent-orange;
+    background-color: lighten($theme-bg-secondary, 3%);
+  }
+
+  .post-author {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .author-avatar, .author-avatar-placeholder {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 12px;
+      background-color: $theme-bg-tertiary;
+      color: $text-primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      object-fit: cover;
+      border: 1px solid $border-primary-darktheme;
+    }
+    .author-info {
+      display: flex;
+      flex-direction: column;
+      .author-name {
+        color: $text-primary;
+        font-weight: 600;
+        font-size: 0.95rem;
+        &:hover { text-decoration: underline; cursor: pointer; }
+      }
+      .post-timestamp {
+        color: $text-muted;
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .post-content {
+    p {
+      margin-top: 0;
+      margin-bottom: 12px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: $text-secondary;
+      font-size: 0.95rem;
+    }
+    .read-more-btn {
+      background: none;
+      border: none;
+      color: $accent-orange;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0;
+      &:hover { text-decoration: underline; }
+    }
+
+    .post-image-attachment {
+      max-width: 100%;
+      max-height: 480px;
+      border-radius: 6px;
+      margin-top: 12px;
+      display: block;
+      cursor: zoom-in;
+      border: 1px solid $border-primary-darktheme;
+    }
+    .post-song-attachment {
+      margin-top: 12px;
+      padding: 12px 15px;
+      background-color: $theme-bg-tertiary;
+      border: 1px solid $border-primary-darktheme;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: $text-secondary;
+      .song-icon {
+        color: $accent-green;
+        font-size: 1.5rem;
+      }
+      .song-details {
+        display: flex;
+        flex-direction: column;
+        .song-title {
+          color: $text-primary;
+          font-weight: 500;
+        }
+        .song-artist {
+          font-size: 0.85rem;
+        }
+      }
+      .play-btn {
+        margin-left: auto;
+        background-color: $accent-green;
+        color: $white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: darken($accent-green, 8%);
+        }
+        .icon {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+
+  .post-interactions {
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid $border-primary-darktheme;
+    color: $text-muted;
+    font-size: 0.9rem;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+
+    span, button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      color: $text-muted;
+      transition: color 0.2s ease;
+
+      &:hover { color: $text-primary; }
+      i { font-size: 1.1rem; }
+    }
+    button.highlight-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      &.active i.fas.fa-star, i.fas.fa-star {
+        color: $accent-orange;
+      }
+    }
+    .interaction-btn.comments {
+    }
+  }
+
+  .comments-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid $border-primary-darktheme;
+
+    .loading-comments,
+    .error-comments,
+    .no-comments {
+      text-align: center;
+      padding: 20px 0;
+      color: $text-muted;
+      font-style: italic;
+      font-size: 0.95rem;
+
+      .retry-btn.small {
+        margin-left: 10px;
+        padding: 4px 10px;
+        font-size: 0.85em;
+        background-color: $theme-bg-tertiary;
+        color: $text-secondary;
+        border: 1px solid $border-primary-darktheme;
+        border-radius: 15px;
+        cursor: pointer;
+        &:hover {
+          background-color: lighten($theme-bg-tertiary, 5%);
+          color: $text-primary;
+        }
+      }
+    }
+
+    .error-comments {
+      color: $status-error;
+    }
+  }
+
+  .new-comment-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+    position: relative;
+    max-width: 700px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+
+    .comment-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: $theme-bg-tertiary;
+      color: $text-primary;
+      border: 1px solid $border-primary-darktheme;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      resize: vertical;
+      min-height: 70px;
+      line-height: 1.6;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+      &::placeholder {
+        color: $text-muted;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $accent-orange;
+        box-shadow: 0 0 0 3px rgba($accent-orange, 0.2);
+      }
+
+      &.is-invalid {
+        border-color: $status-error;
+        &:focus {
+          box-shadow: 0 0 0 3px rgba($status-error, 0.2);
+        }
+      }
+    }
+
+    .comment-form-error,
+    .comment-submit-error {
+      font-size: 0.8rem;
+      color: $status-error;
+      padding: 4px 0 0 4px;
+      min-height: 1.2em;
+    }
+    .comment-submit-error {
+      margin-top: 6px;
+    }
+
+
+    .submit-comment-btn {
+      align-self: flex-end;
+      margin-top: 12px;
+      padding: 10px 24px;
+      background-color: $accent-orange;
+      color: $white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+
+      &:hover:not(:disabled) {
+        background-color: $accent-orange-hover;
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        background-color: $theme-bg-tertiary;
+        color: $text-muted;
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+      i.fa-spinner {
+        margin-right: 6px;
+      }
+    }
+  }
+
+  .comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .comment-item {
+      display: flex;
+      gap: 12px;
+
+      .comment-author-avatar,
+      .comment-author-avatar-placeholder {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        object-fit: cover;
+        background-color: $theme-bg-tertiary;
+        color: $text-primary;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1rem;
+        border: 1px solid $border-primary-darktheme;
+      }
+
+      .comment-content-wrapper {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        padding: 4px 0;
+
+        .comment-author-info {
+          display: flex;
+          align-items: baseline;
+          margin-bottom: 5px;
+
+          .comment-author-name {
+            font-weight: 600;
+            color: $text-primary;
+            font-size: 0.9rem;
+            margin-right: 8px;
+          }
+          .comment-timestamp {
+            font-size: 0.75rem;
+            color: $text-muted;
+          }
+        }
+        .comment-text {
+          font-size: 0.9rem;
+          line-height: 1.65;
+          color: $text-secondary;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+        }
+      }
+    }
+  }
+}
+
+
+.load-more-container {
+  text-align: center;
+  margin-top: 25px;
+  padding-bottom: 20px;
+  .load-more-btn {
+    padding: 12px 30px;
+    background-color: $accent-green;
+    color: $white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease;
+    &:hover:not(:disabled) { background-color: $accent-green-hover; }
+    &:disabled {
+      background-color: $theme-bg-tertiary;
+      color: $text-muted;
+      cursor: not-allowed;
+    }
+    i.fa-spinner { margin-right: 8px; }
+  }
+}
+
+.image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($black, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1070;
+  cursor: zoom-out;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.image-modal-content {
+  position: relative;
+  img.image-full {
+    display: block;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 40px);
+    border-radius: 4px;
+    box-shadow: 0 0 40px rgba($black,0.7);
+  }
+
+  .close-modal-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba($theme-bg-secondary, 0.8);
+    color: $text-primary;
+    border: 1px solid $border-primary-darktheme;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    line-height: 38px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba($black,0.3);
+    z-index: 1071;
+
+    &:hover {
+      background: $theme-bg-secondary;
+    }
+  }
+}
+
+$scrollbar-track-color: $theme-bg-primary;
+$scrollbar-thumb-color: $theme-bg-tertiary;
+$scrollbar-thumb-hover-color: lighten($scrollbar-thumb-color, 10%);
+$scrollbar-width: 6px;
+
+.post-list-container {
+  &::-webkit-scrollbar {
+    width: $scrollbar-width;
+    height: $scrollbar-width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $scrollbar-track-color;
+    border-radius: $scrollbar-width;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $scrollbar-thumb-color;
+    border-radius: $scrollbar-width;
+    border: 1px solid $scrollbar-track-color;
+
+    &:hover {
+      background-color: $scrollbar-thumb-hover-color;
+    }
+  }
+}
