@@ -16,4 +16,6 @@ export class MusicPlayerComponent implements OnInit {
   ngOnInit(): void {
     document.body.style.backgroundColor = "#121212";
   }
+
+  protected readonly Infinity = Infinity;
 }

@@ -1,7 +1,21 @@
-<div class="feed-container">
-  <div class="post-list">
-    <app-post-item *ngFor="let post of posts" [post]="post"></app-post-item>
+<div class="feed-container"> <div class="post-list">
+  <app-post-item *ngFor="let post of posts; trackBy: trackByPostId" [post]="post"></app-post-item>
+</div>
+
+  <div class="loading" *ngIf="_isLoading">
+    <i class="fas fa-spinner fa-spin"></i> Cargando más posts...
   </div>
-  <div class="loading" *ngIf="isLoading">Cargando más posts...</div>
-  <div class="no-more-posts" *ngIf="!hasMorePosts && !isLoading">No hay más posts</div>
+
+  <div class="no-more-posts" *ngIf="!_hasMorePosts && !_isLoading && posts.length > 0">
+    Has llegado al final. ¡No hay más posts por ahora!
+  </div>
+
+  <div class="no-posts" *ngIf="posts.length === 0 && !_isLoading && !error">
+    <p>Aún no hay posts en este feed. ¡Sé el primero en publicar!</p>
+  </div>
+
+  <div class="feed-error" *ngIf="error && !_isLoading">
+    <p>{{ error }}</p>
+    <button (click)="retryLoad()" class="retry-btn">Reintentar</button>
+  </div>
 </div>

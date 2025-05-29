@@ -87,3 +87,32 @@ export class PostService {
   // Si necesitas este método aquí por alguna razón específica, asegúrate de que tenga sentido en el contexto del frontend.
   // Por ahora, lo omito, asumiendo que el userId se obtiene de otra fuente (ej. AuthService).
 }
+
+export interface SpringPage<T> {
+  content: T[];
+  pageable: {
+    sort: {
+      sorted: boolean;
+      unsorted: boolean;
+      empty: boolean;
+    };
+    offset: number;
+    pageNumber: number;
+    pageSize: number;
+    paged: boolean;
+    unpaged: boolean;
+  };
+  last: boolean;
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number; // Número de la página actual (basado en 0)
+  sort: {
+    sorted: boolean;
+    unsorted: boolean;
+    empty: boolean;
+  };
+  first: boolean;
+  numberOfElements: number;
+  empty: boolean;
+}

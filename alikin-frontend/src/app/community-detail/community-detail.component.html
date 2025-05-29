@@ -20,6 +20,9 @@
         <li *ngIf="currentUserRole === 'LEADER'" (click)="setActiveSection('settings')" [class.active]="activeSection === 'settings'">
           <i class="fas fa-cog"></i> Opciones del Servidor
         </li>
+        <li *ngIf="currentUserRole === 'LEADER'" (click)="setActiveSection('radioSettings')" [class.active]="activeSection === 'radioSettings'">
+          <i class="fas fa-broadcast-tower"></i> Radio Comunidad
+        </li>
       </ul>
     </nav>
   </aside>
@@ -34,6 +37,23 @@
       </button>
     </div>
 
+    <div *ngIf="community?.radioPlaylist && community.radioPlaylist?.streamUrl" class="community-active-radio-player">
+      <div class="radio-player-content">
+        <img [src]="community.radioPlaylist?.logoUrl || 'assets/icons/radio.svg'"
+             onError="this.style.display='none'; this.src='assets/icons/radio.svg'"
+             alt="Logo Radio"
+             class="radio-player-logo">
+        <div class="radio-player-info">
+          <span class="radio-player-label">EN VIVO EN LA COMUNIDAD:</span>
+          <strong class="radio-player-name">{{ community.radioPlaylist?.name || 'Radio sin nombre' }}</strong>
+        </div>
+      </div>
+      <button (click)="toggleCommunityRadioPlayback()" class="radio-player-button"
+              [title]="isThisCommunityRadioCurrentlyPlaying ? 'Pausar radio de la comunidad' : 'Reproducir radio de la comunidad'">
+        <i class="fas" [class.fa-play]="!isThisCommunityRadioCurrentlyPlaying" [class.fa-pause]="isThisCommunityRadioCurrentlyPlaying"></i>
+        <span>{{ isThisCommunityRadioCurrentlyPlaying ? 'Pausar' : 'Reproducir' }}</span>
+      </button>
+    </div>
     <div class="active-section-content">
       <div *ngIf="activeSection === 'feed' && communityId">
         <app-community-feed
@@ -50,16 +70,106 @@
         </app-community-members>
       </div>
 
-      <div *ngIf="activeSection === 'settings' && currentUserRole === 'LEADER'">
-        <h4>Opciones del Servidor (Próximamente para LEADER)</h4>
-        <p>Formulario para editar nombre, descripción, imagen, etc.</p>
+      <div *ngIf="activeSection === 'settings' && currentUserRole === 'LEADER' && communitySettingsForm" class="community-settings-form-container">
+        <h4>Opciones del Servidor</h4>
+        <form [formGroup]="communitySettingsForm" (ngSubmit)="onCommunitySettingsSubmit()">
+          <div class="form-group">
+            <label for="communityNameEdit">Nombre de la Comunidad</label>
+            <input type="text" id="communityNameEdit" formControlName="name" class="form-control">
+            <div *ngIf="communitySettingsForm.get('name')?.invalid && (communitySettingsForm.get('name')?.dirty || communitySettingsForm.get('name')?.touched)" class="form-error">
+              <small *ngIf="communitySettingsForm.get('name')?.errors?.['required']">El nombre es requerido.</small>
+              <small *ngIf="communitySettingsForm.get('name')?.errors?.['minlength']">Mínimo 3 caracteres.</small>
+              <small *ngIf="communitySettingsForm.get('name')?.errors?.['maxlength']">Máximo 100 caracteres.</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="communityDescriptionEdit">Descripción</label>
+            <textarea id="communityDescriptionEdit" formControlName="description" class="form-control" rows="4"></textarea>
+            <div *ngIf="communitySettingsForm.get('description')?.invalid && (communitySettingsForm.get('description')?.dirty || communitySettingsForm.get('description')?.touched)" class="form-error">
+              <small *ngIf="communitySettingsForm.get('description')?.errors?.['maxlength']">Máximo 500 caracteres.</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="communityImageFileEdit">Imagen de la Comunidad (opcional)</label>
+            <div class="image-upload-preview">
+              <img [src]="communityImagePreviewUrl || 'assets/images/default-community-placeholder.png'" alt="Vista previa de imagen" class="image-preview-settings">
+              <input type="file" id="communityImageFileEdit" (change)="onCommunityImageSelected($event)" accept="image/png, image/jpeg, image/gif" class="form-control-file">
+              <button type="button" *ngIf="communityImagePreviewUrl && (selectedCommunityImageFile || community?.imageUrl)" (click)="clearCommunityImageSelection(false)" class="btn-clear-image-settings">Quitar Imagen</button>
+            </div>
+            <small class="form-text text-muted">Sube JPG, PNG o GIF. Máx 2MB.</small>
+          </div>
+          <div *ngIf="settingsSubmitSuccess" class="form-success-message">
+            {{ settingsSubmitSuccess }}
+          </div>
+          <div *ngIf="settingsSubmitError" class="form-error-message">
+            {{ settingsSubmitError }}
+          </div>
+          <button type="submit" class="btn-submit-settings" [disabled]="communitySettingsForm.invalid || isSubmittingSettings">
+            <span *ngIf="!isSubmittingSettings">Guardar Cambios</span>
+            <span *ngIf="isSubmittingSettings"><i class="fas fa-spinner fa-spin"></i> Guardando...</span>
+          </button>
+        </form>
+      </div>
+
+      <div *ngIf="activeSection === 'radioSettings' && currentUserRole === 'LEADER'" class="community-radio-settings">
+        <h4>Configurar Radio de la Comunidad</h4>
+        <p>Busca y selecciona una estación de radio para esta comunidad.</p>
+        <div class="radio-search-form">
+          <input type="text" [(ngModel)]="radioSearchTerm" placeholder="Buscar estación de radio..." (keyup.enter)="searchRadioStations()" class="form-control">
+          <button (click)="searchRadioStations()" [disabled]="isLoadingRadioSearch" class="btn-primary">
+            <span *ngIf="!isLoadingRadioSearch">Buscar</span>
+            <span *ngIf="isLoadingRadioSearch"><i class="fas fa-spinner fa-spin"></i> Buscando...</span>
+          </button>
+        </div>
+        <div *ngIf="isLoadingRadioSearch && radioSearchResults.length === 0" class="loading-indicator small-loader">
+          <i class="fas fa-spinner fa-spin"></i> Buscando estaciones...
+        </div>
+        <div class="radio-search-results" *ngIf="radioSearchResults.length > 0 && !isLoadingRadioSearch">
+          <h5>Resultados de la Búsqueda:</h5>
+          <ul>
+            <li *ngFor="let station of radioSearchResults" (click)="selectRadioStation(station)" [class.selected]="selectedRadioStation?.streamUrl === station.streamUrl">
+              <img [src]="station.favicon" onError="this.style.display='none'; this.src='assets/icons/radio.svg'" alt="" class="station-favicon">
+              <span class="station-name">{{ station.name }}</span>
+              <span class="station-details" *ngIf="station.country || station.tags">({{ station.country }}<span *ngIf="station.country && station.tags"> - </span>{{ station.tags }})</span>
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="!isLoadingRadioSearch && radioSearchResults.length === 0 && radioSearchTerm" class="no-results-message">
+          No se encontraron estaciones para "{{radioSearchTerm}}".
+        </div>
+        <div *ngIf="selectedRadioStation" class="selected-radio-info">
+          <p><strong>Seleccionada:</strong> {{ selectedRadioStation.name }}</p>
+          <p><small>URL: {{ selectedRadioStation.streamUrl }}</small></p>
+          <button (click)="saveCommunityRadio()" [disabled]="isSavingRadio" class="btn-submit-settings">
+            <span *ngIf="!isSavingRadio">Establecer como Radio</span>
+            <span *ngIf="isSavingRadio"><i class="fas fa-spinner fa-spin"></i> Guardando...</span>
+          </button>
+        </div>
+        <div *ngIf="radioSaveError" class="form-error-message">{{ radioSaveError }}</div>
+        <div *ngIf="radioSaveSuccess" class="form-success-message">{{ radioSaveSuccess }}</div>
+
+        <div *ngIf="community?.radioPlaylist && community?.radioPlaylist?.streamUrl" class="current-community-radio">
+          <hr>
+          <h5>Radio Actual de la Comunidad:</h5>
+          <div class="current-radio-display">
+            <img [src]="community.radioPlaylist?.logoUrl || 'assets/icons/radio.svg'" onError="this.style.display='none'; this.src='assets/icons/radio.svg'" alt="Logo Radio" class="station-favicon current">            <div class="current-radio-text">
+            <strong>{{ community.radioPlaylist?.name || 'Radio sin nombre' }}</strong>
+              <button (click)="playCommunityRadio()" class="play-community-radio-btn">
+                <i class="fas fa-play"></i> Reproducir Radio
+              </button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="community && (!community.radioPlaylist || !community.radioPlaylist.streamUrl) && activeSection === 'radioSettings'" class="no-results-message">
+          <p>Aún no se ha configurado una radio para esta comunidad.</p>
+        </div>
       </div>
     </div>
   </main>
 </div>
 
 <div *ngIf="isLoading" class="loading-indicator">
-  <p>Cargando detalles de la comunidad...</p>
+  <p><i class="fas fa-spinner fa-spin"></i> Cargando detalles de la comunidad...</p>
 </div>
 <div *ngIf="!isLoading && error" class="error-message-container">
   <p>{{ error }}</p>

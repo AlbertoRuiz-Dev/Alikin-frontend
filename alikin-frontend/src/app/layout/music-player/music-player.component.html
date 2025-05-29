@@ -22,7 +22,7 @@
     </div>
 
     <!-- Progreso justo debajo -->
-    <div class="progress-bar-container">
+    <div *ngIf="musicService.duration != Infinity" class="progress-bar-container" >
       <span>{{ musicService.formatTime(musicService.currentTime) }}</span>
       <input
         type="range"
@@ -32,7 +32,8 @@
         [value]="musicService.currentTime"
         (input)="musicService.seekTo($event)"
       />
-      <span>{{ musicService.formatTime(musicService.duration) }}</span>
+      <span>{{ musicService.formatTime(musicService.duration) }} ""</span>
+
     </div>
   </div>
 

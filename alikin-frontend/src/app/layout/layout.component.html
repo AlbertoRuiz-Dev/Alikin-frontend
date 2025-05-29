@@ -6,10 +6,16 @@
     <header class="navbar">
       <app-navbar></app-navbar>
     </header>
-    <main class="feed-area" [class.feed-area--feed-style]="isFeedRouteActive">
-      <div class="feed-wrapper" [class.feed-wrapper--feed-style]="isFeedRouteActive">
-        <router-outlet></router-outlet>
-      </div>
+    <main class="feed-area"
+          [class.feed-area--feed-style]="isFeedRouteActive"
+          infiniteScroll
+          [infiniteScrollDistance]="2"
+          [infiniteScrollThrottle]="300"
+          (scrolled)="onFeedAreaScrolled()"
+          [infiniteScrollDisabled]="isFeedLoading || !feedHasMorePosts"
+          [scrollWindow]="false"> <div class="feed-wrapper" [class.feed-wrapper--feed-style]="isFeedRouteActive">
+      <router-outlet></router-outlet>
+    </div>
     </main>
     <footer class="music-player">
       <app-music-player></app-music-player>

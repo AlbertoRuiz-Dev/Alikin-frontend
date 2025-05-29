@@ -6,6 +6,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { MusicPlayerComponent } from './music-player/music-player.component';
 import { RouterModule } from '@angular/router';
 import {FormsModule} from "@angular/forms";
+import {InfiniteScrollModule} from "ngx-infinite-scroll";
 
 @NgModule({
   declarations: [
@@ -18,6 +19,8 @@ import {FormsModule} from "@angular/forms";
     CommonModule,
     RouterModule,
     FormsModule,
+    InfiniteScrollModule,
+
   ],
   exports: [
     LayoutComponent

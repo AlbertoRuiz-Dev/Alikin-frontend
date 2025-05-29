@@ -115,23 +115,35 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
         post.uiIsLoadingComments = false;
       },
       error: (err) => {
-        console.error('Error loading comments for post ' + post.id, err);
         post.uiCommentsError = 'No se pudieron cargar los comentarios.';
         post.uiIsLoadingComments = false;
       }
     });
   }
 
+
   onCommentSubmit(post: PostResponse): void {
     const form = this.commentForms.get(post.id);
-    if (!form || form.invalid || !post.id) {
-      form?.markAllAsTouched();
+
+    if (!form) {
       return;
     }
 
+    if (!post.id) {
+      // Considera no llamar a form.markAllAsTouched() si form puede ser null aquí.
+      // Si !form ya hizo return, esta comprobación de post.id es segura.
+      form.markAllAsTouched(); // Opcional, dependiendo de si quieres marcar el form si solo falta el post.id
+      return;
+    }
+
+    if (form.invalid) {
+      form.markAllAsTouched();
+      return;
+    }
     post.uiIsSubmittingComment = true;
     post.uiSubmitCommentError = null;
     const commentData: CommentRequest = { content: form.value.content };
+
 
     this.commentService.addComment(post.id, commentData).subscribe({
       next: (newComment: AppComment) => {
@@ -144,7 +156,6 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
         post.uiIsSubmittingComment = false;
       },
       error: (err) => {
-        console.error('Error submitting comment for post ' + post.id, err);
         post.uiSubmitCommentError = err.error?.message || 'Error al enviar. Inténtalo de nuevo.';
         post.uiIsSubmittingComment = false;
       }
@@ -175,13 +186,11 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
           this.availableSongs = response;
         }
         else {
-          console.error('Formato de respuesta de canciones inesperado:', response);
           this.availableSongs = [];
         }
         this.isLoadingSongs = false;
       },
       error: (err) => {
-        console.error("Error cargando canciones disponibles:", err);
         this.availableSongs = [];
         this.isLoadingSongs = false;
       }
@@ -254,7 +263,6 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
         this.isSubmittingPost = false;
       },
       error: (err) => {
-        console.error('Error creando post:', err);
         this.postSubmitError = err.error?.message || 'No se pudo enviar el post.';
         this.isSubmittingPost = false;
       }
@@ -320,7 +328,6 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
         this.isLoadingPosts = false;
       },
       error: (err) => {
-        console.error('Error cargando posts:', err);
         this.postsError = 'No se pudieron cargar los posts.';
         this.isLoadingPosts = false;
       }
@@ -372,6 +379,25 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
     });
   }
 
+  vote(post: PostResponse, value: number): void {
+    if (!post || post.id === undefined) return;
+
+    // Si el usuario ya votó con este valor, al hacer clic de nuevo se quita el voto (enviar 0)
+    // Si el usuario vota diferente, se envía el nuevo valor.
+    const newVoteToSend = post.userVote === value ? 0 : value;
+
+    this.postService.voteForPost(post.id, newVoteToSend).subscribe({
+      next: (updatedPostData) => { // El backend debería devolver el PostResponse actualizado o al menos voteCount y el nuevo userVote
+        post.userVote = updatedPostData.userVote; // Asumiendo que el backend devuelve el nuevo userVote
+        post.voteCount = updatedPostData.voteCount; // Asumiendo que el backend devuelve el nuevo voteCount
+      },
+      error: (err) => {
+        console.error(`Error al votar (valor: ${newVoteToSend}) en post ${post.id}:`, err);
+        // Aquí podrías manejar el error en la UI si lo deseas, por ejemplo, revirtiendo un cambio optimista.
+      }
+    });
+  }
+
   getSongStreamUrl(songId?: number): string | null {
     if (songId === undefined || songId === null) return null;
     return `${environment.apiUrl}/songs/${songId}/stream`;
@@ -391,4 +417,5 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
     }
     return 'Canción seleccionada';
   }
+
 }

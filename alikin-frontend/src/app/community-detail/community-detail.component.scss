@@ -3,12 +3,16 @@
 $music-player-height: 80px;
 $top-navbar-height: 60px;
 
+// Fuente base y colores
+:host {
+  font-family: var(--font-family, 'Roboto', 'Arial', sans-serif); // Usar una fuente más moderna como fallback
+  color: $text-secondary;
+}
+
 .community-detail-page {
   display: flex;
   height: calc(100vh - #{$top-navbar-height} - #{$music-player-height});
   background-color: $theme-bg-primary;
-  color: $text-secondary;
-  font-family: var(--font-family, 'Arial', sans-serif);
 }
 
 .community-sidebar {
@@ -157,7 +161,6 @@ $top-navbar-height: 60px;
     flex-direction: column;
     min-height: 0;
 
-
     h4 {
       color: $text-primary;
       font-size: 1.8rem;
@@ -169,11 +172,464 @@ $top-navbar-height: 60px;
     p {
       line-height: 1.6;
       font-size: 1rem;
+      margin-bottom: 15px;
     }
   }
 }
 
-.loading-indicator, .error-message-container, .not-found-container {
+// Estilos para el formulario de Opciones del Servidor
+.community-settings-form-container {
+  max-width: 700px; // Limitar el ancho para mejor legibilidad del formulario
+  margin: 0 auto;   // Centrar el formulario si el espacio es mayor
+  padding: 20px;
+  background-color: $theme-bg-secondary; // Fondo ligeramente diferente para destacar el form
+  border-radius: 8px;
+  border: 1px solid $border-primary-darktheme;
+  box-shadow: 0 4px 12px rgba(0,0,0, 0.15);
+
+  .form-group {
+    margin-bottom: 25px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: $text-primary;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    input[type="text"].form-control,
+    textarea.form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid $border-primary-darktheme;
+      border-radius: 6px;
+      background-color: $theme-bg-tertiary; // Un poco más oscuro para campos de entrada
+      color: $text-primary;
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+      &:focus {
+        border-color: $accent-orange;
+        box-shadow: 0 0 0 3px rgba($accent-orange, 0.25);
+        outline: none;
+      }
+    }
+
+    textarea.form-control {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-error small {
+      display: block;
+      margin-top: 6px;
+      color: $status-error;
+      font-size: 0.85rem;
+    }
+  }
+
+  .image-upload-preview {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+
+    .image-preview-settings {
+      width: 150px;
+      height: 150px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px dashed $border-primary-darktheme;
+      background-color: $theme-bg-tertiary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $text-secondary; // Para el texto del placeholder si no hay imagen
+    }
+
+    input[type="file"].form-control-file {
+      // Estilos base para input file, a menudo se personalizan con "trucos"
+      color: $text-secondary;
+      font-size: 0.9rem;
+      // Para una mejor apariencia, a menudo se oculta el input real
+      // y se estiliza un label asociado a él.
+      // Pero para simplicidad, un estilo básico:
+      &::file-selector-button { // Estilo para el botón del input file
+        padding: 8px 12px;
+        border: 1px solid $accent-orange;
+        border-radius: 4px;
+        background-color: $accent-orange;
+        color: $text-on-accent;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        margin-right: 10px;
+        &:hover {
+          background-color: darken($accent-orange, 8%);
+        }
+      }
+    }
+
+    .btn-clear-image-settings {
+      padding: 8px 15px;
+      background-color: $theme-bg-tertiary;
+      color: $text-secondary;
+      border: 1px solid $border-primary-darktheme;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      &:hover {
+        background-color: lighten($theme-bg-tertiary, 5%);
+        color: $text-primary;
+      }
+    }
+  }
+
+  .form-text.text-muted {
+    font-size: 0.85rem;
+    color: $text-secondary;
+    display: block;
+    margin-top: 5px;
+  }
+
+  .form-success-message, .form-error-message { // Mensajes globales del formulario
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-top: 20px;
+    margin-bottom: 20px; // Espacio antes del botón de submit
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .form-success-message {
+    background-color: rgba($accent-green, 0.15);
+    color: $accent-green;
+    border: 1px solid rgba($accent-green, 0.4);
+  }
+
+  .form-error-message { // Este ya estaba definido en radio, se puede unificar o mantener específico
+    background-color: rgba($status-error, 0.15);
+    color: $status-error;
+    border: 1px solid rgba($status-error, 0.4);
+  }
+
+  .btn-submit-settings {
+    width: 100%;
+    padding: 14px 20px;
+    background-color: $accent-primary; // Asumo que tienes $accent-primary, si no usa $accent-orange
+    color: $text-on-accent;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: darken($accent-primary, 8%);
+    }
+    &:disabled {
+      background-color: $theme-bg-tertiary;
+      color: $text-disabled;
+      cursor: not-allowed;
+    }
+    i.fa-spinner {
+      margin-left: 8px;
+    }
+  }
+}
+
+
+// Estilos para la sección de Radio Comunidad (los que hicimos antes)
+.community-radio-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 25px; // Espacio entre elementos principales de la sección de radio
+
+  .radio-search-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+
+    input[type="text"].form-control {
+      flex-grow: 1;
+      padding: 12px 15px;
+      border: 1px solid $border-primary-darktheme;
+      border-radius: 6px;
+      background-color: $theme-bg-secondary;
+      color: $text-primary;
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+      &:focus {
+        border-color: $accent-orange;
+        box-shadow: 0 0 0 3px rgba($accent-orange, 0.2);
+        outline: none;
+      }
+    }
+
+    button.btn-primary {
+      padding: 12px 20px;
+      background-color: $accent-orange;
+      color: $text-on-accent;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background-color: darken($accent-orange, 8%);
+      }
+      &:disabled {
+        background-color: $theme-bg-tertiary;
+        color: $text-disabled;
+        cursor: not-allowed;
+      }
+      i.fa-spinner {
+        margin-left: 8px;
+      }
+    }
+  }
+
+  .loading-indicator.small-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    color: $text-secondary;
+    font-size: 0.9rem;
+    i {
+      margin-right: 8px;
+      font-size: 1.2em;
+    }
+  }
+
+
+  .radio-search-results {
+    h5 {
+      font-size: 1.2rem;
+      color: $text-primary;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid $border-primary-darktheme;
+      border-radius: 6px;
+      background-color: $theme-bg-secondary;
+
+      li {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid $border-primary-darktheme;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        gap: 12px;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background-color: $theme-bg-tertiary;
+        }
+
+        &.selected {
+          background-color: rgba($accent-orange, 0.2);
+          border-left: 3px solid $accent-orange;
+          padding-left: 12px;
+
+          .station-name {
+            color: $accent-orange;
+            font-weight: bold;
+          }
+        }
+
+        .station-favicon {
+          width: 32px;
+          height: 32px;
+          border-radius: 4px;
+          object-fit: cover;
+          background-color: $theme-bg-tertiary;
+        }
+
+        .station-name {
+          flex-grow: 1;
+          color: $text-primary;
+          font-weight: 500;
+          font-size: 0.95rem;
+        }
+
+        .station-details {
+          font-size: 0.8rem;
+          color: $text-secondary;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 150px;
+        }
+      }
+    }
+  }
+
+  .no-results-message { // Mensaje para "no se encontraron estaciones" o "no hay radio configurada"
+    padding: 15px;
+    text-align: center;
+    color: $text-secondary;
+    background-color: $theme-bg-secondary;
+    border-radius: 6px;
+    border: 1px solid $border-primary-darktheme;
+    font-style: italic;
+  }
+
+  .selected-radio-info {
+    padding: 20px;
+    background-color: $theme-bg-secondary;
+    border-radius: 8px;
+    border: 1px solid $border-primary-darktheme;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 10px;
+
+    p {
+      margin: 0 0 10px 0;
+      strong {
+        color: $text-primary;
+        font-weight: 600;
+      }
+      small {
+        font-size: 0.85rem;
+        color: $text-secondary;
+        word-break: break-all;
+      }
+    }
+    // Hereda el estilo de .btn-submit-settings de las opciones del servidor o puedes crear uno específico
+    // Por ahora, se asume que usa la clase .btn-submit-settings que tiene el botón de radio.
+    // Si el botón de radio tiene una clase diferente o necesita un estilo diferente, se puede ajustar.
+    // El HTML usa .btn-submit-settings para "Establecer como Radio"
+  }
+
+  // Ya están definidos en la sección de Opciones del Servidor, se aplicarán si las clases coinciden
+  // .form-error-message, .form-success-message { ... }
+
+  .current-community-radio {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid $border-primary-darktheme;
+
+    h5 {
+      font-size: 1.3rem;
+      color: $text-primary;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .current-radio-display {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      background-color: $theme-bg-secondary;
+      border-radius: 8px;
+      border: 1px solid $border-primary-darktheme;
+
+      .station-favicon.current {
+        width: 50px;
+        height: 50px;
+        border-radius: 6px;
+        object-fit: cover;
+        border: 2px solid $border-primary-darktheme;
+      }
+
+      .current-radio-text {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+
+        strong {
+          font-size: 1.1rem;
+          color: $text-primary;
+          margin-bottom: 5px;
+          font-weight: 600;
+        }
+
+        .play-community-radio-btn {
+          background-color: $accent-orange;
+          color: $text-on-accent;
+          border: none;
+          border-radius: 20px;
+          padding: 8px 15px;
+          font-size: 0.9rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background-color 0.2s ease, transform 0.1s ease;
+          display: inline-flex;
+          align-items: center;
+          align-self: flex-start;
+
+          i {
+            margin-right: 6px;
+          }
+
+          &:hover {
+            background-color: darken($accent-orange, 8%);
+            transform: scale(1.05);
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// Estilos generales para indicadores de carga y mensajes
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  padding: 30px;
+  text-align: center;
+  p {
+    font-size: 1.25rem;
+    margin-bottom: 25px;
+    color: $text-secondary;
+  }
+  i.fa-spinner {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: $accent-orange;
+  }
+  button {
+    padding: 12px 25px;
+    background-color: $accent-orange;
+    color: $text-on-accent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    &:hover {
+      background-color: darken($accent-orange, 8%);
+    }
+  }
+}
+
+.error-message-container, .not-found-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -195,7 +651,90 @@ $top-navbar-height: 60px;
     cursor: pointer;
     font-weight: 500;
     &:hover {
-      background-color: $accent-orange-hover;
+      background-color: darken($accent-orange, 8%);
     }
   }
 }
+.community-active-radio-player {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background-color: $theme-bg-tertiary; // Un fondo que destaque un poco
+  border-radius: 8px;
+  margin-bottom: 25px; // Espacio antes del contenido de la sección activa
+  border: 1px solid $border-primary-darktheme;
+  box-shadow: 0 2px 8px rgba(0,0,0, 0.2);
+
+  .radio-player-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1; // Permite que esta parte ocupe el espacio disponible
+    overflow: hidden; // Para controlar el desbordamiento del nombre
+  }
+
+  .radio-player-logo {
+    width: 45px;
+    height: 45px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid darken($border-primary-darktheme, 5%);
+    flex-shrink: 0; // Evita que el logo se encoja
+  }
+
+  .radio-player-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden; // Para el text-overflow del nombre
+
+    .radio-player-label {
+      font-size: 0.75rem;
+      color: $text-secondary;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .radio-player-name {
+      font-size: 1rem;
+      color: $text-primary;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .radio-player-button {
+    background-color: $accent-orange;
+    color: $text-on-accent;
+    border: none;
+    border-radius: 25px; // Botón redondeado
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; // Espacio entre icono y texto
+    margin-left: 15px; // Espacio respecto a la info de la radio
+    flex-shrink: 0; // Evita que el botón se encoja
+
+    i {
+      font-size: 1em; // Icono del mismo tamaño que el texto del botón
+    }
+
+    &:hover {
+      background-color: darken($accent-orange, 10%);
+      transform: scale(1.03);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+

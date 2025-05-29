@@ -3,7 +3,7 @@ export interface Song {
   title: string;
   artist: string;
   album?: string;
-  url: string;
+  url?: string;
   coverImageUrl?: string;
-  duration: number;
+  duration?: number;
 }

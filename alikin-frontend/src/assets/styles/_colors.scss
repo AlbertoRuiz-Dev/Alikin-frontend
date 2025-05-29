@@ -39,7 +39,7 @@ $border-secondary-darktheme: #888888; // Un borde un poco más claro si es neces
 $status-error: #e74c3c;                         // Rojo para errores
 $status-error-bg: rgba($status-error, 0.1);
 $status-error-border: rgba($status-error, 0.3);
-
+$accent-link : orange;
 $status-success: $accent-green;                 // Verde para éxito (reutilizando el de acento)
 $status-success-bg: rgba($status-success, 0.1);
 $status-success-border: rgba($status-success, 0.3);
@@ -49,7 +49,7 @@ $status-warning-bg: rgba($status-warning, 0.1);
 
 $status-info: #3498db;                          // Azul para información
 $status-info-bg: rgba($status-info, 0.1);
-
+$accent-primary: #007bff;
 // --- Gradientes (de tu lista original) ---
 $gradient-start: $theme-bg-primary;             // Usando $black (que es $spotify-black)
 $gradient-end: darken($theme-bg-secondary, 3%);

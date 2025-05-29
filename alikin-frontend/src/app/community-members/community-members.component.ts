@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import {UserResponse} from "../models/user.model";
 import {environment} from "../../enviroments/enviroment";
 import {CommunityService} from "../communities/communities.service";
+import {ToastrService} from "ngx-toastr";
 @Component({
   selector: 'app-community-members',
   templateUrl: './community-members.component.html',
@@ -21,7 +22,7 @@ export class CommunityMembersComponent implements OnInit, OnChanges {
   private readonly backendImageUrlBase = `${environment.mediaUrl}/uploads/`;
 
 
-  constructor(private communityService: CommunityService) { }
+  constructor(private communityService: CommunityService, private toastr: ToastrService) { }
 
   ngOnInit(): void {
     if (this.communityId) {
@@ -56,24 +57,22 @@ export class CommunityMembersComponent implements OnInit, OnChanges {
     if (!this.canKick(memberId)) return;
 
     if (confirm(`¿Estás seguro de que quieres echar a "${memberName}" de la comunidad?`)) {
-      console.log(`TODO: Implementar lógica para echar al miembro ${memberId}`);
-      // Aquí llamarías a un método en CommunityService para echar al miembro.
-      // this.communityService.kickCommunityMember(this.communityId, memberId).subscribe({
-      //   next: () => {
-      //     //this.toastr.success(`"${memberName}" ha sido echado de la comunidad.`);
-      //     alert(`"${memberName}" ha sido echado de la comunidad.`);
-      //     this.loadMembers(); // Recargar la lista
-      //   },
-      //   error: (err) => {
-      //     //this.toastr.error(`No se pudo echar a "${memberName}".`);
-      //     alert(`No se pudo echar a "${memberName}". Error: ${err.error?.message || err.message}`);
-      //   }
-      // });
+       this.communityService.kickCommunityMember(this.communityId, memberId).subscribe({
+         next: () => {
+          this.toastr.success(`"${memberName}" ha sido expulsado de la comunidad.`);
+           alert(`"${memberName}" ha sido expulsado de la comunidad.`);
+           this.loadMembers(); // Recargar la lista
+         },
+         error: (err) => {
+           this.toastr.error(`No se pudo echar a "${memberName}".`);
+           alert(`No se pudo echar a "${memberName}". Error: ${err.error?.message || err.message}`);
+         }
+       });
     }
   }
 
   canKick(memberId: number): boolean {
-    return this.currentUserRole === 'LEADER'; // Simplificado por ahora
+    return this.currentUserRole === 'LEADER' ;
   }
 
   getFullImageUrl(relativePath: string | null | undefined): string | null {
