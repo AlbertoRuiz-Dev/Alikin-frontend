@@ -1,4 +1,6 @@
 <div class="signup-container">
+  <img src="assets/icons/alikin-logo.png" alt="Logo Alikin" class="logo-app" >
+
   <h2>Crear cuenta</h2>
 
   <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
@@ -35,11 +37,9 @@
 
     <button type="submit" [disabled]="signupForm.invalid">Registrarse</button>
 
-    <p>
-      ¿Ya tienes Cuenta?
-    </p>
-    <button routerLink="/auth/login">Haz Login aquí</button>
-
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+    <p class="secondary-action-text">¿Ya tienes Cuenta?</p>
+    <button type="button" class="btn-link-action" routerLink="/auth/login">Haz Login aquí</button>
+
   </form>
 </div>

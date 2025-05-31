@@ -179,170 +179,201 @@ $top-navbar-height: 60px;
 
 // Estilos para el formulario de Opciones del Servidor
 .community-settings-form-container {
-  max-width: 700px; // Limitar el ancho para mejor legibilidad del formulario
-  margin: 0 auto;   // Centrar el formulario si el espacio es mayor
-  padding: 20px;
-  background-color: $theme-bg-secondary; // Fondo ligeramente diferente para destacar el form
-  border-radius: 8px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px 40px;
+  background-color: $theme-bg-secondary;
+  border-radius: 12px;
   border: 1px solid $border-primary-darktheme;
-  box-shadow: 0 4px 12px rgba(0,0,0, 0.15);
+  box-shadow: 0 8px 25px rgba(0,0,0, 0.25);
 
   .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
+    width: 85%;
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       color: $text-primary;
-      font-weight: 500;
-      font-size: 0.95rem;
+      font-weight: 600;
+      font-size: 1.05rem;
     }
 
     input[type="text"].form-control,
     textarea.form-control {
       width: 100%;
-      padding: 12px 15px;
-      border: 1px solid $border-primary-darktheme;
-      border-radius: 6px;
-      background-color: $theme-bg-tertiary; // Un poco más oscuro para campos de entrada
+      padding: 16px 20px;
+      border: 1px solid darken($border-primary-darktheme, 7%);
+      border-radius: 8px;
+      background-color: $theme-bg-tertiary;
       color: $text-primary;
       font-size: 1rem;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 
       &:focus {
         border-color: $accent-orange;
         box-shadow: 0 0 0 3px rgba($accent-orange, 0.25);
         outline: none;
+        background-color: lighten($theme-bg-tertiary, 4%);
       }
     }
 
     textarea.form-control {
-      min-height: 100px;
+      min-height: 140px;
       resize: vertical;
     }
 
     .form-error small {
       display: block;
-      margin-top: 6px;
+      margin-top: 10px;
       color: $status-error;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
     }
   }
 
   .image-upload-preview {
-    margin-top: 10px;
+    margin-top: 15px;
+    margin-bottom: 30px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 15px;
+    gap: 20px;
+
+    .image-preview-container { // Contenedor para la imagen y el input/botón
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+    }
 
     .image-preview-settings {
-      width: 150px;
-      height: 150px;
-      border-radius: 8px;
+      width: 180px;
+      height: 180px;
+      border-radius: 12px;
       object-fit: cover;
-      border: 2px dashed $border-primary-darktheme;
+      border: 2px dashed darken($border-primary-darktheme, 10%);
       background-color: $theme-bg-tertiary;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: $text-secondary; // Para el texto del placeholder si no hay imagen
+      color: $text-secondary;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+      &:hover {
+        border-color: $accent-orange;
+      }
+    }
+
+    .file-input-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
     }
 
     input[type="file"].form-control-file {
-      // Estilos base para input file, a menudo se personalizan con "trucos"
       color: $text-secondary;
-      font-size: 0.9rem;
-      // Para una mejor apariencia, a menudo se oculta el input real
-      // y se estiliza un label asociado a él.
-      // Pero para simplicidad, un estilo básico:
-      &::file-selector-button { // Estilo para el botón del input file
-        padding: 8px 12px;
-        border: 1px solid $accent-orange;
-        border-radius: 4px;
+      font-size: 0.95rem;
+
+      &::file-selector-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
         background-color: $accent-orange;
         color: $text-on-accent;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        margin-right: 10px;
+        margin-right: 12px;
+        font-weight: 500;
         &:hover {
-          background-color: darken($accent-orange, 8%);
+          background-color: darken($accent-orange, 10%);
         }
       }
     }
 
     .btn-clear-image-settings {
-      padding: 8px 15px;
+      padding: 9px 18px;
       background-color: $theme-bg-tertiary;
       color: $text-secondary;
       border: 1px solid $border-primary-darktheme;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.85rem;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
       &:hover {
-        background-color: lighten($theme-bg-tertiary, 5%);
+        background-color: lighten($theme-bg-tertiary, 7%);
         color: $text-primary;
+        border-color: darken($border-primary-darktheme, 10%);
       }
     }
   }
 
   .form-text.text-muted {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: $text-secondary;
     display: block;
-    margin-top: 5px;
+    margin-top: 10px;
   }
 
-  .form-success-message, .form-error-message { // Mensajes globales del formulario
-    padding: 12px 15px;
-    border-radius: 6px;
-    margin-top: 20px;
-    margin-bottom: 20px; // Espacio antes del botón de submit
-    font-size: 0.9rem;
+  .form-success-message, .form-error-message {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-top: 25px;
+    margin-bottom: 30px;
+    font-size: 0.95rem;
     text-align: center;
   }
 
   .form-success-message {
     background-color: rgba($accent-green, 0.15);
-    color: $accent-green;
-    border: 1px solid rgba($accent-green, 0.4);
+    color: darken($accent-green, 5%);
+    border: 1px solid rgba($accent-green, 0.3);
   }
 
-  .form-error-message { // Este ya estaba definido en radio, se puede unificar o mantener específico
-    background-color: rgba($status-error, 0.15);
-    color: $status-error;
-    border: 1px solid rgba($status-error, 0.4);
+  .form-error-message {
+    background-color: rgba($status-error, 0.1);
+    color: darken($status-error, 5%);
+    border: 1px solid rgba($status-error, 0.3);
   }
 
   .btn-submit-settings {
     width: 100%;
-    padding: 14px 20px;
-    background-color: $accent-primary; // Asumo que tienes $accent-primary, si no usa $accent-orange
+    max-width: 300px;
+    display: block;
+    margin: 20px auto 0 auto;
+    padding: 16px 22px;
+    background-color: $accent-orange; // Usando $accent-orange como en el :focus de los inputs
     color: $text-on-accent;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    transition: background-color 0.25s ease, transform 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 
-    &:hover {
-      background-color: darken($accent-primary, 8%);
+    &:hover:not(:disabled) {
+      background-color: darken($accent-orange, 10%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba($accent-orange, 0.2);
     }
     &:disabled {
       background-color: $theme-bg-tertiary;
       color: $text-disabled;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
     i.fa-spinner {
-      margin-left: 8px;
+      margin-left: 10px;
+      font-size: 1.1em;
     }
   }
 }
+// Fin de Estilos para el formulario de Opciones del Servidor
 
 
 // Estilos para la sección de Radio Comunidad (los que hicimos antes)
@@ -517,14 +548,7 @@ $top-navbar-height: 60px;
         word-break: break-all;
       }
     }
-    // Hereda el estilo de .btn-submit-settings de las opciones del servidor o puedes crear uno específico
-    // Por ahora, se asume que usa la clase .btn-submit-settings que tiene el botón de radio.
-    // Si el botón de radio tiene una clase diferente o necesita un estilo diferente, se puede ajustar.
-    // El HTML usa .btn-submit-settings para "Establecer como Radio"
   }
-
-  // Ya están definidos en la sección de Opciones del Servidor, se aplicarán si las clases coinciden
-  // .form-error-message, .form-success-message { ... }
 
   .current-community-radio {
     margin-top: 25px;
@@ -737,4 +761,3 @@ $top-navbar-height: 60px;
     }
   }
 }
-

@@ -36,11 +36,8 @@ export class FeedComponent implements OnInit, OnDestroy {
     this.feedControlService.loadMoreRequest$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        console.log('FeedComponent: Recibida solicitud de loadMoreRequest$ del servicio.'); // <--- AÑADE ESTO
         if (this.posts.length > 0 || this.currentPage === 0 && !this._isLoading) { // Permitir cargar más si es la carga inicial aunque posts esté vacío
           this.loadMorePosts();
-        } else {
-          console.log('FeedComponent: Solicitud de cargar más ignorada. Posts:', this.posts.length, 'isLoading:', this._isLoading);
         }
       });
   }
@@ -57,12 +54,9 @@ export class FeedComponent implements OnInit, OnDestroy {
   }
 
   loadMorePosts(): void {
-    console.log('FeedComponent: loadMorePosts() llamado.'); // <--- AÑADE ESTO
     if (!this._hasMorePosts || this._isLoading) {
-      console.log(`FeedComponent: Carga de más posts detenida. HasMore: ${this._hasMorePosts}, IsLoading: ${this._isLoading}`);
       return;
     }
-    console.log(`FeedComponent: Incrementando página a ${this.currentPage + 1} y llamando a fetchPosts.`);
     this.currentPage++;
     this.fetchPosts(true);
   }

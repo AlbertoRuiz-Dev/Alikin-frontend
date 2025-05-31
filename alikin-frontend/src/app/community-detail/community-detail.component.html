@@ -1,11 +1,11 @@
 <div class="community-detail-page" *ngIf="!isLoading && community">
   <aside class="community-sidebar">
     <div class="community-header">
-      <img *ngIf="community?.imageUrl" [src]="getFullImageUrl(community!.imageUrl)" [alt]="community!.name" class="community-avatar">
-      <div *ngIf="!community?.imageUrl" class="community-avatar-placeholder">
-        {{ getCommunityInitials(community?.name) }}
+      <img *ngIf="community.imageUrl" [src]="getFullImageUrl(community!.imageUrl)" [alt]="community!.name" class="community-avatar">
+      <div *ngIf="!community.imageUrl" class="community-avatar-placeholder">
+        {{ getCommunityInitials(community.name) }}
       </div>
-      <h3>{{ community?.name }}</h3>
+      <h3>{{ community.name }}</h3>
       <p class="role-indicator">Tu rol: {{ currentUserRole }}</p>
     </div>
 
@@ -37,15 +37,15 @@
       </button>
     </div>
 
-    <div *ngIf="community?.radioPlaylist && community.radioPlaylist?.streamUrl" class="community-active-radio-player">
+    <div *ngIf="community.radioPlaylist && community.radioPlaylist?.streamUrl" class="community-active-radio-player">
       <div class="radio-player-content">
-        <img [src]="community.radioPlaylist?.logoUrl || 'assets/icons/radio.svg'"
+        <img [src]="community.radioPlaylist.logoUrl || 'assets/icons/radio.svg'"
              onError="this.style.display='none'; this.src='assets/icons/radio.svg'"
              alt="Logo Radio"
              class="radio-player-logo">
         <div class="radio-player-info">
           <span class="radio-player-label">EN VIVO EN LA COMUNIDAD:</span>
-          <strong class="radio-player-name">{{ community.radioPlaylist?.name || 'Radio sin nombre' }}</strong>
+          <strong class="radio-player-name">{{ community.radioPlaylist.name || 'Radio sin nombre' }}</strong>
         </div>
       </div>
       <button (click)="toggleCommunityRadioPlayback()" class="radio-player-button"
@@ -94,7 +94,7 @@
             <div class="image-upload-preview">
               <img [src]="communityImagePreviewUrl || 'assets/images/default-community-placeholder.png'" alt="Vista previa de imagen" class="image-preview-settings">
               <input type="file" id="communityImageFileEdit" (change)="onCommunityImageSelected($event)" accept="image/png, image/jpeg, image/gif" class="form-control-file">
-              <button type="button" *ngIf="communityImagePreviewUrl && (selectedCommunityImageFile || community?.imageUrl)" (click)="clearCommunityImageSelection(false)" class="btn-clear-image-settings">Quitar Imagen</button>
+              <button type="button" *ngIf="communityImagePreviewUrl && (selectedCommunityImageFile || community.imageUrl)" (click)="clearCommunityImageSelection(false)" class="btn-clear-image-settings">Quitar Imagen</button>
             </div>
             <small class="form-text text-muted">Sube JPG, PNG o GIF. Máx 2MB.</small>
           </div>
@@ -148,12 +148,12 @@
         <div *ngIf="radioSaveError" class="form-error-message">{{ radioSaveError }}</div>
         <div *ngIf="radioSaveSuccess" class="form-success-message">{{ radioSaveSuccess }}</div>
 
-        <div *ngIf="community?.radioPlaylist && community?.radioPlaylist?.streamUrl" class="current-community-radio">
+        <div *ngIf="community.radioPlaylist && community.radioPlaylist?.streamUrl" class="current-community-radio">
           <hr>
           <h5>Radio Actual de la Comunidad:</h5>
           <div class="current-radio-display">
-            <img [src]="community.radioPlaylist?.logoUrl || 'assets/icons/radio.svg'" onError="this.style.display='none'; this.src='assets/icons/radio.svg'" alt="Logo Radio" class="station-favicon current">            <div class="current-radio-text">
-            <strong>{{ community.radioPlaylist?.name || 'Radio sin nombre' }}</strong>
+            <img [src]="community.radioPlaylist.logoUrl || 'assets/icons/radio.svg'" onError="this.style.display='none'; this.src='assets/icons/radio.svg'" alt="Logo Radio" class="station-favicon current">            <div class="current-radio-text">
+            <strong>{{ community.radioPlaylist.name || 'Radio sin nombre' }}</strong>
               <button (click)="playCommunityRadio()" class="play-community-radio-btn">
                 <i class="fas fa-play"></i> Reproducir Radio
               </button>

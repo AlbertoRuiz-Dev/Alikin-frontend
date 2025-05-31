@@ -1,6 +1,7 @@
 <div class="login-container">
-  <h2>Iniciar sesión</h2>
+  <img src="assets/icons/alikin-logo.png" alt="Logo Alikin" class="logo-app" >
 
+  <h2>Iniciar sesión</h2>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <input formControlName="usernameOrEmail" placeholder="Email o Nickname" />
     <p *ngIf="loginForm.get('usernameOrEmail')?.touched && loginForm.get('usernameOrEmail')?.invalid" class="error">
@@ -15,8 +16,8 @@
     <button type="submit" [disabled]="loginForm.invalid">Entrar</button>
 
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
-    <p class=>¿No tienes cuenta? </p>
-    <button class="link" routerLink="/auth/register" style="background-color: orange; color: #0b0b0b ">Regístrate aquí</button>
+    <p class="secondary-action-text">¿No tienes cuenta? </p>
+    <button type="button" class="btn-link-action" routerLink="/auth/register">Regístrate aquí</button>
 
   </form>
 </div>

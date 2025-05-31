@@ -33,11 +33,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    console.log('LayoutComponent: ngOnInit - INICIADO. Valor inicial de isFeedRouteActive:', this.isFeedRouteActive);
 
     this.router.events.pipe(
-      tap(event => console.log('[DEBUG] LayoutComponent: Router Event Received (RAW):', event)),
-      // AJUSTE DEL FILTRO:
       filter((event: RouterEvent): event is NavigationEnd =>
         event instanceof NavigationEnd || (event instanceof Scroll && event.routerEvent instanceof NavigationEnd)
       ),
@@ -46,28 +43,17 @@ export class LayoutComponent implements OnInit, OnDestroy {
         const navigationEndEvent = (event instanceof Scroll) ? event.routerEvent : event;
         return navigationEndEvent as NavigationEnd; // Hacemos un type assertion
       }),
-      tap(event => console.log('[DEBUG] LayoutComponent: NavigationEnd Event (PASÓ EL FILTRO Y MAP):', event)),
       map((event: NavigationEnd) => {
         const currentRouteData = this.getRouteData(this.router.routerState.snapshot.root);
         const newIsFeedActive = currentRouteData?.pageType === 'feed';
-        console.log('[DEBUG] LayoutComponent: Dentro de map - currentRouteData:', currentRouteData, 'newIsFeedActive:', newIsFeedActive);
         return newIsFeedActive;
       }),
       takeUntil(this.destroy$)
     ).subscribe((calculatedIsFeedActive: boolean) => {
-      console.log('[DEBUG] LayoutComponent: Entrando al SUBSCRIBE con calculatedIsFeedActive:', calculatedIsFeedActive);
-
       if (this.isFeedRouteActive !== calculatedIsFeedActive) {
         this.isFeedRouteActive = calculatedIsFeedActive;
-        console.log(
-          '%cLayoutComponent: VALOR FINAL ACTUALIZADO', 'color: green; font-weight: bold;',
-          { isFeedRouteActive: this.isFeedRouteActive }
-        );
         this.cdr.detectChanges();
       } else {
-        console.log(
-          '%cLayoutComponent: Valor de isFeedRouteActive NO cambió (ya era ' + this.isFeedRouteActive + ')', 'color: orange;'
-        );
         // Si no cambió pero queremos asegurar que detectChanges se llame si es la primera vez y es true:
         if(this.isFeedRouteActive && calculatedIsFeedActive) { // Si es true y no cambió, igual puede ser necesario
           // this.cdr.detectChanges(); // Descomentar si aún hay problemas de ExpressionChanged
@@ -101,14 +87,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   onFeedAreaScrolled(): void {
-    console.log('LayoutComponent: onFeedAreaScrolled ¡EVENTO DISPARADO!');
     if (this.isFeedRouteActive && !this.isFeedLoading && this.feedHasMorePosts) {
-      console.log('LayoutComponent: Ruta de feed activa, solicitando más posts...');
       this.feedControlService.requestLoadMore();
-    } else {
-      console.log('[DEBUG] LayoutComponent: Scroll NO solicita más posts.',
-        { isFeedRouteActive: this.isFeedRouteActive, isFeedLoading: this.isFeedLoading, feedHasMorePosts: this.feedHasMorePosts }
-      );
     }
   }
 

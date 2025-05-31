@@ -1,47 +1,67 @@
 // Variables inspiradas en Reddit y Spotify
 $reddit-orange: #ff4500;
-$spotify-green: #1db954;
+$spotify-green: #1db954; // Dejamos esta por si se usa en algún elemento común
 $dark-background: #121212;
 $light-text: #ffffff;
 $medium-gray: #282828;
 $light-gray: #b3b3b3;
 $error-red: #e91429;
 $border-radius: 8px;
-$box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+$box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); // Sombra un poco más oscura
 
+// Variable de acento principal para esta página
+$primary-accent: $reddit-orange;
 
-.link{
-  background-color: $reddit-orange;
-}
-
-body {
-  background-color: #121212; /* Color de respaldo si la imagen falla */
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  font-family: 'Circular', 'Helvetica Neue', Arial, sans-serif;
+  padding: 20px; // Espacio por si el contenido es más grande que la pantalla
+  box-sizing: border-box;
+}
+
+.logo-app {
+  display: block;
+  margin: 0 auto 30px auto;
+  width: 150px; // Ajusta según necesites
+  height: auto;
 }
 
 // Estilos para el contenedor principal
 .login-container {
-  max-width: 750px;
-  margin: 60px auto;
-  padding: 40px;
-  background-color: $dark-background;
+  width: 100%;
+  max-width: 420px; // Ancho más típico para formularios de login/registro
+  padding: 30px 35px;
+  background-color: rgba($dark-background, 0.9); // Fondo semi-transparente para que se vea el fondo de la página
+  backdrop-filter: blur(8px); // Efecto vidrio
+  -webkit-backdrop-filter: blur(8px);
   border-radius: $border-radius;
   box-shadow: $box-shadow;
   color: $light-text;
   font-family: 'Circular', 'Helvetica Neue', Arial, sans-serif;
+  position: relative; // Para el pseudo-elemento ::before
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: $primary-accent; // Usar el color de acento principal
+    border-radius: $border-radius $border-radius 0 0;
+  }
 
   h2 {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     font-weight: 700;
-    font-size: 32px;
+    font-size: 28px;
     letter-spacing: -0.5px;
     color: $light-text;
   }
@@ -49,7 +69,7 @@ body {
   form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px; // Un poco más de espacio entre inputs
 
     input {
       padding: 14px 16px;
@@ -58,12 +78,14 @@ body {
       background-color: $medium-gray;
       color: $light-text;
       font-size: 16px;
-      width: 95%;
+      width: 100%; // Que ocupe todo el ancho del formulario
+      box-sizing: border-box; // Para que padding no afecte el width total
       transition: all 0.2s ease;
+
       &:focus {
         outline: none;
-        border-color: $spotify-green;
-        box-shadow: 0 0 0 2px rgba($spotify-green, 0.3);
+        border-color: $primary-accent; // Usar el color de acento principal
+        box-shadow: 0 0 0 3px rgba($primary-accent, 0.3); // Usar el color de acento principal
       }
 
       &::placeholder {
@@ -72,16 +94,17 @@ body {
 
       &.ng-touched.ng-invalid {
         border-color: $error-red;
+        box-shadow: 0 0 0 1px $error-red; // Resaltar más el error
       }
     }
 
-    button {
+    button[type="submit"] {
       margin-top: 10px;
       padding: 14px;
       border-radius: 30px;
       border: none;
-      background: $spotify-green;
-      color: $light-text;
+      background: $primary-accent; // Usar el color de acento principal
+      color: $light-text; // Texto blanco para contraste con naranja
       font-weight: 700;
       font-size: 16px;
       text-transform: uppercase;
@@ -89,9 +112,10 @@ body {
       cursor: pointer;
       transition: all 0.2s ease;
 
-      &:hover {
-        background: lighten($spotify-green, 5%);
+      &:hover:not(:disabled) {
+        background: lighten($primary-accent, 7%); // Usar el color de acento principal
         transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       }
 
       &:disabled {
@@ -104,51 +128,70 @@ body {
 
     .error {
       color: $error-red;
-      font-size: 14px;
-      margin: -8px 0 0 4px;
+      font-size: 13px;
+      margin: -10px 0 0 4px; // Ajuste de margen
+      text-align: left;
     }
 
-    .link {
-      margin-top: 20px;
+    .secondary-action-text {
+      margin-top: 15px;
       text-align: center;
       font-size: 14px;
       color: $light-gray;
+      margin-bottom: -10px; // Para juntar con el botón de link
+    }
 
-      a {
-        color: $reddit-orange;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s ease;
+    .btn-link-action {
+      padding: 10px;
+      border-radius: 20px;
+      border: none;
+      background: transparent;
+      color: $primary-accent; // Usar el color de acento principal
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
 
-        &:hover {
-          color: lighten($reddit-orange, 10%);
-          text-decoration: underline;
-        }
+      &:hover {
+        background: rgba($primary-accent, 0.1); // Usar el color de acento principal
+        text-decoration: underline;
       }
     }
   }
 }
 
-// Agregando un toque visual inspirado en Reddit
-.login-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(to right, $reddit-orange, $spotify-green);
-  border-radius: $border-radius $border-radius 0 0;
-}
-
 // Responsive
 @media (max-width: 576px) {
+  :host {
+    padding: 10px; // Menos padding en móvil para :host
+  }
   .login-container {
-    margin: 20px;
-    padding: 30px 20px;
+    margin: 20px auto;
+    padding: 25px 20px;
 
     h2 {
-      font-size: 28px;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    form {
+      gap: 16px;
+      input {
+        font-size: 15px;
+        padding: 12px 14px;
+      }
+      button[type="submit"] {
+        font-size: 15px;
+        padding: 12px;
+      }
+      .error {
+        font-size: 12px;
+      }
+      .secondary-action-text {
+        font-size: 13px;
+      }
+      .btn-link-action {
+        font-size: 13px;
+      }
     }
   }
 }

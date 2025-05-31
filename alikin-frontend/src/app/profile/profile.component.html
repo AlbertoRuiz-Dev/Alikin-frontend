@@ -1,1 +1,119 @@
-<p>profile works!</p>
+<div class="profile-container">
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Cargando perfil...</p>
+  </div>
+
+  <div *ngIf="!isLoading && submitError && !isEditing" class="error-banner">
+    <p>{{ submitError }}</p>
+    <button (click)="loadUserData()" class="btn btn-secondary">Reintentar</button>
+  </div>
+
+  <div *ngIf="!isLoading && currentUser" class="profile-content">
+    <header class="profile-header">
+      <h1>Mi Perfil</h1>
+      <button *ngIf="!isEditing" (click)="toggleEditMode()" class="btn btn-primary edit-profile-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px" height="18px"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        Editar Perfil
+      </button>
+    </header>
+
+    <form [formGroup]="profileForm" (ngSubmit)="onSaveChanges()">
+      <div class="profile-main-layout">
+        <div class="profile-image-section">
+          <div class="image-preview-container">
+            <img [src]="profileImagePreviewUrl || getDefaultProfileImage()" alt="Foto de perfil" class="profile-picture">
+            <div *ngIf="isEditing" class="image-actions">
+              <label for="profileImageFileEdit" class="btn btn-icon btn-upload" title="Cambiar imagen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v4h4v2h-4v4h-2v-4H7v-2h4V7z"/></svg>
+              </label>
+              <input type="file" id="profileImageFileEdit" (change)="onProfileImageSelected($event)" accept="image/jpeg, image/png, image/gif" [disabled]="!isEditing">
+              <button *ngIf="profileImagePreviewUrl && profileImagePreviewUrl !== getDefaultProfileImage() || selectedProfileImageFile" type="button" (click)="removeProfileImage()" class="btn btn-icon btn-remove" title="Eliminar imagen actual" [disabled]="!isEditing">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3-13H9v2h6V7zm-1 4H8v2h6v-2zm-2 4h-2v2H9v-2H7v-2h2V9h2v2h2v2z"/></svg>
+              </button>
+            </div>
+          </div>
+          <small *ngIf="isEditing" class="image-hint">Max 2MB (JPG, PNG, GIF)</small>
+        </div>
+
+        <div class="profile-details-section">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="nickname">Nickname <span class="required-asterisk">*</span></label>
+              <input type="text" id="nickname" formControlName="nickname" placeholder="Tu apodo público">
+              <div *ngIf="profileForm.get('nickname')?.invalid && (profileForm.get('nickname')?.dirty || profileForm.get('nickname')?.touched)" class="validation-error">
+                <small *ngIf="profileForm.get('nickname')?.errors?.['required']">Nickname requerido.</small>
+                <small *ngIf="profileForm.get('nickname')?.errors?.['minlength']">Mínimo 3 caracteres.</small>
+                <small *ngIf="profileForm.get('nickname')?.errors?.['maxlength']">Máximo 50 caracteres.</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="name">Nombre</label>
+              <input type="text" id="name" formControlName="name" placeholder="Tu nombre (opcional)">
+              <div *ngIf="profileForm.get('name')?.invalid && (profileForm.get('name')?.dirty || profileForm.get('name')?.touched)" class="validation-error">
+                <small *ngIf="profileForm.get('name')?.errors?.['maxlength']">Máximo 100 caracteres.</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Apellidos</label>
+              <input type="text" id="lastName" formControlName="lastName" placeholder="Tus apellidos (opcional)">
+              <div *ngIf="profileForm.get('lastName')?.invalid && (profileForm.get('lastName')?.dirty || profileForm.get('lastName')?.touched)" class="validation-error">
+                <small *ngIf="profileForm.get('lastName')?.errors?.['maxlength']">Máximo 100 caracteres.</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="phoneNumber">Teléfono</label>
+              <input type="tel" id="phoneNumber" formControlName="phoneNumber" placeholder="+34 123 456 789 (opcional)">
+              <div *ngIf="profileForm.get('phoneNumber')?.invalid && (profileForm.get('phoneNumber')?.dirty || profileForm.get('phoneNumber')?.touched)" class="validation-error">
+                <small *ngIf="profileForm.get('phoneNumber')?.errors?.['pattern']">Formato de teléfono inválido.</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="birthDate">Fecha de Nacimiento</label>
+              <input type="date" id="birthDate" formControlName="birthDate">
+            </div>
+          </div>
+
+          <div class="form-group bio-group">
+            <label for="bio">Biografía</label>
+            <textarea id="bio" formControlName="bio" rows="4" placeholder="Cuéntanos algo sobre ti... (opcional)"></textarea>
+            <div *ngIf="profileForm.get('bio')?.invalid && (profileForm.get('bio')?.dirty || profileForm.get('bio')?.touched)" class="validation-error">
+              <small *ngIf="profileForm.get('bio')?.errors?.['maxlength']">Máximo 1000 caracteres.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isEditing" class="form-actions">
+        <div *ngIf="submitError" class="submit-error-inline">
+          {{ submitError }}
+        </div>
+        <button type="button" (click)="toggleEditMode()" class="btn btn-secondary" [disabled]="isSubmitting">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || isSubmitting">
+          <span *ngIf="!isSubmitting">Guardar Cambios</span>
+          <span *ngIf="isSubmitting">Guardando... <div class="btn-spinner"></div></span>
+        </button>
+      </div>
+    </form>
+
+    <div class="danger-zone" *ngIf="!isEditing && currentUser">
+      <h2>Zona Peligrosa</h2>
+      <div class="danger-item">
+        <div>
+          <strong>Eliminar esta cuenta</strong>
+          <p>Una vez que eliminas tu cuenta, no hay vuelta atrás. Por favor, piénsalo bien.</p>
+        </div>
+        <button (click)="onDeleteAccount()" class="btn btn-danger" [disabled]="isSubmitting">Eliminar Cuenta</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div *ngIf="!isLoading && !currentUser && !submitError" class="no-user-data">
+    <p>No se pudieron cargar los datos del perfil. Inténtalo de nuevo más tarde.</p>
+  </div>
+</div>

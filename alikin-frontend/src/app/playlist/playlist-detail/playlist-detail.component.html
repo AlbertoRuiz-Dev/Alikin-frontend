@@ -1,0 +1,51 @@
+<div class="detail-container" *ngIf="playlist$ | async as playlist; else loadingOrError">
+  <header class="playlist-main-header">
+    <img [src]="playlist.coverImageUrl ? mediaUrl + playlist.coverImageUrl : 'assets/images/default-playlist-cover.png'"
+         [alt]="playlist.name"
+         class="main-cover"
+         onError="this.src='assets/images/default-playlist-cover.jpg'">
+    <div class="main-info">
+      <h2>{{ playlist.name }}</h2>
+      <p class="description">{{ playlist.description || 'Sin descripción.' }}</p>
+      <p>Por: {{ playlist.owner?.name || 'Desconocido' }}</p> <p>{{ playlist.songs?.length || 0 }} canciones | {{ playlist.public ? 'Pública' : 'Privada' }}</p> <p class="created-at">Creada: {{ playlist.createdAt | date:'mediumDate' }}</p>
+      <div class="actions-main">
+        <button (click)="goToEdit()" class="action-btn edit-btn">Editar Playlist</button>
+        <button (click)="toggleSongSearch(true)" class="action-btn add-song-btn">Añadir Canciones</button>
+      </div>
+    </div>
+  </header>
+
+  <section *ngIf="showSongSearch" class="song-search-panel">
+  </section>
+
+  <section class="playlist-songs-section">
+    <h3>Canciones en esta Playlist</h3>
+    <ul *ngIf="playlist.songs && playlist.songs.length > 0; else noSongsInPlaylist" class="songs-list">
+      <li *ngFor="let song of playlist.songs" class="song-item-detail">
+        <img [src]="song.coverImageUrl ? mediaUrl + song.coverImageUrl : 'assets/images/default-song-cover.png'"
+             [alt]="song.title"
+             class="song-cover-small"
+             onError="this.src='assets/images/default-song-cover.png'">
+        <div class="song-info">
+          <span class="title">{{ song.title }}</span>
+          <span class="artist">{{ song.artist }}</span>
+        </div>
+        <div class="song-duration">{{ song.duration | number }}s</div>
+        <div class="song-actions-detail">
+          <button class="action-icon play-icon" (click)="playSong(song)" title="Reproducir">
+            <img src="assets/icons/play.svg" alt="play">
+          </button>
+          <button class="action-icon remove-icon" (click)="removeSongFromPlaylist(song.id)" title="Eliminar de la playlist">
+            <img src="assets/icons/delete.svg" alt="delete">
+          </button>
+        </div>
+      </li>
+    </ul>
+    <ng-template #noSongsInPlaylist>
+      <p class="empty-state">Esta playlist no tiene canciones todavía.</p>
+    </ng-template>
+  </section>
+</div>
+
+<ng-template #loadingOrError>
+</ng-template>

@@ -1,0 +1,15 @@
+
+@import "../../assets/styles/_colors";
+
+:host {
+  display: block;
+  background-color: $theme-bg-primary;
+  color: $text-primary;
+  min-height: 100vh;
+}
+
+.playlist-feature-container {
+  padding: 20px 30px; // Espaciado interno generoso
+  max-width: 1200px;  // Un ancho máximo para mantener la legibilidad
+  margin: 0 auto;     // Centrar el contenido
+}

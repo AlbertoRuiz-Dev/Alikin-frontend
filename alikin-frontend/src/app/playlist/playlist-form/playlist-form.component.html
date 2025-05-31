@@ -1,0 +1,52 @@
+<div class="form-container">
+  <h2>{{ pageTitle }}</h2>
+
+  <div *ngIf="successMessage" class="message success-banner">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="message error-banner">
+    {{ errorMessage }}
+  </div>
+
+  <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="form-field">
+      <label for="name">Nombre de la Playlist:</label>
+      <input type="text" id="name" formControlName="name" placeholder="Ej: Éxitos Verano 2025">
+      <div *ngIf="name?.invalid && (name?.dirty || name?.touched)" class="validation-errors">
+        <small *ngIf="name?.errors?.['required']">El nombre es obligatorio.</small>
+        <small *ngIf="name?.errors?.['minlength']">El nombre debe tener al menos 3 caracteres.</small>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="description">Descripción (opcional):</label>
+      <textarea id="description" formControlName="description" rows="3" placeholder="Una breve descripción de tu playlist..."></textarea>
+    </div>
+
+    <div class="form-field">
+      <label for="coverImageFile">Imagen de Portada (opcional):</label>
+      <input
+        type="file"
+        id="coverImageFile"
+        (change)="onFileSelected($event)"
+        accept="image/png, image/jpeg, image/gif"
+        class="file-input">
+
+      <div *ngIf="coverImagePreviewUrl" class="image-preview-container">
+        <img [src]="coverImagePreviewUrl" alt="Previsualización de portada" class="image-preview">
+      </div>
+    </div>
+
+    <div class="form-field checkbox-field">
+      <input type="checkbox" id="isPublic" formControlName="public">
+      <label for="isPublic" class="checkbox-label">Hacer esta playlist pública</label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="submit-button" [disabled]="playlistForm.invalid">
+        {{ isEditMode ? 'Guardar Cambios' : 'Crear Playlist' }}
+      </button>
+      <button type="button" class="cancel-button" (click)="cancel()">Cancelar</button>
+    </div>
+  </form>
+</div>

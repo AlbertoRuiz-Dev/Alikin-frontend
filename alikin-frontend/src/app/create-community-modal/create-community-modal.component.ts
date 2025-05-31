@@ -100,12 +100,7 @@ export class CreateCommunityModalComponent implements OnInit {
       // El backend esperará el archivo bajo un nombre específico, ej: 'imageFile'
       formData.append('imageFile', this.selectedFile, this.selectedFile.name);
     }
-    // Si el backend espera que los campos de texto también vengan como un JSON bajo una clave específica
-    // junto con el archivo (lo cual es menos común pero posible para @RequestPart),
-    // tendrías que ajustar la construcción del FormData.
-    // Por ejemplo:
-    // const communityData = { name: this.name?.value, description: this.description?.value };
-    // formData.append('communityData', new Blob([JSON.stringify(communityData)], { type: 'application/json' }));
+
 
     this.communityService.createCommunity(formData).subscribe({
       next: (newCommunity) => {

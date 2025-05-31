@@ -3,6 +3,7 @@ import { CommunityService } from "./communities.service";
 import { Router } from '@angular/router';
 import {CommunityResponse} from "./community-response";
 import {ToastrService} from "ngx-toastr";
+import {environment} from "../../enviroments/enviroment";
 
 @Component({
   selector: 'app-communities',
@@ -16,7 +17,7 @@ export class CommunitiesComponent implements OnInit {
   filteredCommunities: CommunityResponse[] = [];
   showCreateCommunityModal = false;
 
-  private readonly backendImageUrlBase = 'http://localhost:8080/uploads/';
+  private readonly backendImageUrlBase = `${environment.mediaUrl}/`;
 
   @ViewChild('allCommunitiesSection') allCommunitiesSection!: ElementRef;
 

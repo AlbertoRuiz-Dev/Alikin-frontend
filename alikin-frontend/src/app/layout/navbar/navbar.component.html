@@ -1,24 +1,14 @@
 <div class="navbar-content">
   <!-- Izquierda: Logo y nombre -->
   <div class="navbar-left">
-    <div class="brand">
-      <div class="logo-container">
-        <img src="assets/icons/" alt="logo">
-        <div class="app-name">Alikin</div>
-      </div>
+    <div class="brand" (click)="navigateToHome()">
+    <div class="logo-container">
+      <img src="assets/icons/alikin-logo.png" alt="logo" width="80" height="80"> <div class="app-name">Alikin</div>
     </div>
+  </div>
   </div>
 
-  <!-- Centro: Buscador -->
-  <div class="navbar-center">
-    <div class="search-container">
-      <div class="search-box">
-        <i class="fas fa-search search-icon"></i>
-        <input type="text" placeholder="Buscar canciones, artistas o podcasts..." class="search-input">
-        <button class="clear-btn" *ngIf="searchTerm">×</button>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Derecha: Usuario -->
   <div class="navbar-right">
@@ -35,8 +25,7 @@
 
         <div class="user-dropdown" *ngIf="menuVisible">
           <ul class="dropdown-menu">
-            <li class="dropdown-item"><i class="fas fa-user"></i><span>Perfil</span></li>
-            <li class="dropdown-item"><i class="fas fa-cog"></i><span>Configuración</span></li>
+            <li class="dropdown-item" (click)="navigateToProfile()"><i class="fas fa-user"></i><span>Perfil</span></li>
             <li class="dropdown-divider"></li>
             <li class="dropdown-item logout" (click)="logout()"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></li>
           </ul>

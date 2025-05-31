@@ -1,0 +1,92 @@
+// src/app/features/playlists/components/playlist-list/playlist-list.component.scss
+@import "../../../assets/styles/_colors"; // Ajusta esta ruta si es necesario
+
+.playlist-list-container {
+  padding: 20px 0; // Más padding vertical, el horizontal lo da el contenedor padre
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid $border-primary-darktheme;
+
+  h1 {
+    margin: 0;
+    font-size: 1.8rem; // Tamaño de título principal
+    font-weight: 700;
+    color: $text-primary;
+  }
+}
+
+.create-button {
+  padding: 10px 20px;
+  background-color: $accent-green;
+  color: $text-on-accent;
+  border: none;
+  border-radius: 20px; // Botón tipo "pill"
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease-out;
+
+  &:hover {
+    background-color: $accent-green-hover;
+  }
+}
+
+.error-banner {
+  background-color: $status-error-bg;
+  color: $status-error;
+  padding: 12px 15px;
+  border: 1px solid $status-error-border;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-bar-container {
+  margin-bottom: 25px; // Espacio debajo de la barra de búsqueda
+  position: relative; // Para posicionar un ícono si lo añades
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 18px; // Padding cómodo
+  padding-right: 40px; // Espacio para un posible ícono de búsqueda
+  background-color: $theme-bg-tertiary;
+  color: $text-primary;
+  border: 1px solid $border-primary-darktheme;
+  border-radius: 25px; // Input redondeado tipo "pill"
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
+
+  &::placeholder {
+    color: $text-muted;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $accent-green; // Resaltar con color de acento
+    box-shadow: 0 0 0 3px rgba($accent-green, 0.2);
+  }
+}
+
+.empty-state,
+.loading-state {
+  text-align: center;
+  color: $text-secondary;
+  font-size: 1.1rem;
+  padding: 40px 20px;
+  border: 1px dashed $border-primary-darktheme;
+  border-radius: 6px;
+  background-color: $theme-bg-secondary;
+  margin-top: 20px;
+}
+
+// No se necesita .playlists-grid si app-playlist-item ya tiene margin-bottom

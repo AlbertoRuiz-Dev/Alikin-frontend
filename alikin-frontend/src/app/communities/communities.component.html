@@ -46,7 +46,7 @@
           </div>
           <div class="card-body">
             <h3 class="card-title">{{ community.name || 'Sin nombre' }}</h3>
-            <p class="card-description">
+            <p class="card-description" *ngIf="community.description">
               {{ community.description | slice:0:100 }}{{ community.description && community.description.length > 100 ? '...' : '' }}
             </p>
             <div class="card-footer">
@@ -93,7 +93,7 @@
             </div>
             <div class="card-body">
               <h3 class="card-title">{{ community.name || 'Sin nombre' }}</h3>
-              <p class="card-description">
+              <p class="card-description" *ngIf="community.description">
                 {{ community.description | slice:0:100 }}{{ community.description && community.description.length > 100 ? '...' : '' }}
               </p>
               <div class="card-footer">

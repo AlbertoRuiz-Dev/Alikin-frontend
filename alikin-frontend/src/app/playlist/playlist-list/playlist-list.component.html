@@ -1,0 +1,42 @@
+<div class="playlist-list-container">
+  <header class="list-header">
+    <h1>{{ listTitle }}</h1>
+    <button *ngIf="listType === 'currentUser'" class="create-button" (click)="navigateToCreate()">Crear Nueva Playlist</button>
+  </header>
+
+  <div class="search-bar-container">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Buscar playlists por nombre, descripción, creador..." [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchTermChange()"
+      aria-label="Buscar playlists">
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Cargando playlists...</p>
+  </div>
+
+  <div *ngIf="!isLoading && errorMessage" class="error-banner">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage">
+    <div *ngIf="filteredPlaylists.length > 0; else noPlaylistsFound">
+      <app-playlist-item
+        *ngFor="let playlist of filteredPlaylists"
+        [playlist]="playlist"
+        (viewDetails)="handleViewDetails($event)"
+        (editPlaylist)="handleEditPlaylist($event)"
+        (deletePlaylist)="handleDeletePlaylist($event)">
+      </app-playlist-item>
+    </div>
+    <ng-template #noPlaylistsFound>
+      <p class="empty-state">
+        <span *ngIf="searchTerm.trim() !== ''">No se encontraron playlists públicas que coincidan con tu búsqueda "{{ searchTerm }}".</span>
+        <span *ngIf="searchTerm.trim() === '' && listType === 'currentUser'">No tienes playlists públicas. ¡Prueba a crear una o haz pública alguna existente!</span>
+        <span *ngIf="searchTerm.trim() === '' && (listType === 'public' || listType === 'userSpecific')">No hay playlists públicas para mostrar.</span>
+      </p>
+    </ng-template>
+  </div>
+</div>

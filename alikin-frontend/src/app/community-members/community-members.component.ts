@@ -19,7 +19,7 @@ export class CommunityMembersComponent implements OnInit, OnChanges {
   isLoading = false;
   error: string | null = null;
 
-  private readonly backendImageUrlBase = `${environment.mediaUrl}/uploads/`;
+  private readonly backendImageUrlBase = `${environment.mediaUrl}`;
 
 
   constructor(private communityService: CommunityService, private toastr: ToastrService) { }

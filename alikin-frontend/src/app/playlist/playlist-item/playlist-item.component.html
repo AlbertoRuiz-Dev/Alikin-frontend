@@ -1,0 +1,19 @@
+<div class="playlist-card" (click)="onViewDetails()">
+  <img [src]="playlist.coverImageUrl ? mediaUrl + playlist.coverImageUrl : defaultCoverUrl"
+       [alt]="playlist.name"
+       class="playlist-cover"
+       onError="this.src=defaultCoverUrl">
+  <div class="playlist-info">
+    <h3 class="playlist-name">{{ playlist.name }}</h3>
+    <p class="playlist-owner">De: {{ playlist.owner?.name || 'Desconocido' }}</p>
+    <p class="playlist-song-count">{{ playlist.songs?.length || 0 }} canciones</p>
+    <span *ngIf="playlist.public" class="badge public">Pública</span> <span *ngIf="!playlist.public" class="badge private">Privada</span> </div>
+  <div class="playlist-actions">
+    <button class="action-button edit-button" (click)="onEdit(); $event.stopPropagation();" title="Editar">
+      <img src="assets/icons/edit.svg" alt="Editar">
+    </button>
+    <button class="action-button delete-button" (click)="onDelete(); $event.stopPropagation();" title="Eliminar">
+      <img src="assets/icons/delete.svg" alt="Eliminar">
+    </button>
+  </div>
+</div>

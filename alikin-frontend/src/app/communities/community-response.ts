@@ -10,7 +10,7 @@ export interface UserBasicResponse {
 export interface CommunityRadio {
   name: string;
   streamUrl: string;
-  logoUrl: string | null; // Para el favicon/logo de la estación
+  logoUrl: string | null;
 }
 
 

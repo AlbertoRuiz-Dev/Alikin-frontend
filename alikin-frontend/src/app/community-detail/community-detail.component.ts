@@ -26,7 +26,7 @@ export class CommunityDetailComponent implements OnInit {
   error: string | null = null;
   activeSection: string = 'feed';
 
-  private readonly backendImageUrlBase = `${environment.mediaUrl}/uploads`;
+  private readonly backendImageUrlBase = `${environment.mediaUrl}`;
   showDeleteModal = false;
   communityNameToDelete = '';
 

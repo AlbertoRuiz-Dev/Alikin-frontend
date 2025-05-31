@@ -232,7 +232,7 @@ export class SongsComponent implements OnInit, OnDestroy {
     const defaultCover = 'assets/default-cover.jpg';
     if (!coverPath) return defaultCover;
     if (coverPath.startsWith('http')) return coverPath;
-    return `${environment.mediaUrl || 'http://localhost:8080'}/uploads/${coverPath}`;
+    return `${environment.mediaUrl || 'http://localhost:8080'}/${coverPath}`;
   }
 
   getSongStreamUrl(songId?: number): string | null {

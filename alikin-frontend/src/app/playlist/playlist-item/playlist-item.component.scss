@@ -1,0 +1,107 @@
+// src/app/features/playlists/components/playlist-item/playlist-item.component.scss
+@import "../../../assets/styles/_colors"; // Ajusta esta ruta si es necesario
+
+:host {
+  display: block; // Asegura que el componente ocupe su espacio
+}
+
+.playlist-card {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  margin-bottom: 12px;
+  background-color: $theme-bg-secondary;
+  border-radius: 6px; // Bordes suavemente redondeados
+  border: 1px solid $theme-bg-secondary; // Borde sutil o sin borde si se prefiere
+  transition: background-color 0.2s ease-out, transform 0.2s ease-out;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $theme-bg-tertiary;
+    transform: translateY(-2px); // Ligero efecto de elevación
+  }
+}
+
+.playlist-cover {
+  width: 60px; // Un poco más pequeño para un look más compacto
+  height: 60px;
+  border-radius: 4px;
+  object-fit: cover;
+  margin-right: 15px;
+  background-color: $theme-bg-tertiary; // Placeholder mientras carga la imagen
+}
+
+.playlist-info {
+  flex-grow: 1;
+  overflow: hidden; // Para truncar texto si es necesario
+}
+
+.playlist-name {
+  font-size: 1rem; // Tamaño de fuente base
+  font-weight: 600;
+  color: $text-primary;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; // Truncar nombres largos
+}
+
+.playlist-owner,
+.playlist-song-count {
+  font-size: 0.85rem;
+  color: $text-secondary;
+  margin: 2px 0;
+  white-space: nowrap;
+}
+
+.badge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-top: 4px;
+  display: inline-block; // Para que el margin-top funcione
+
+  &.public {
+    background-color: rgba($accent-green, 0.15);
+    color: $accent-green-light;
+  }
+  &.private {
+    background-color: rgba($text-muted, 0.2);
+    color: $text-secondary;
+  }
+}
+
+.playlist-actions {
+  margin-left: 15px; // Espacio entre info y acciones
+  display: flex;
+  align-items: center;
+  flex-shrink: 0; // Evitar que los botones se encojan
+
+  .action-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem; // Ajusta el tamaño de los iconos/emoji
+    padding: 6px;
+    margin-left: 5px;
+    color: $text-secondary;
+    border-radius: 50%; // Botones redondos
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease-out, background-color 0.2s ease-out;
+
+    &:hover {
+      color: $text-primary;
+      background-color: $theme-bg-tertiary;
+    }
+
+    // Si usas iconos específicos para editar/eliminar, puedes estilizarlos aquí
+    // &.edit-button:hover { color: $accent-primary; }
+    // &.delete-button:hover { color: $status-error; }
+  }
+}
