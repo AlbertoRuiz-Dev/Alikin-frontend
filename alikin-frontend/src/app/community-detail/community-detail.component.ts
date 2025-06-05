@@ -1,17 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-// Asegúrate de que la ruta a tu archivo de modelos y los nombres de las interfaces son correctos.
-// Deberías tener una interfaz CommunityRadio definida como:
-// export interface CommunityRadio { name: string; streamUrl: string; logoUrl: string | null; }
-// Y tu CommunityResponse debería tener: radioPlaylist: CommunityRadio | null;
-// y opcionalmente las propiedades planas del servidor si necesitas referenciarlas antes de la transformación:
-// radioStationName?: string; radioStreamUrl?: string; radioStationLogoUrl?: string; member?: boolean;
-import { CommunityResponse, CommunityRadio } from "../communities/community-response"; // AJUSTA ESTA RUTA E INTERFAZ SEGÚN SEA NECESARIO
+import { CommunityResponse, CommunityRadio } from "../communities/community-response";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MusicPlayerService } from '../layout/music-player/music-player.service';
 import { environment } from "../../enviroments/enviroment";
 import { RadioStationSearchResult } from "./RadioStationSearchResult.model";
 import { CommunityService } from "../communities/communities.service";
+// import { AuthService } from '../../auth/auth.service'; // Ejemplo si tuvieras AuthService
 
 @Component({
   selector: 'app-community-detail',
@@ -26,7 +21,7 @@ export class CommunityDetailComponent implements OnInit {
   error: string | null = null;
   activeSection: string = 'feed';
 
-  private readonly backendImageUrlBase = `${environment.mediaUrl}`;
+  private readonly backendImageUrlBase = `${environment.mediaUrl || 'http://localhost:8080'}`;
   showDeleteModal = false;
   communityNameToDelete = '';
 
@@ -45,6 +40,8 @@ export class CommunityDetailComponent implements OnInit {
   radioSaveError: string | null = null;
   radioSaveSuccess: string | null = null;
 
+  currentUserIdForFeed: number | null = null; // NUEVA PROPIEDAD
+
   public get isThisCommunityRadioCurrentlyPlaying(): boolean {
     if (!this.community?.radioPlaylist?.streamUrl || !this.musicService.currentSong) {
       return false;
@@ -53,16 +50,30 @@ export class CommunityDetailComponent implements OnInit {
       this.musicService.currentSong.streamUrl === this.community.radioPlaylist.streamUrl;
   }
 
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private communityService: CommunityService,
     private fb: FormBuilder,
     private musicService: MusicPlayerService
+    // private authService: AuthService // Si tuvieras AuthService
   ) {}
 
   ngOnInit(): void {
+    // Obtener currentUserId (ejemplo usando localStorage, idealmente AuthService)
+    const userFromStorage = localStorage.getItem('currentUser');
+    if (userFromStorage) {
+      try {
+        const parsedUser = JSON.parse(userFromStorage);
+        this.currentUserIdForFeed = parsedUser && parsedUser.id ? +parsedUser.id : null;
+        if (parsedUser && parsedUser.id && isNaN(+parsedUser.id)) {
+          this.currentUserIdForFeed = null;
+        }
+      } catch (e) {
+        this.currentUserIdForFeed = null;
+      }
+    }
+
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.communityId = +idParam;
@@ -105,16 +116,12 @@ export class CommunityDetailComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
     this.communityService.getCommunityById(this.communityId).subscribe({
-      next: (data: CommunityResponse) => { // data es la respuesta directa del servidor
-        // Crear un nuevo objeto para this.community, transformando la info de la radio
+      next: (data: CommunityResponse) => {
         const communityDataWithProcessedRadio: CommunityResponse = {
-          ...data, // Copiar todas las propiedades de la respuesta del servidor
-          radioPlaylist: null // Inicializar radioPlaylist
+          ...data,
+          radioPlaylist: null
         };
 
-        // Si el servidor envía los campos planos de la radio, los usamos para construir radioPlaylist
-        // Asegúrate que data.radioStationName, data.radioStreamUrl, data.radioStationLogoUrl
-        // son los nombres correctos de las propiedades en la respuesta del servidor.
         if (data.radioStreamUrl && data.radioStationName) {
           communityDataWithProcessedRadio.radioPlaylist = {
             name: data.radioStationName,
@@ -124,8 +131,7 @@ export class CommunityDetailComponent implements OnInit {
         }
         this.community = communityDataWithProcessedRadio;
 
-        // Determinar el rol del usuario (usando 'member' como en tu JSON de ejemplo)
-        if (data.member) { // 'member' en lugar de 'isMember' según tu JSON
+        if (data.member) {
           this.currentUserRole = data.userRole === 'LEADER' ? 'LEADER' : 'MEMBER';
         } else {
           this.currentUserRole = 'VISITOR';
@@ -152,7 +158,7 @@ export class CommunityDetailComponent implements OnInit {
       this.settingsSubmitSuccess = null;
     }
     if (section === 'radioSettings') {
-      this.radioSaveError = null; // Limpiar errores/éxitos al cambiar a la pestaña de radio
+      this.radioSaveError = null;
       this.radioSaveSuccess = null;
     }
   }
@@ -185,7 +191,7 @@ export class CommunityDetailComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     } else {
-      this.clearCommunityImageSelection(true); // Limpiar si no se selecciona archivo
+      this.clearCommunityImageSelection(true);
     }
   }
 
@@ -194,11 +200,11 @@ export class CommunityDetailComponent implements OnInit {
     if (rePopulateWithCurrent) {
       this.communityImagePreviewUrl = this.community?.imageUrl ? this.getFullImageUrl(this.community.imageUrl) : null;
     } else {
-      this.communityImagePreviewUrl = null; // Limpiar vista previa si no se repopula
+      this.communityImagePreviewUrl = null;
     }
     const fileInput = document.getElementById('communityImageFileEdit') as HTMLInputElement;
     if (fileInput) {
-      fileInput.value = ""; // Resetear el input de archivo
+      fileInput.value = "";
     }
   }
 
@@ -229,15 +235,11 @@ export class CommunityDetailComponent implements OnInit {
 
     this.communityService.updateCommunity(this.communityId, formData).subscribe({
       next: (updatedCommunityFromServer: CommunityResponse) => {
-        // Preservar la radioPlaylist existente, ya que la API de updateCommunity
-        // podría no devolver la información de la radio actualizada de la misma manera.
         const existingRadioPlaylist = this.community?.radioPlaylist ?? null;
-
         this.community = {
           ...updatedCommunityFromServer,
-          radioPlaylist: existingRadioPlaylist // Ahora es CommunityRadio | null
+          radioPlaylist: existingRadioPlaylist
         };
-
         this.populateSettingsForm();
         this.isSubmittingSettings = false;
         this.settingsSubmitSuccess = "¡Comunidad actualizada con éxito!";
@@ -270,15 +272,12 @@ export class CommunityDetailComponent implements OnInit {
       streamUrl: this.community.radioPlaylist.streamUrl
     };
 
-    // Verifica si la radio de la comunidad es la que está actualmente cargada en el servicio de música
     if (this.musicService.currentSong?.streamUrl === communityRadioTrack.streamUrl) {
-      // Si es la misma canción, simplemente alterna play/pause
       this.musicService.togglePlayPause();
     } else {
-      // Si es una canción diferente o no hay nada cargado, inicia esta radio
       this.musicService.playSong(communityRadioTrack);
     }
-    if (this.radioSaveError !== undefined) { // Limpiar error si la acción fue exitosa
+    if (this.radioSaveError !== undefined) {
       this.radioSaveError = null;
     }
   }
@@ -326,7 +325,7 @@ export class CommunityDetailComponent implements OnInit {
 
     const stationName = this.selectedRadioStation.name;
     const streamUrl = this.selectedRadioStation.streamUrl;
-    const favicon = this.selectedRadioStation.favicon; // Esto será nuestro logoUrl
+    const favicon = this.selectedRadioStation.favicon;
 
     this.communityService.setCommunityRadioStation(
       this.communityId,
@@ -334,18 +333,14 @@ export class CommunityDetailComponent implements OnInit {
       streamUrl,
       favicon
     ).subscribe({
-      next: (updatedCommunityFromServer: CommunityResponse) => { // Respuesta del servidor
+      next: (updatedCommunityFromServer: CommunityResponse) => {
         console.log('Respuesta del backend (updatedCommunityFromServer al guardar radio):', JSON.stringify(updatedCommunityFromServer, null, 2));
-
-        // Crear un nuevo objeto para this.community, combinando datos existentes y actualizados
-        // y transformando la info de la radio.
         const communityDataForState: CommunityResponse = {
-          ...(this.community || {} as CommunityResponse), // Mantener datos base de this.community si existe
-          ...updatedCommunityFromServer, // Sobrescribir con todos los datos de la respuesta
-          radioPlaylist: null // Inicializar radioPlaylist para (re)construirla
+          ...(this.community || {} as CommunityResponse),
+          ...updatedCommunityFromServer,
+          radioPlaylist: null
         };
 
-        // Construimos el objeto radioPlaylist usando los campos planos de la respuesta del servidor
         if (updatedCommunityFromServer.radioStreamUrl && updatedCommunityFromServer.radioStationName) {
           communityDataForState.radioPlaylist = {
             name: updatedCommunityFromServer.radioStationName,
@@ -353,12 +348,10 @@ export class CommunityDetailComponent implements OnInit {
             logoUrl: updatedCommunityFromServer.radioStationLogoUrl || null
           };
         }
-
         this.community = communityDataForState;
-
         this.isSavingRadio = false;
         this.radioSaveSuccess = `Radio '${stationName}' guardada para la comunidad.`;
-        this.selectedRadioStation = null; // Limpiar la selección de radio
+        this.selectedRadioStation = null;
       },
       error: (err) => {
         this.radioSaveError = err.error?.message || "No se pudo guardar la radio.";
@@ -368,22 +361,18 @@ export class CommunityDetailComponent implements OnInit {
   }
 
   playCommunityRadio(): void {
-    // this.community.radioPlaylist ya debería tener la estructura CommunityRadio | null
     const radioInfo = this.community?.radioPlaylist;
-
     if (radioInfo && radioInfo.streamUrl) {
       this.musicService.playSong({
         title: radioInfo.name || 'Radio de la Comunidad',
         artist: this.community?.name || 'Comunidad',
-        // MusicPlayerService espera 'coverImageUrl', mapeamos 'logoUrl' a 'coverImageUrl'
         coverImageUrl: radioInfo.logoUrl || this.getFullImageUrl(this.community?.imageUrl) || 'assets/images/default-cover.jpg',
         streamUrl: radioInfo.streamUrl
       });
-      this.radioSaveError = null; // Limpiar cualquier error previo si la reproducción inicia
+      this.radioSaveError = null;
     } else {
       console.warn("playCommunityRadio: No hay radio configurada o falta la URL del stream en this.community.radioPlaylist.");
       this.radioSaveError = "No hay radio configurada para reproducir o la información es incorrecta. Por favor, intenta configurar la radio nuevamente.";
-      // Considera mostrar un mensaje más visible al usuario si esto ocurre.
     }
   }
 
@@ -409,7 +398,7 @@ export class CommunityDetailComponent implements OnInit {
     if (words.length > 1 && words[0].length > 0 && words[1].length > 0) {
       return (words[0][0] + words[1][0]).toUpperCase();
     }
-    if (words[0].length > 0) { // Fallback para nombres de una palabra si los anteriores no aplican
+    if (words[0].length > 0) {
       return words[0].substring(0, Math.min(2, words[0].length)).toUpperCase();
     }
     return '?';
@@ -421,7 +410,7 @@ export class CommunityDetailComponent implements OnInit {
 
   openDeleteConfirmationModal(): void {
     if (this.community) {
-      this.communityNameToDelete = this.community.name; // Corregido para que el nombre se pase al modal
+      this.communityNameToDelete = this.community.name;
       this.showDeleteModal = true;
     }
   }
@@ -436,20 +425,17 @@ export class CommunityDetailComponent implements OnInit {
     if (enteredName === this.community.name) {
       this.communityService.deleteCommunity(this.community.id).subscribe({
         next: () => {
-          // Considera usar un servicio de notificaciones en lugar de alert
           alert(`Comunidad "${this.community?.name}" eliminada con éxito.`);
           this.showDeleteModal = false;
           this.router.navigate(['/communities']);
         },
         error: (err) => {
           alert(`Error: ${err.error?.message || err.message || 'No se pudo eliminar la comunidad.'}`);
-          this.showDeleteModal = false; // Asegurarse de cerrar el modal también en caso de error
+          this.showDeleteModal = false;
         }
       });
     } else {
       alert('El nombre de la comunidad no coincide. Eliminación cancelada.');
-      // No cerrar el modal aquí podría ser una opción para permitir reintentos, o cerrarlo, según UX deseada.
-      // this.showDeleteModal = false;
     }
   }
 }

@@ -1,0 +1,11 @@
+{
+  "/api-radio": {
+    "target": "https://de2.api.radio-browser.info",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api-radio": ""
+    },
+    "logLevel": "debug"
+  }
+}

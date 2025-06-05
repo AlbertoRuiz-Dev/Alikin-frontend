@@ -1,13 +1,13 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {Page, PostResponse} from "../post/post.model"; // PostResponse usa tu 'Comment' correctamente
-import {Song} from "../songs/song.model";
-import {environment} from "../../enviroments/enviroment";
-import {PageableRequest, PostService} from "../post/post.service";
-import {SongService} from "../songs/song.service";
-import {MusicPlayerService} from "../layout/music-player/music-player.service";
-import {CommentService} from "../comment/comment.service"; // CommentService usa tu 'Comment' correctamente
-import {Comment as AppComment, CommentRequest} from '../comment/comment.model'; // Alias importado
+import { Page, PostResponse } from "../post/post.model";
+import { Song } from "../songs/song.model";
+import { environment } from "../../enviroments/enviroment";
+import { PageableRequest, PostService } from "../post/post.service";
+import { SongService } from "../songs/song.service";
+import { MusicPlayerService } from "../layout/music-player/music-player.service";
+import { CommentService } from "../comment/comment.service";
+import { Comment as AppComment, CommentRequest } from '../comment/comment.model';
 
 @Component({
   selector: 'app-community-feed',
@@ -17,6 +17,7 @@ import {Comment as AppComment, CommentRequest} from '../comment/comment.model'; 
 export class CommunityFeedComponent implements OnInit, OnChanges {
   @Input() communityId!: number;
   @Input() currentUserRole: 'LEADER' | 'MEMBER' | 'VISITOR' = 'VISITOR';
+  @Input() currentUserId: number | null = null; // NUEVO INPUT para el ID del usuario actual
 
   posts: PostResponse[] = [];
   isLoadingPosts = false;
@@ -37,6 +38,8 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
   isLoadingSongs = false;
   commentForms = new Map<number, FormGroup>();
 
+  showDropdownMap = new Map<number, boolean>(); // Para manejar desplegables por post
+
   private readonly backendImageUrlBase = `${environment.mediaUrl || 'http://localhost:8080'}`;
 
   @ViewChild('postListContainer') postListContainer!: ElementRef;
@@ -47,8 +50,28 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
     private songService: SongService,
     private fb: FormBuilder,
     private musicService: MusicPlayerService,
-    private commentService: CommentService
+    private commentService: CommentService,
+    private elementRef: ElementRef // Para cerrar desplegables al hacer clic fuera
   ) {}
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    // Cerrar todos los desplegables si el clic es fuera de ellos
+    // Esto es una implementación simple. Podría mejorarse para no cerrar si se
+    // hace clic en el propio botón que lo abrió de nuevo.
+    let closeAll = true;
+    this.showDropdownMap.forEach((value, key) => {
+      // Necesitaríamos una referencia al elemento del botón del menú para una lógica más precisa
+      // Por ahora, cerramos todos si el clic no está contenido en este componente general.
+      // Para una mejor UX, cada post-item (si fuera un componente) manejaría su propio clic fuera.
+      // Como aquí es una lista, es más complejo.
+    });
+    // Para simplificar: si un dropdown está abierto y se hace clic en cualquier lugar,
+    // la lógica de toggleDropdown debería manejar el cierre si se hace clic en el mismo botón.
+    // Un clic genérico fuera podría requerir que cada botón tenga una ref.
+    // Vamos a mantenerlo simple: el toggle lo maneja, y el borrado lo cierra.
+  }
+
 
   ngOnInit(): void {
     this.initNewPostForm();
@@ -69,6 +92,47 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
       if (this.canPost() && this.availableSongs.length === 0 && !this.isLoadingSongs) {
         this.loadAvailableSongs();
       }
+    }
+    // Podríamos necesitar recalcular isOwner para los posts si currentUserId cambia,
+    // pero currentUserId se establece en ngOnInit del padre y se pasa una vez.
+  }
+
+  isOwner(post: PostResponse): boolean {
+    if (!this.currentUserId || !post || !post.user) {
+      return false;
+    }
+    return this.currentUserId === post.user.id;
+  }
+
+  toggleDropdown(post: PostResponse, event: Event): void {
+    event.stopPropagation(); // Evita que el HostListener lo cierre inmediatamente
+    const currentState = this.showDropdownMap.get(post.id) || false;
+    // Cierra todos los demás desplegables
+    this.showDropdownMap.forEach((value, key) => {
+      if (key !== post.id) {
+        this.showDropdownMap.set(key, false);
+      }
+    });
+    this.showDropdownMap.set(post.id, !currentState);
+  }
+
+  deletePost(postId: number, event: Event): void {
+    event.stopPropagation();
+    if (confirm('¿Estás seguro de que quieres eliminar este post? Esta acción no se puede deshacer.')) {
+      this.postService.deletePost(postId).subscribe({
+        next: () => {
+          this.posts = this.posts.filter(p => p.id !== postId);
+          this.showDropdownMap.set(postId, false); // Cierra el desplegable
+          // Considera mostrar un toast de éxito
+        },
+        error: (err) => {
+          console.error('Error al eliminar el post:', err);
+          alert(err.error?.message || 'No se pudo eliminar el post.');
+          this.showDropdownMap.set(postId, false); // Cierra el desplegable
+        }
+      });
+    } else {
+      this.showDropdownMap.set(postId, false); // Cierra si cancela
     }
   }
 
@@ -108,9 +172,6 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
     post.uiCommentsError = null;
     this.commentService.getCommentsForPost(post.id).subscribe({
       next: (commentsFromService: AppComment[]) => {
-        // Forzar la asignación usando 'as any' para el lado derecho.
-        // Esto le dice a TypeScript que confíe en que los tipos son compatibles aquí,
-        // saltándose la verificación estricta para esta línea específica.
         post.uiComments = commentsFromService as any;
         post.uiIsLoadingComments = false;
       },
@@ -124,18 +185,11 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
 
   onCommentSubmit(post: PostResponse): void {
     const form = this.commentForms.get(post.id);
-
-    if (!form) {
-      return;
-    }
-
+    if (!form) return;
     if (!post.id) {
-      // Considera no llamar a form.markAllAsTouched() si form puede ser null aquí.
-      // Si !form ya hizo return, esta comprobación de post.id es segura.
-      form.markAllAsTouched(); // Opcional, dependiendo de si quieres marcar el form si solo falta el post.id
+      form.markAllAsTouched();
       return;
     }
-
     if (form.invalid) {
       form.markAllAsTouched();
       return;
@@ -143,7 +197,6 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
     post.uiIsSubmittingComment = true;
     post.uiSubmitCommentError = null;
     const commentData: CommentRequest = { content: form.value.content };
-
 
     this.commentService.addComment(post.id, commentData).subscribe({
       next: (newComment: AppComment) => {
@@ -306,7 +359,6 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
     }
     this.postService.getCommunityPosts(this.communityId, pageable).subscribe({
       next: (pageData: Page<PostResponse>) => {
-        // Inicializar propiedades UI para comentarios en cada post nuevo
         const newPosts = pageData.content.map(p => ({
           ...p,
           uiShowComments: false,
@@ -381,19 +433,14 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
 
   vote(post: PostResponse, value: number): void {
     if (!post || post.id === undefined) return;
-
-    // Si el usuario ya votó con este valor, al hacer clic de nuevo se quita el voto (enviar 0)
-    // Si el usuario vota diferente, se envía el nuevo valor.
     const newVoteToSend = post.userVote === value ? 0 : value;
-
     this.postService.voteForPost(post.id, newVoteToSend).subscribe({
-      next: (updatedPostData) => { // El backend debería devolver el PostResponse actualizado o al menos voteCount y el nuevo userVote
-        post.userVote = updatedPostData.userVote; // Asumiendo que el backend devuelve el nuevo userVote
-        post.voteCount = updatedPostData.voteCount; // Asumiendo que el backend devuelve el nuevo voteCount
+      next: (updatedPostData) => {
+        post.userVote = updatedPostData.userVote;
+        post.voteCount = updatedPostData.voteCount;
       },
       error: (err) => {
         console.error(`Error al votar (valor: ${newVoteToSend}) en post ${post.id}:`, err);
-        // Aquí podrías manejar el error en la UI si lo deseas, por ejemplo, revirtiendo un cambio optimista.
       }
     });
   }
@@ -417,5 +464,4 @@ export class CommunityFeedComponent implements OnInit, OnChanges {
     }
     return 'Canción seleccionada';
   }
-
 }

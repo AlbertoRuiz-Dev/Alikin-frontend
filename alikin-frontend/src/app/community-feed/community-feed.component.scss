@@ -804,3 +804,70 @@ $scrollbar-width: 6px;
     }
   }
 }
+.post-menu-container-feed {
+  position: relative; // Necesario para el posicionamiento absoluto del dropdown
+  margin-left: auto; // Empuja el botón del menú a la derecha en el .post-author
+
+  .menu-btn-feed {
+    background: none;
+    border: none;
+    padding: 0.5rem; // Ajusta si es necesario
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon { // SVG de tres puntos
+      width: 20px; // Ajusta el tamaño de tu SVG
+      height: 20px;
+      fill: $text-secondary; // Usa tus variables de color
+      transition: fill 0.2s ease;
+    }
+
+    &:hover {
+      background-color: $theme-bg-tertiary; // Usa tus variables
+      .icon {
+        fill: $text-primary; // Usa tus variables
+      }
+    }
+  }
+
+  .dropdown-menu-feed {
+    position: absolute;
+    top: 100%; // Justo debajo del botón
+    right: 0; // Alineado a la derecha
+    background-color: $theme-bg-tertiary; // Usa tus variables
+    border: 1px solid $border-primary-darktheme; // Usa tus variables
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 100; // Por encima de otros elementos
+    width: max-content; // Ancho según contenido
+    min-width: 150px; // Ancho mínimo
+    padding: 0.5rem 0; // Padding vertical para la lista
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        padding: 0.6rem 1rem;
+        color: $text-secondary; // Usa tus variables
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.2s ease, color 0.2s ease;
+
+        &:hover {
+          background-color: lighten($theme-bg-tertiary, 5%); // Aclarar un poco el fondo al pasar el ratón
+          color: $text-primary; // Cambiar color del texto
+        }
+        // Podrías tener un estilo específico para la opción de eliminar
+        // &:last-child:hover {
+        //   background-color: rgba($status-error, 0.1);
+        //   color: $status-error;
+        // }
+      }
+    }
+  }
+}

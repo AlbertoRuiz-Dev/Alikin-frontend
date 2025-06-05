@@ -78,7 +78,7 @@ export class CommunityService {
 
     // Es recomendable usar los servidores DNS de Radio Browser o elegir uno cercano.
     // Ver documentación: https://api.radio-browser.info/
-    const radioApiUrl = 'https://de1.api.radio-browser.info/json/stations/search'; // Ejemplo de servidor
+    const radioApiUrl = 'https://de2.api.radio-browser.info/json/stations/search';
 
     return this.http.get<any[]>(radioApiUrl, { params }).pipe(
       map(apiStationsArray => {
@@ -86,7 +86,7 @@ export class CommunityService {
         return apiStationsArray.map(station => ({
           id: station.stationuuid,
           name: station.name,
-          streamUrl: station.url_resolved || station.url, // url_resolved suele ser más fiable
+          streamUrl: station.url_resolved || station.url,
           favicon: station.favicon || null,
           country: station.countrycode || station.country || '', // countrycode es más estándar
           tags: station.tags || ''
@@ -97,7 +97,6 @@ export class CommunityService {
 
 
   kickCommunityMember(communityId: number, memberId: number): Observable<MessageResponse> {
-    // El endpoint es DELETE /api/communities/{communityId}/members/{memberId}
     return this.http.delete<MessageResponse>(`${this.apiUrl}/${communityId}/members/${memberId}`)
       .pipe(
         tap(response => console.log('Respuesta de expulsión:', response)), // Opcional: para debugging

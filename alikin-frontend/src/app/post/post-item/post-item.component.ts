@@ -1,44 +1,97 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, HostListener, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../../enviroments/enviroment';
 import { MusicPlayerService } from "../../layout/music-player/music-player.service";
 import { PostService } from '../post.service';
 import { PostResponse } from "../post.model";
-import {CommentService} from "../../comment/comment.service";
-import { Comment } from '../../comment/comment.model'; // NUEVA IMPORTACIÓN
-
-
+import { CommentService } from "../../comment/comment.service";
+import { Comment } from '../../comment/comment.model';
+// Asume que tienes un AuthService para obtener el ID del usuario actual
+// import { AuthService } from '../../auth/auth.service'; // Descomenta y ajusta la ruta
 
 @Component({
   selector: 'app-post-item',
   templateUrl: './post-item.component.html',
   styleUrls: ['./post-item.component.scss']
 })
-export class PostItemComponent implements OnInit { // IMPLEMENTS ONINIT
+export class PostItemComponent implements OnInit {
   @Input() post!: PostResponse;
+  @Input() currentUserId: number | null = null; // Alternativa si no usas AuthService
+  @Output() postDeleted = new EventEmitter<number>();
+
   expandedImageUrl?: string;
   private readonly backendImageUrlBase = `${environment.mediaUrl}`;
 
-  // Propiedades para comentarios
   comments: Comment[] = [];
   showComments = false;
   isLoadingComments = false;
   commentsError: string | null = null;
-  commentForm!: FormGroup; // Non-null assertion operator
+  commentForm!: FormGroup;
   isSubmittingComment = false;
   submitCommentError: string | null = null;
+
+  isOwner = false;
+  showDropdown = false;
 
   constructor(
     private musicService: MusicPlayerService,
     private postService: PostService,
-    private commentService: CommentService, // INYECTAR CommentService
-    private fb: FormBuilder // INYECTAR FormBuilder
+    private commentService: CommentService,
+    private fb: FormBuilder,
+    private elementRef: ElementRef
+    // private authService: AuthService // Descomenta si usas AuthService
   ) {}
 
   ngOnInit(): void {
     this.commentForm = this.fb.group({
       content: ['', [Validators.required, Validators.maxLength(1000)]]
     });
+
+
+    if (this.currentUserId != null && this.post?.user?.id != null) {
+      // Convertir ambos a número para una comparación segura
+      const numCurrentUserId = +this.currentUserId;
+      const numPostOwnerId = +this.post.user.id;
+
+      this.isOwner = numCurrentUserId === numPostOwnerId;
+    } else {
+      this.isOwner = false;
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    if (this.showDropdown && !this.elementRef.nativeElement.contains(event.target)) {
+      this.showDropdown = false;
+    }
+  }
+
+  toggleDropdown(event: Event): void {
+    event.stopPropagation();
+    this.showDropdown = !this.showDropdown;
+  }
+
+  deletePost(): void {
+    if (!this.isOwner || !this.post || this.post.id === undefined) {
+      console.error("No se puede eliminar: no es propietario o falta ID del post.");
+      return;
+    }
+    if (confirm('¿Estás seguro de que quieres eliminar este post? Esta acción no se puede deshacer.')) {
+      this.postService.deletePost(this.post.id).subscribe({
+        next: () => {
+          this.postDeleted.emit(this.post.id);
+          this.showDropdown = false;
+          // Considera mostrar un toast de éxito aquí
+        },
+        error: (err) => {
+          console.error('Error al eliminar el post:', err);
+          alert(err.error?.message || 'No se pudo eliminar el post.');
+          this.showDropdown = false;
+        }
+      });
+    } else {
+      this.showDropdown = false;
+    }
   }
 
   private handleVoteResponse(newVoteValue: number, response: PostResponse) {
@@ -96,7 +149,6 @@ export class PostItemComponent implements OnInit { // IMPLEMENTS ONINIT
     });
   }
 
-  // --- MÉTODOS PARA COMENTARIOS ---
   toggleComments(): void {
     this.showComments = !this.showComments;
     if (this.showComments && this.comments.length === 0 && !this.commentsError) {
@@ -133,9 +185,9 @@ export class PostItemComponent implements OnInit { // IMPLEMENTS ONINIT
 
     this.commentService.addComment(this.post.id, commentData).subscribe({
       next: (newComment) => {
-        this.comments.unshift(newComment); // Añadir al inicio de la lista
+        this.comments.unshift(newComment);
         this.commentForm.reset();
-        this.post.commentsCount = (this.post.commentsCount || 0) + 1; // Actualizar contador
+        this.post.commentsCount = (this.post.commentsCount || 0) + 1;
         this.isSubmittingComment = false;
       },
       error: (err) => {
@@ -146,7 +198,6 @@ export class PostItemComponent implements OnInit { // IMPLEMENTS ONINIT
     });
   }
 
-  // Función para obtener iniciales si no hay imagen de perfil para comentarios
   getCommentUserInitials(user: { nickname: string | null, name: string }): string {
     const nameToUse = user.nickname || user.name;
     return nameToUse ? nameToUse.substring(0, 1).toUpperCase() : '?';

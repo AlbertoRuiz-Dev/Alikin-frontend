@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import {Playlist} from "../models/playlist.model";
-import {Song} from "../../songs/song.model";
-import {PlaylistService} from "../playlist.services";
-import {SongService} from "../../songs/song.service";
-import {Page} from "../../shared/models/page.model";
-import {SongBasic} from "../models/song-basic.model";
-import {environment} from "../../../enviroments/enviroment";
+import { Playlist } from "../models/playlist.model";
+import { Song } from "../../songs/song.model"; // Modelo completo por si lo necesitas en el futuro
+import { PlaylistService } from "../playlist.services";
+import { SongService } from "../../songs/song.service";
+import { Page } from "../../shared/models/page.model";
+import { SongBasic } from "../models/song-basic.model";
+import { environment } from "../../../enviroments/enviroment";
+import { MusicPlayerService } from '../../layout/music-player/music-player.service'; // <-- AÑADE ESTA IMPORTACIÓN
 
 @Component({
   selector: 'app-playlist-detail',
@@ -20,18 +21,18 @@ export class PlaylistDetailComponent implements OnInit {
   playlistId!: number;
   errorMessage: string | null = null;
 
-  // Para añadir canciones
   showSongSearch = false;
-  availableSongsPage$: Observable<Page<Song>> = of({ content: [], totalElements: 0, totalPages: 0, number: 0, size: 0,  first: true, last: true, empty: true, numberOfElements:0, sort: { sorted: false, unsorted: true, empty: true} }); // Inicializar
+  availableSongsPage$: Observable<Page<Song>> = of({ content: [], totalElements: 0, totalPages: 0, number: 0, size: 0,  first: true, last: true, empty: true, numberOfElements:0, sort: { sorted: false, unsorted: true, empty: true} });
   currentPage = 0;
   pageSize = 10;
-  mediaUrl = environment.mediaUrl;
+  mediaUrl = environment.mediaUrl; // Ya tenías esto para las imágenes de portada
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private playlistService: PlaylistService,
-    private songService: SongService // Para buscar canciones y añadirlas
+    private songService: SongService,
+    public musicService: MusicPlayerService
   ) {}
 
   ngOnInit(): void {
@@ -43,7 +44,7 @@ export class PlaylistDetailComponent implements OnInit {
           return of(null);
         }
         this.playlistId = +id;
-        return this.playlistService.getPlaylistById(this.playlistId).pipe( //
+        return this.playlistService.getPlaylistById(this.playlistId).pipe(
           catchError(err => {
             this.errorMessage = 'Error al cargar la playlist.';
             console.error(err);
@@ -54,9 +55,9 @@ export class PlaylistDetailComponent implements OnInit {
     );
   }
 
-  loadPlaylistDetails(): void { // Método para recargar la playlist
+  loadPlaylistDetails(): void {
     if (this.playlistId) {
-      this.playlist$ = this.playlistService.getPlaylistById(this.playlistId).pipe( //
+      this.playlist$ = this.playlistService.getPlaylistById(this.playlistId).pipe(
         catchError(err => {
           this.errorMessage = 'Error al recargar la playlist.';
           console.error(err);
@@ -66,13 +67,13 @@ export class PlaylistDetailComponent implements OnInit {
     }
   }
 
-  removeSongFromPlaylist(songId: number): void {
+  removeSongFromPlaylist(songId: number): void { //
     if (!this.playlistId) return;
     if (confirm('¿Estás seguro de eliminar esta canción de la playlist?')) {
-      this.playlistService.removeSongFromPlaylist(this.playlistId, songId).subscribe({ //
+      this.playlistService.removeSongFromPlaylist(this.playlistId, songId).subscribe({
         next: () => {
           alert('Canción eliminada.');
-          this.loadPlaylistDetails(); // Recargar
+          this.loadPlaylistDetails();
         },
         error: (err) => {
           this.errorMessage = 'Error al eliminar la canción.';
@@ -83,18 +84,16 @@ export class PlaylistDetailComponent implements OnInit {
     }
   }
 
-  toggleSongSearch(show: boolean): void {
+  toggleSongSearch(show: boolean): void { //
     this.showSongSearch = show;
     if (show) {
       this.searchSongs();
     }
   }
 
-  searchSongs(page: number = 0): void {
+  searchSongs(page: number = 0): void { //
     this.currentPage = page;
-    // Usamos el SongService existente para buscar canciones paginadas
-    // Aquí podrías añadir más filtros si tu PageableSongRequest y backend los soportan
-    this.availableSongsPage$ = this.songService.getAvailableSongs({ page: this.currentPage, size: this.pageSize, sort: 'title,asc' }).pipe( //
+    this.availableSongsPage$ = this.songService.getAvailableSongs({ page: this.currentPage, size: this.pageSize, sort: 'title,asc' }).pipe(
       catchError(err => {
         this.errorMessage = 'Error al buscar canciones.';
         console.error(err);
@@ -103,13 +102,12 @@ export class PlaylistDetailComponent implements OnInit {
     );
   }
 
-  addSongToPlaylist(songId: number): void {
+  addSongToPlaylist(songId: number): void { //
     if (!this.playlistId) return;
-    this.playlistService.addSongToPlaylist(this.playlistId, songId).subscribe({ //
+    this.playlistService.addSongToPlaylist(this.playlistId, songId).subscribe({
       next: () => {
         alert('Canción añadida a la playlist.');
-        this.loadPlaylistDetails(); // Recargar
-        // Opcional: podrías cerrar el buscador de canciones o actualizar la lista de disponibles
+        this.loadPlaylistDetails();
       },
       error: (err) => {
         this.errorMessage = 'Error al añadir la canción. ¿Quizás ya existe en la playlist?';
@@ -119,13 +117,40 @@ export class PlaylistDetailComponent implements OnInit {
     });
   }
 
-  // Simulación de reproducción
-  playSong(song: SongBasic | Song): void {
-    console.log(`Reproduciendo: ${song.title} - ${song.artist}`);
-    alert(`Reproduciendo: ${song.title}`);
+  // --- MÉTODO playSong ACTUALIZADO ---
+  playSong(songBasic: SongBasic): void {
+
+    const streamUrl = `${environment.apiUrl}/songs/${songBasic.id}/stream`;
+
+    const fullCoverImageUrl = songBasic.coverImageUrl
+      ? (songBasic.coverImageUrl.startsWith('http') ? songBasic.coverImageUrl : this.mediaUrl +"/"+ songBasic.coverImageUrl)
+      : 'assets/images/default-song-cover.png'; // Fallback a imagen por defecto
+
+    const songForPlayer = {
+      title: songBasic.title,
+      artist: songBasic.artist || 'Artista Desconocido',
+      coverImageUrl: fullCoverImageUrl,
+      streamUrl: streamUrl
+    };
+
+    if (this.musicService.currentSong?.streamUrl === streamUrl) {
+      this.musicService.togglePlayPause(); //
+    } else {
+      this.musicService.playSong(songForPlayer); //
+    }
   }
 
-  goToEdit(): void {
+  isCurrentlyPlaying(songBasic: SongBasic): boolean {
+    if (!this.musicService.currentSong || !this.musicService.isPlaying) {
+      return false;
+    }
+    // Compara usando la URL de stream construida, ya que es lo que el servicio usa
+    const streamUrl = `${environment.apiUrl}/songs/${songBasic.id}/stream`; // <-- ¡AJUSTA ESTA RUTA!
+    return this.musicService.currentSong.streamUrl === streamUrl;
+  }
+
+
+  goToEdit(): void { //
     this.router.navigate(['/playlist', this.playlistId, 'edit']);
   }
 }

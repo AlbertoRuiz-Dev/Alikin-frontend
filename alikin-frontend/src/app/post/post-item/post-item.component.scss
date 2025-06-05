@@ -1,31 +1,28 @@
-// src/app/components/post/post-item/post-item.component.scss
-@import "../../../assets/styles/_colors.scss"; // Ajusta la ruta a tu archivo de variables SASS
+@import "../../../assets/styles/_colors.scss";
 
-// Variables locales si son específicas para el post y no están en _colors.scss
-$post-card-bg: $theme-bg-secondary; // Fondo de la tarjeta del post
+$post-card-bg: $theme-bg-secondary;
 $post-border-color: $border-primary-darktheme;
-$post-border-radius: 8px; // Un radio más sutil y moderno
+$post-border-radius: 8px;
 $post-text-primary: $text-primary;
 $post-text-secondary: $text-secondary;
-$post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más"
+$post-text-collapsible-color: $accent-link;
 
 .post-card {
   background-color: $post-card-bg;
   border: 1px solid $post-border-color;
   border-radius: $post-border-radius;
-  padding: 1.25rem 1.5rem; // Ajustar padding
+  padding: 1.25rem 1.5rem;
   color: $post-text-primary;
   display: flex;
   gap: 1rem;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   position: relative;
 
-
   &:hover {
     border-color: lighten($post-border-color, 10%);
   }
 
-  &.highlighted { // Para posts destacados
+  &.highlighted {
     border-color: $accent-orange;
     box-shadow: 0 0 12px rgba($accent-orange, 0.3);
   }
@@ -35,25 +32,25 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3rem; // Menor espacio entre botones de voto
-  width: 40px; // Un poco más estrecho
-  padding-top: 4px; // Alineación con el contenido del post
+  gap: 0.3rem;
+  width: 40px;
+  padding-top: 4px;
 
   .vote-btn {
     background-color: transparent;
     border: none;
     padding: 0.4rem;
     cursor: pointer;
-    border-radius: 50%; // Botones redondos
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background-color 0.2s ease;
 
-    img { // Si usas <img> para los iconos SVG
+    img {
       width: 20px;
       height: 20px;
-      filter: grayscale(100%) brightness(1.5); // Iconos más sutiles por defecto
+      filter: grayscale(100%) brightness(1.5);
       transition: filter 0.2s ease;
     }
 
@@ -61,50 +58,27 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
       filter: grayscale(0%) brightness(1);
     }
 
-    &.upvote:hover img {
-      // Podrías aplicar un color específico al SVG en hover si es posible (o cambiar a iconos de fuente)
-    }
-    &.downvote:hover img {
-      // Similarmente para downvote
-    }
-
     &.active {
       img {
-        filter: grayscale(0%) brightness(1); // Icono activo a color
-      }
-      &.upvote img {
-        // Considera un color específico para upvote activo si el SVG lo permite o usa una clase
-      }
-      &.downvote img {
-        // Considera un color específico para downvote activo
+        filter: grayscale(0%) brightness(1);
       }
     }
-    // Si usas iconos de fuente (ej. Font Awesome) en lugar de <img>
-    // i {
-    //   font-size: 1.2rem;
-    //   color: $text-secondary;
-    // }
-    // &:hover i {
-    //   color: $text-primary;
-    // }
-    // &.upvote.active i { color: $accent-orange; }
-    // &.downvote.active i { color: $accent-blue; } // O el color que uses para downvotes
   }
 
   .vote-count {
     font-size: 0.9rem;
-    color: $text-primary; // Más visible
+    color: $text-primary;
     font-weight: 600;
     padding: 0.2rem 0;
   }
 }
 
-.post-content-main { // Contenedor para todo excepto la sección de votos
+.post-content-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem; // Espacio entre header, body, media, etc.
-  min-width: 0; // Para que el text-overflow funcione correctamente en hijos
+  gap: 0.8rem;
+  min-width: 0;
 }
 
 .post-header {
@@ -113,19 +87,19 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
   gap: 0.75rem;
 
   .avatar {
-    width: 40px; // Ligeramente más grande
+    width: 40px;
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid $border-primary-darktheme; // Borde sutil
+    border: 1px solid $border-primary-darktheme;
   }
 
   .user-info {
     flex: 1;
-    display: flex; // Para alinear nickname y created-at
-    align-items: baseline; // Alinear por la base del texto
+    display: flex;
+    align-items: baseline;
     gap: 0.5rem;
-    min-width: 0; // Para text-overflow
+    min-width: 0;
 
     .nickname {
       font-size: 1rem;
@@ -143,8 +117,13 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
       white-space: nowrap;
     }
   }
+}
 
-  .menu-btn { // Botón de tres puntos
+.post-menu-container {
+  position: relative;
+  margin-left: auto;
+
+  .menu-btn {
     background: none;
     border: none;
     padding: 0.5rem;
@@ -154,7 +133,7 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
     align-items: center;
     justify-content: center;
 
-    .icon { // SVG
+    .icon {
       width: 20px;
       height: 20px;
       fill: $text-secondary;
@@ -168,31 +147,71 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
       }
     }
   }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: $theme-bg-tertiary;
+    border: 1px solid $border-primary-darktheme;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    width: max-content;
+    min-width: 150px;
+    padding: 0.5rem 0;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        padding: 0.6rem 1rem;
+        color: $text-secondary;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.2s ease, color 0.2s ease;
+
+        &:hover {
+          background-color: lighten($theme-bg-tertiary, 5%);
+          color: $text-primary;
+        }
+
+        // Si quieres un color específico para la opción de eliminar en hover
+        // &:last-child:hover { // Asumiendo que "Eliminar" es la última
+        //   background-color: rgba($status-error, 0.1);
+        //   color: $status-error;
+        // }
+      }
+    }
+  }
 }
 
+
 .post-body {
-  font-size: 0.95rem; // Tamaño más estándar para cuerpo de texto
-  line-height: 1.6;   // Mejor legibilidad
-  color: $text-primary; // Color principal para el texto del post
-  word-wrap: break-word; // Para que las palabras largas no rompan el layout
-  font-weight: normal; // Quitar el bold general
-  letter-spacing: normal; // Quitar letter-spacing general
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: $text-primary;
+  word-wrap: break-word;
+  font-weight: normal;
+  letter-spacing: normal;
 
   p {
-    margin: 0 0 0.5rem 0; // Espacio entre párrafos si hay varios
+    margin: 0 0 0.5rem 0;
     &:last-child {
       margin-bottom: 0;
     }
   }
 
-  .post-text-collapsible { // Para el texto colapsable
+  .post-text-collapsible {
     cursor: pointer;
   }
 
-  .read-more { // "Leer más"
+  .read-more {
     color: $post-text-collapsible-color;
     font-weight: 500;
-    margin-left: 4px; // Pequeño espacio
+    margin-left: 4px;
     cursor: pointer;
 
     &:hover {
@@ -203,52 +222,51 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
 
 .post-media {
   margin-top: 0.5rem;
-  position: relative; // Para el modal
+  position: relative;
 
   .post-image {
     max-width: 100%;
-    max-height: 500px; // Limitar altura máxima de la imagen
-    object-fit: cover; // O 'contain' si prefieres ver la imagen completa
-    border-radius: $post-border-radius; // Usar el mismo radio que la card
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: $post-border-radius;
     border: 1px solid $post-border-color;
     display: block;
-    cursor: zoom-in; // Ya estaba en el HTML
+    cursor: zoom-in;
   }
 }
 
-// Estilos para el Modal de Imagen (ya tenías .image-modal-overlay en HTML)
 .image-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.85); // Fondo oscuro semi-transparente
+  background-color: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000; // Asegurar que esté por encima de todo
+  z-index: 10000;
   cursor: zoom-out;
-  padding: 20px; // Espacio por si la imagen es muy grande
+  padding: 20px;
 
   .image-modal-content {
     position: relative;
     max-width: 90vw;
     max-height: 90vh;
-    display: flex; // Para centrar la imagen si es más pequeña que max-width/height
+    display: flex;
 
     .image-full {
       display: block;
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain; // Para ver la imagen completa sin recorte
+      object-fit: contain;
       border-radius: $post-border-radius;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
     }
 
     .close-modal-btn {
       position: absolute;
-      top: -10px; // Ajustar posición fuera de la imagen
+      top: -10px;
       right: -10px;
       background-color: $theme-bg-tertiary;
       color: $text-primary;
@@ -257,7 +275,7 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
       width: 36px;
       height: 36px;
       font-size: 1.8rem;
-      line-height: 36px; // Centrar el '×'
+      line-height: 36px;
       text-align: center;
       cursor: pointer;
       transition: background-color 0.2s ease, transform 0.2s ease;
@@ -275,7 +293,7 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
 .song-card {
   display: flex;
   align-items: center;
-  background-color: $theme-bg-tertiary; // Un fondo un poco más claro que el post
+  background-color: $theme-bg-tertiary;
   border: 1px solid $post-border-color;
   border-radius: $post-border-radius;
   padding: 0.75rem 1rem;
@@ -287,7 +305,7 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
     height: 50px;
     border-radius: 6px;
     object-fit: cover;
-    flex-shrink: 0; // Evitar que se encoja
+    flex-shrink: 0;
   }
 
   .song-details {
@@ -295,7 +313,7 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-width: 0; // Para text-overflow
+    min-width: 0;
 
     .title {
       color: $text-primary;
@@ -315,7 +333,7 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
     }
   }
 
-  .play-btn { // Botón de play para la canción
+  .play-btn {
     background: none;
     border: none;
     cursor: pointer;
@@ -327,10 +345,10 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
     transition: background-color 0.2s ease;
     flex-shrink: 0;
 
-    .icon { // SVG
-      width: 28px; // Icono de play un poco más grande
+    .icon {
+      width: 28px;
       height: 28px;
-      fill: $accent-green; // Usar un color de "play" (Spotify green o similar)
+      fill: $accent-green;
       transition: fill 0.2s ease;
     }
 
@@ -345,9 +363,9 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
 
 .interaction-bar {
   display: flex;
-  gap: 0.5rem; // Menor espacio entre botones de interacción
-  margin-top: 1rem; // Espacio después del contenido principal del post
-  padding-top: 0.75rem; // Espacio y línea separadora
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
   border-top: 1px solid $post-border-color;
 
   .interaction-btn {
@@ -360,18 +378,18 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
-    padding: 0.5rem 0.75rem; // Padding ajustado
-    border-radius: 6px; // Radio más sutil
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
     transition: background-color 0.2s ease, color 0.2s ease;
 
-    .icon { // SVG
+    .icon {
       width: 20px;
       height: 20px;
       fill: $text-secondary;
       transition: fill 0.2s ease;
     }
 
-    span { // Texto del botón (ej. contador de comentarios)
+    span {
       line-height: 1;
     }
 
@@ -386,12 +404,9 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
   }
 }
 
-// Estilos para la sección de comentarios (unificando y mejorando)
 .comments-section {
   width: 85%;
-  margin-top: 1rem; // Espacio después de la barra de interacción
-  // padding-top: 1rem; // No necesita padding-top si la interaction-bar ya tiene border-top
-
+  margin-top: 1rem;
   .loading-comments, .error-comments, .no-comments {
     text-align: center;
     padding: 1.5rem 0;
@@ -401,7 +416,7 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
 
     p { margin: 0; }
 
-    .retry-btn.small { // Botón para reintentar carga de comentarios
+    .retry-btn.small {
       margin-left: 10px;
       padding: 4px 10px;
       font-size: 0.85em;
@@ -417,23 +432,19 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
   }
 
   .error-comments {
-    color: $status-error; // Usar variable de error
+    color: $status-error;
   }
 
   .no-comments p {
-    color: $text-muted; // Un color más apagado
+    color: $text-muted;
   }
 }
 
-.new-comment-form { // Formulario para nuevo comentario
+.new-comment-form {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.5rem; // Espacio antes de la lista de comentarios
-  position: relative; // Para mensajes de error/éxito
-  // max-width: 430px; // Quitar el max-width para que ocupe el ancho del post
-  // width: 100%;
-  // margin-left: auto;
-  // margin-right: auto;
+  margin-bottom: 1.5rem;
+  position: relative;
 
   .comment-textarea {
     width: 100%;
@@ -450,12 +461,12 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
     &::placeholder {
-      color: $text-muted; // Usar tu variable
+      color: $text-muted;
     }
 
     &:focus {
       outline: none;
-      border-color: $accent-orange; // Color de acento al enfocar
+      border-color: $accent-orange;
       box-shadow: 0 0 0 3px rgba($accent-orange, 0.2);
     }
 
@@ -472,35 +483,35 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
     font-size: 0.8rem;
     color: $status-error;
     padding: 4px 0 0 4px;
-    min-height: 1.2em; // Para evitar saltos de layout
-    text-align: left; // Alinear a la izquierda
+    min-height: 1.2em;
+    text-align: left;
   }
 
   .comment-submit-error {
-    margin-top: 6px; // Espacio sobre el botón si hay error de envío
+    margin-top: 6px;
   }
 
   .submit-comment-btn {
-    align-self: flex-end; // Botón a la derecha
+    align-self: flex-end;
     margin-top: 12px;
-    padding: 10px 20px; // Padding ajustado
-    background-color: $accent-orange; // Color de acento
-    color: $text-on-accent; // Usar tu variable
+    padding: 10px 20px;
+    background-color: $accent-orange;
+    color: $text-on-accent;
     border: none;
-    border-radius: 20px; // Botón más redondeado
+    border-radius: 20px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
     transition: background-color 0.2s ease, transform 0.1s ease;
 
     &:hover:not(:disabled) {
-      background-color: darken($accent-orange, 8%); // Usar darken
-      transform: translateY(-1px); // Efecto sutil de elevación
+      background-color: darken($accent-orange, 8%);
+      transform: translateY(-1px);
     }
 
     &:disabled {
       background-color: $theme-bg-tertiary;
-      color: $text-muted; // Usar tu variable
+      color: $text-muted;
       cursor: not-allowed;
       opacity: 0.7;
     }
@@ -513,22 +524,22 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
 .comments-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem; // Espacio entre items de comentario
+  gap: 1rem;
 
   .comment-item {
     display: flex;
-    gap: 0.75rem; // Espacio entre avatar y contenido del comentario
+    gap: 0.75rem;
 
     .comment-author-avatar,
     .comment-author-avatar-placeholder {
-      width: 36px; // Tamaño consistente con avatar del post
+      width: 36px;
       height: 36px;
       border-radius: 50%;
       background-color: $theme-bg-tertiary;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem; // Tamaño para las iniciales
+      font-size: 0.9rem;
       font-weight: 600;
       color: $text-primary;
       object-fit: cover;
@@ -540,15 +551,15 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
       display: flex;
       flex-direction: column;
       flex-grow: 1;
-      background-color: $theme-bg-tertiary; // Fondo sutil para el comentario
-      padding: 0.75rem 1rem; // Padding interno
-      border-radius: $post-border-radius; // Bordes redondeados
+      background-color: $theme-bg-tertiary;
+      padding: 0.75rem 1rem;
+      border-radius: $post-border-radius;
 
       .comment-author-info {
         display: flex;
         align-items: baseline;
         margin-bottom: 0.3rem;
-        flex-wrap: wrap; // Para que el timestamp pase abajo en espacios pequeños
+        flex-wrap: wrap;
 
         .comment-author-name {
           font-weight: 600;
@@ -562,16 +573,16 @@ $post-text-collapsible-color: $accent-link; // Usar una variable para "Leer más
         }
         .comment-timestamp {
           font-size: 0.75rem;
-          color: $text-muted; // Usar tu variable
+          color: $text-muted;
         }
       }
       .comment-text {
         font-size: 0.9rem;
         line-height: 1.6;
-        color: $text-secondary; // Color más suave para el texto del comentario
-        white-space: pre-wrap; // Conservar saltos de línea y espacios
-        word-wrap: break-word; // Romper palabras largas
-        p { // Si el contenido del comentario tiene <p>
+        color: $text-secondary;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        p {
           margin: 0;
         }
       }

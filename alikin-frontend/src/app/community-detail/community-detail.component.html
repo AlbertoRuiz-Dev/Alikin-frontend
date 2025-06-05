@@ -58,7 +58,8 @@
       <div *ngIf="activeSection === 'feed' && communityId">
         <app-community-feed
           [communityId]="communityId"
-          [currentUserRole]="currentUserRole">
+          [currentUserRole]="currentUserRole"
+          [currentUserId]="currentUserIdForFeed">
         </app-community-feed>
       </div>
 

@@ -133,19 +133,18 @@ export class PostComponent implements OnInit, OnDestroy {
     }
 
     if (this.selectedImageFile) {
-      // El backend en PostController (createPostWithImage) espera 'imageFile'
-      formData.append('imageFile', this.selectedImageFile, this.selectedImageFile.name);
+      // Cambia "imageFile" a "image" para que coincida con @RequestPart(value = "image", ...) en el backend
+      formData.append('image', this.selectedImageFile, this.selectedImageFile.name); // <-- CAMBIO AQUÍ
     }
 
     // Llamar al método del servicio que espera FormData
-    this.postService.createGeneralPostWithFormData(formData).subscribe({
+    this.postService.createGeneralPostWithFormData(formData).subscribe({ //
       next: (res) => {
         this.isSubmitting = false;
         this.postForm.reset();
         this.selectedImageFile = undefined;
         this.imagePreviewUrl = undefined;
-        // Redirigir o mostrar mensaje de éxito
-        this.router.navigate(['/']); // O a la página del feed, o del post creado
+        this.router.navigate(['/']);
       },
       error: (err) => {
         console.error('Error al crear el post:', err);

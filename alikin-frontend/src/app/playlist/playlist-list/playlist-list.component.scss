@@ -89,4 +89,30 @@
   margin-top: 20px;
 }
 
-// No se necesita .playlists-grid si app-playlist-item ya tiene margin-bottom
+.playlist-section {
+  margin-bottom: 30px; // Espacio entre secciones
+}
+
+.section-title {
+  font-size: 1.5rem; // Tamaño para los títulos de sección "Mis Playlists", "Otras Playlists Públicas"
+  color: $text-primary; // Usando tu variable de color
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid $border-primary-darktheme; // Usando tu variable de color
+}
+
+.section-separator {
+  border: 0;
+  height: 1px;
+  background-color: $border-primary-darktheme; // Usando tu variable de color
+  margin: 30px 0; // Espacio generoso para el separador
+}
+
+.empty-state-section { // Estilo específico para mensajes de vacío dentro de las secciones
+  text-align: center;
+  color: $text-secondary; // Usando tu variable de color
+  font-size: 1rem;
+  padding: 20px;
+  background-color: $theme-bg-secondary; // Usando tu variable de color
+  border-radius: 6px;
+}

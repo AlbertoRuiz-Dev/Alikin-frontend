@@ -19,20 +19,29 @@
     </button>
   </div>
 
-  <div class="post-content-main"> <div class="post-header">
-    <img
-      class="avatar"
-      [src]="getImageUrl(post.user.profilePictureUrl) || '/assets/default-profile.jpg'"
-      alt="User avatar"
-    >
-    <div class="user-info">
-      <span class="nickname">{{ post.user.nickname || post.user.name || 'Anónimo' }}</span>
-      <span class="created-at">• {{ post.createdAt | date:"short" }}</span>
+  <div class="post-content-main">
+    <div class="post-header">
+      <img
+        class="avatar"
+        [src]="getImageUrl(post.user.profilePictureUrl) || '/assets/default-profile.jpg'"
+        alt="User avatar"
+      >
+      <div class="user-info">
+        <span class="nickname">{{ post.user.nickname || post.user.name || 'Anónimo' }}</span>
+        <span class="created-at">• {{ post.createdAt | date:"short" }}</span>
+      </div>
+
+      <div class="post-menu-container" *ngIf="isOwner">
+        <button class="menu-btn" aria-label="More options" (click)="toggleDropdown($event)">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="18" r="2"/></svg>
+        </button>
+        <div class="dropdown-menu" *ngIf="showDropdown">
+          <ul>
+            <li (click)="deletePost()">Eliminar Post</li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <button class="menu-btn" aria-label="More options">
-      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="18" r="2"/></svg>
-    </button>
-  </div>
 
     <div class="post-body">
       <p
@@ -57,7 +66,7 @@
     <div class="song-card" *ngIf="post.song">
       <img
         class="cover"
-        [src]="getImageUrl(post.song.coverImageUrl) || 'assets/images/default-song-cover.png'"
+        [src]="getImageUrl(post.song.coverImageUrl) || 'assets/default-cover.jpg'"
         alt="Cover del álbum"
       >
       <div class="song-details">
@@ -79,7 +88,8 @@
     </div>
 
     <div class="interaction-bar">
-      <button class="interaction-btn comments" aria-label="View comments" (click)="toggleComments()">        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <button class="interaction-btn comments" aria-label="View comments" (click)="toggleComments()">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span>{{ post.commentsCount || 0 }}</span>
       </button>
     </div>

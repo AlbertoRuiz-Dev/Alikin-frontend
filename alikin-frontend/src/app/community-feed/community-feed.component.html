@@ -42,6 +42,16 @@
             <span class="author-name">{{ post.user.nickname || post.user.name }}</span>
             <span class="post-timestamp">{{ formatPostDate(post.createdAt) }}</span>
           </div>
+          <div class="post-menu-container-feed" *ngIf="isOwner(post)">
+            <button class="menu-btn-feed" aria-label="Más opciones" (click)="toggleDropdown(post, $event)">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="18" r="2"/></svg>
+            </button>
+            <div class="dropdown-menu-feed" *ngIf="showDropdownMap.get(post.id)">
+              <ul>
+                <li (click)="deletePost(post.id, $event)">Eliminar Post</li>
+              </ul>
+            </div>
+          </div>
         </div>
         <div class="post-content">
           <p [innerHTML]="post.isExpanded || (post.content && post.content.length < 200) ? post.content : (post.content | slice:0:200) + '...'"></p>
@@ -129,12 +139,15 @@
             </div>
           </div>
         </div>
-      </div> </div> <div *ngIf="hasMorePosts && !isLoadingPosts && posts.length > 0" class="load-more-container">
-    <button (click)="loadMorePosts()" class="load-more-btn" [disabled]="isLoadingPosts">
-      <span *ngIf="!isLoadingPosts">Cargar más posts</span>
-      <span *ngIf="isLoadingPosts"><i class="fas fa-spinner fa-spin"></i> Cargando...</span>
-    </button>
-  </div>
+      </div>
+    </div>
+
+    <div *ngIf="hasMorePosts && !isLoadingPosts && posts.length > 0" class="load-more-container">
+      <button (click)="loadMorePosts()" class="load-more-btn" [disabled]="isLoadingPosts">
+        <span *ngIf="!isLoadingPosts">Cargar más posts</span>
+        <span *ngIf="isLoadingPosts"><i class="fas fa-spinner fa-spin"></i> Cargando...</span>
+      </button>
+    </div>
     <div *ngIf="isLoadingPosts && posts.length > 0" class="loading-more-indicator">
       <i class="fas fa-spinner fa-spin"></i> Cargando más...
     </div>

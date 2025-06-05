@@ -1,11 +1,11 @@
-// src/app/feed/feed.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { PostService, SpringPage } from '../post/post.service'; // Ajusta la ruta
-import { PostResponse } from '../post/post.model'; // Ajusta la ruta
-import { Subject } from 'rxjs';
-import { takeUntil, finalize, catchError, tap } from 'rxjs/operators';
-import { throwError } from 'rxjs';
-import {FeedControlService} from "../layout/feed-control.services";
+import { PostService, SpringPage } from '../post/post.service';
+import { PostResponse } from '../post/post.model';
+import { Subject, throwError } from 'rxjs';
+import { takeUntil, finalize, catchError } from 'rxjs/operators';
+import { FeedControlService } from "../layout/feed-control.services";
+// Asume que tienes un AuthService para obtener el ID del usuario actual
+// import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-feed',
@@ -16,27 +16,62 @@ export class FeedComponent implements OnInit, OnDestroy {
   posts: PostResponse[] = [];
   currentPage = 0;
   pageSize = 10;
-  // isLoading y hasMorePosts ahora se gestionan/informan a través del servicio
-  // pero mantenemos variables locales para la lógica interna del fetch si es necesario.
-  // La directiva en LayoutComponent usará los valores del servicio.
   protected _isLoading = false;
   protected _hasMorePosts = true;
-
   error: string | null = null;
   private destroy$ = new Subject<void>();
 
+  currentUserId: number | null = null; // Para pasarlo a post-item
+
   constructor(
     private postService: PostService,
-    private feedControlService: FeedControlService // <-- INYECTA EL SERVICIO
+    private feedControlService: FeedControlService
+    // private authService: AuthService // Descomenta si usas AuthService
   ) {}
 
   ngOnInit(): void {
+    const userFromStorage = localStorage.getItem('currentUser');
+
+    if (userFromStorage) {
+      try {
+        const parsedUser = JSON.parse(userFromStorage);
+
+        if (parsedUser && typeof parsedUser.id !== 'undefined' && parsedUser.id !== null) {
+          const idValue = parsedUser.id;
+
+          const numericId = Number(idValue); // Intentar convertir a número explícitamente
+
+          if (!isNaN(numericId)) {
+            this.currentUserId = numericId;
+          } else {
+            this.currentUserId = null;
+          }
+        } else {
+          this.currentUserId = null;
+        }
+      } catch (e) {
+        this.currentUserId = null;
+      }
+    } else {
+      this.currentUserId = null;
+    }
     this.loadInitialPosts();
 
     this.feedControlService.loadMoreRequest$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        if (this.posts.length > 0 || this.currentPage === 0 && !this._isLoading) { // Permitir cargar más si es la carga inicial aunque posts esté vacío
+        if (this.posts.length > 0 || (this.currentPage === 0 && !this._isLoading)) {
+          this.loadMorePosts();
+        }
+      });
+
+
+    this.loadInitialPosts();
+
+    this.feedControlService.loadMoreRequest$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (this.posts.length > 0 || (this.currentPage === 0 && !this._isLoading)) {
           this.loadMorePosts();
         }
       });
@@ -45,11 +80,11 @@ export class FeedComponent implements OnInit, OnDestroy {
   loadInitialPosts(): void {
     this.currentPage = 0;
     this.posts = [];
-    this._hasMorePosts = true; // Resetea estado local
-    this.feedControlService.setHasMore(true); // Informa al servicio
+    this._hasMorePosts = true;
+    this.feedControlService.setHasMore(true);
     this.error = null;
-    this._isLoading = false; // Resetea estado local
-    this.feedControlService.setLoading(false); // Informa al servicio
+    this._isLoading = false;
+    this.feedControlService.setLoading(false);
     this.fetchPosts(false);
   }
 
@@ -70,22 +105,21 @@ export class FeedComponent implements OnInit, OnDestroy {
     if (this._isLoading) return;
 
     this._isLoading = true;
-    this.feedControlService.setLoading(true); // Informa al servicio
+    this.feedControlService.setLoading(true);
 
-    this.postService.getGeneralFeedPosts(this.currentPage, this.pageSize)
+    this.postService.getGlobalPostsWithoutCommunity(this.currentPage, this.pageSize)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
           this._isLoading = false;
-          this.feedControlService.setLoading(false); // Informa al servicio al finalizar
+          this.feedControlService.setLoading(false);
         }),
         catchError(err => {
-          console.error('Error al cargar posts del feed:', err);
+          console.error('Error al cargar posts del feed global:', err);
           this.error = err.message || 'No se pudieron cargar las publicaciones. Por favor, intenta de nuevo.';
           if (isLoadMore) {
-            this.currentPage--; // Revertir si falló al cargar más
+            this.currentPage--;
           }
-          // this.feedControlService.setHasMore(false); // Opcional: Considera si en error se debe detener el scroll
           return throwError(() => err);
         })
       )
@@ -98,13 +132,17 @@ export class FeedComponent implements OnInit, OnDestroy {
             } else {
               this.posts = pageData.content;
             }
-          } else if (!isLoadMore) { // No hay contenido en la carga inicial
+          } else if (!isLoadMore) {
             this.posts = [];
           }
           this._hasMorePosts = !pageData.last;
-          this.feedControlService.setHasMore(this._hasMorePosts); // Informa al servicio
+          this.feedControlService.setHasMore(this._hasMorePosts);
         }
       });
+  }
+
+  onPostDeleted(deletedPostId: number): void {
+    this.posts = this.posts.filter(post => post.id !== deletedPostId);
   }
 
   trackByPostId(index: number, post: PostResponse): number {

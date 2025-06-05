@@ -7,7 +7,7 @@
     <div class="main-info">
       <h2>{{ playlist.name }}</h2>
       <p class="description">{{ playlist.description || 'Sin descripción.' }}</p>
-      <p>Por: {{ playlist.owner?.name || 'Desconocido' }}</p> <p>{{ playlist.songs?.length || 0 }} canciones | {{ playlist.public ? 'Pública' : 'Privada' }}</p> <p class="created-at">Creada: {{ playlist.createdAt | date:'mediumDate' }}</p>
+      <p>Por: {{ playlist.owner?.name || 'Desconocido' }}</p> <p>{{ playlist.songs?.length || 0 }} canciones | {{ playlist.public ? 'Pública' : 'Privada' }}</p> <p class="created-at">Creada: {{ playlist.createdAt | date:'mediumDate'}}</p>
       <div class="actions-main">
         <button (click)="goToEdit()" class="action-btn edit-btn">Editar Playlist</button>
         <button (click)="toggleSongSearch(true)" class="action-btn add-song-btn">Añadir Canciones</button>
@@ -16,16 +16,43 @@
   </header>
 
   <section *ngIf="showSongSearch" class="song-search-panel">
+    <h3>Añadir Canciones a la Playlist</h3>
+
+    <div *ngIf="availableSongsPage$ | async as songPage; else loadingSongs">
+
+      <ul *ngIf="songPage.content && songPage.content.length > 0" class="available-songs-list">
+        <li *ngFor="let song of songPage.content" class="available-song-item">
+          <span>{{song.title}} <span *ngIf="song.artist">- {{song.artist}}</span></span>
+          <button (click)="addSongToPlaylist(song.id)" class="add-button" title="Añadir a playlist">+</button>
+        </li>
+      </ul>
+
+      <div *ngIf="(!songPage.content || songPage.content.length === 0) && !errorMessage" class="empty-search">
+        No hay canciones disponibles para añadir en este momento.
+      </div>
+
+      <div class="pagination-controls" *ngIf="songPage.totalPages > 1">
+        <button [disabled]="songPage.first" (click)="searchSongs(currentPage - 1)">Anterior</button>
+        <span>Página {{ songPage.number + 1 }} de {{ songPage.totalPages }}</span>
+        <button [disabled]="songPage.last" (click)="searchSongs(currentPage + 1)">Siguiente</button>
+      </div>
+    </div>
+
+    <ng-template #loadingSongs>
+      <p class="loading-state">Cargando canciones...</p>
+    </ng-template>
+
+    <button (click)="toggleSongSearch(false)" class="close-search-btn">Cerrar Búsqueda</button>
   </section>
 
   <section class="playlist-songs-section">
     <h3>Canciones en esta Playlist</h3>
     <ul *ngIf="playlist.songs && playlist.songs.length > 0; else noSongsInPlaylist" class="songs-list">
       <li *ngFor="let song of playlist.songs" class="song-item-detail">
-        <img [src]="song.coverImageUrl ? mediaUrl + song.coverImageUrl : 'assets/images/default-song-cover.png'"
+        <img [src]="song.coverImageUrl ? mediaUrl +'/'+ song.coverImageUrl : 'assets/default-cover.jpg'"
              [alt]="song.title"
              class="song-cover-small"
-             onError="this.src='assets/images/default-song-cover.png'">
+             onError="this.src='assets/default-cover.jpg'">
         <div class="song-info">
           <span class="title">{{ song.title }}</span>
           <span class="artist">{{ song.artist }}</span>

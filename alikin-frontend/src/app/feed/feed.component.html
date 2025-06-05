@@ -1,6 +1,12 @@
-<div class="feed-container"> <div class="post-list">
-  <app-post-item *ngFor="let post of posts; trackBy: trackByPostId" [post]="post"></app-post-item>
-</div>
+<div class="feed-container">
+  <div class="post-list">
+    <app-post-item
+      *ngFor="let post of posts; trackBy: trackByPostId"
+      [post]="post"
+      [currentUserId]="currentUserId"
+      (postDeleted)="onPostDeleted($event)">
+    </app-post-item>
+  </div>
 
   <div class="loading" *ngIf="_isLoading">
     <i class="fas fa-spinner fa-spin"></i> Cargando más posts...

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'; // FormArray no se usa actualmente aquí
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { PlaylistService } from "../playlist.services"; // Ruta corregida si estaba mal
-import { Playlist, PlaylistRequest } from "../models/playlist.model";
-import {environment} from "../../../enviroments/enviroment"; //
+import { PlaylistService } from "../playlist.services";
+import { Playlist, PlaylistRequest } from "../models/playlist.model"; //
+import { environment } from "../../../enviroments/enviroment";
 
 @Component({
   selector: 'app-playlist-form',
@@ -22,7 +22,7 @@ export class PlaylistFormComponent implements OnInit {
 
   selectedCoverImageFile: File | null = null;
   coverImagePreviewUrl: string | ArrayBuffer | null = null;
-  mediaUrl = environment.mediaUrl; // Para previsualizar imagen existente
+  mediaUrl = environment.serverURL;
 
   constructor(
     private fb: FormBuilder,
@@ -33,7 +33,7 @@ export class PlaylistFormComponent implements OnInit {
     this.playlistForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
-      public: [true, Validators.required], // El control del formulario se llama 'public'
+      public: [true, Validators.required], // CORRECTO: El control del formulario se llama 'public'
     });
   }
 
@@ -49,24 +49,22 @@ export class PlaylistFormComponent implements OnInit {
         }
         return of(null);
       })
-    ).subscribe((playlist: Playlist | null) => {
+    ).subscribe((playlist: Playlist | null) => { //
       if (this.isEditMode && playlist) {
         this.playlistForm.patchValue({
           name: playlist.name,
           description: playlist.description,
-          public: playlist.public, // <-- CAMBIADO: Usar playlist.public para rellenar el form control 'public'
+          public: playlist.public, // CORRECTO: Usa playlist.public para rellenar el form control 'public'
         });
         if (playlist.coverImageUrl) {
-          // Si coverImageUrl es una ruta relativa como '/uploads/playlist-covers/...'
           this.coverImagePreviewUrl = this.mediaUrl + playlist.coverImageUrl;
-          // Si playlist.coverImageUrl ya fuera una URL absoluta, sería:
-          // this.coverImagePreviewUrl = playlist.coverImageUrl;
         }
       }
     });
   }
 
   onFileSelected(event: Event): void {
+    // ... (lógica de selección de archivo sin cambios relevantes para 'public') ...
     const element = event.currentTarget as HTMLInputElement;
     let fileList: FileList | null = element.files;
     if (fileList && fileList[0]) {
@@ -76,18 +74,18 @@ export class PlaylistFormComponent implements OnInit {
       reader.readAsDataURL(this.selectedCoverImageFile);
     } else {
       this.selectedCoverImageFile = null;
-      // Decide si quieres limpiar la previsualización o restaurar la imagen original si estaba editando
       if (this.isEditMode && this.playlistIdToEdit) {
-        // Podrías volver a cargar los datos de la playlist para restaurar la imagen original
-        // o manejarlo de otra forma si el usuario deselecciona un archivo.
-        // Por ahora, si deselecciona, se limpia. Si había una imagen de servidor,
-        // y no sube una nueva, el backend no debería cambiarla.
-        this.coverImagePreviewUrl = null; // Limpia previsualización si se deselecciona
-        // Si quieres que se muestre la imagen actual del servidor si deselecciona un nuevo archivo:
+        // Si se deselecciona un archivo, podríamos querer restaurar la vista previa de la imagen del servidor
+        const currentPlaylist = this.playlistForm.value; // Esto no es la playlist original, es el valor del form
+        // Para obtener la imagen original, necesitaríamos tenerla guardada
+        // o volver a pedirla. Por ahora, simplemente limpiamos.
+        // Mejor obtenerla de nuevo si es necesario restaurar la imagen original del servidor
+        // o mantener la URL original en una variable separada.
         // this.playlistService.getPlaylistById(this.playlistIdToEdit).subscribe(p => {
         //   if (p && p.coverImageUrl) this.coverImagePreviewUrl = this.mediaUrl + p.coverImageUrl;
+        //   else this.coverImagePreviewUrl = null;
         // });
-
+        this.coverImagePreviewUrl = null; // Simplificado: limpiar la preview si se deselecciona
       } else {
         this.coverImagePreviewUrl = null;
       }
@@ -105,11 +103,11 @@ export class PlaylistFormComponent implements OnInit {
     }
 
     const formData = new FormData();
+    // El tipo PlaylistRequest aquí asume que tiene 'public', no 'isPublic'
     const playlistDetails: Partial<PlaylistRequest> = {
       name: this.playlistForm.value.name,
       description: this.playlistForm.value.description,
-      public: this.playlistForm.value.public, // <-- CAMBIADO: Enviar 'public' en el JSON
-      // songIds: ...
+      public: this.playlistForm.value.public, // CORRECTO: Toma el valor del form control 'public' y lo asigna a la clave 'public' del JSON
     };
     formData.append('playlistData', new Blob([JSON.stringify(playlistDetails)], { type: 'application/json' }));
 
@@ -117,10 +115,12 @@ export class PlaylistFormComponent implements OnInit {
       formData.append('coverImageFile', this.selectedCoverImageFile, this.selectedCoverImageFile.name);
     }
 
+    // Lógica de submit (create/update)
     if (this.isEditMode && this.playlistIdToEdit) {
       this.playlistService.updatePlaylist(this.playlistIdToEdit, formData).subscribe({
         next: (updatedPlaylist) => {
           this.successMessage = `Playlist "${updatedPlaylist.name}" actualizada.`;
+          // Navega a la ruta base /playlist y luego al ID
           setTimeout(() => this.router.navigate(['/playlist', updatedPlaylist.id]), 1500);
         },
         error: (err) => {
@@ -135,7 +135,7 @@ export class PlaylistFormComponent implements OnInit {
           this.playlistForm.reset({ public: true });
           this.selectedCoverImageFile = null;
           this.coverImagePreviewUrl = null;
-          setTimeout(() => this.router.navigate(['/playlist', newPlaylist.id]), 1500);
+          setTimeout(() => this.router.navigate(['/playlist', newPlaylist.id]), 1500); //
         },
         error: (err) => {
           this.errorMessage = 'Error al crear la playlist.';
@@ -152,9 +152,9 @@ export class PlaylistFormComponent implements OnInit {
 
   cancel(): void {
     if (this.isEditMode && this.playlistIdToEdit) {
-      this.router.navigate(['/playlist', this.playlistIdToEdit]);
+      this.router.navigate(['/playlist', this.playlistIdToEdit]); //
     } else {
-      this.router.navigate(['/playlist']);
+      this.router.navigate(['/playlist']); //
     }
   }
 }

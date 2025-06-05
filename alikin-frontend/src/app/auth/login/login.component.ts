@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         // Obtener datos del usuario autenticado
         this.http.get(`${environment.apiUrl}/users/me`).subscribe({
           next: (user) => {
-            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('currentUser', JSON.stringify(user));
             this.router.navigate(['/']);
           },
           error: () => {
